@@ -6,6 +6,7 @@ import { CodeEditor } from '@/components/editor';
 import { LoadedFlow } from '@/components/loaded-flow';
 import { StartFlow } from '@/components/start-flow';
 import { FlowRun } from '@/components/flow-run';
+import Nav from '@/components/nav';
 // import { FlowRun } from '@/components/flow-run';
 
 export default function Home() {
@@ -16,13 +17,14 @@ export default function Home() {
         <ModeToggle />
         <ConnectWallet />
       </div>
+      <Nav />
 
-      <div className='mt-24 flex place-items-start gap-8'>
+      {/* <div className='mt-24 flex place-items-start gap-8'>
         <InputForm />
         <LoadedFlow />
         <StartFlow />
       </div>
-      <FlowRun />
+      <FlowRun /> */}
     </main>
   );
 }

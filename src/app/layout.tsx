@@ -5,12 +5,15 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/contexts/theme-provider';
 import WalletContextProvider from '@/components/contexts/wallet';
 import { Toaster } from 'sonner';
+import { QueryProvider } from '@/providers/query';
+import { ErrorBoundary } from 'react-error-boundary';
+import { GlobalError } from '@/components/global-error';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: 'Space Operator',
-  description: 'Build anything',
+  title: 'Space Operator - Voting UI',
+  description: 'Realm Vote Aggregator',
 };
 
 export default async function RootLayout({
@@ -26,17 +29,21 @@ export default async function RootLayout({
           inter.variable
         )}
       >
-        <WalletContextProvider>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </WalletContextProvider>
+        <ErrorBoundary fallbackRender={GlobalError}>
+          <QueryProvider>
+            <WalletContextProvider>
+              <ThemeProvider
+                attribute='class'
+                defaultTheme='system'
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </WalletContextProvider>
+          </QueryProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
