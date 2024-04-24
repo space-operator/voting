@@ -1,17 +1,16 @@
 'use client';
 
 import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants';
-import { useRealms } from '@/app/api/getRealms';
+import { fetchRealms } from '@/app/api/getRealms';
 import { Suspense } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 export function Realms() {
-  const [data] = useRealms({
-    pubkey: DEFAULT_GOVERNANCE_PROGRAM_ID,
+  const { data, isLoading } = useQuery({
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID],
+    queryFn: async () => await fetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    staleTime: 3600000, // 1 hour
   });
 
-  return (
-    <Suspense fallback={<div>loading...</div>}>
-      <main>{JSON.stringify(data)}</main>
-    </Suspense>
-  );
+  return <main>{isLoading ? <div>loading...</div> : <div>{data}</div>}</main>;
 }

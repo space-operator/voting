@@ -35,9 +35,8 @@ export const filterProposals = (
   // };
 
   const filterProposal = (proposal: ProgramAccount<Proposal>) => {
-    console.log(proposal);
     const state = mapFromProposal(proposal.account.state);
-    console.log(state, filters[state]);
+
     if (!filters[state]) {
       return false;
     }
