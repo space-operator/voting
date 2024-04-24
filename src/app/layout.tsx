@@ -8,6 +8,8 @@ import { Toaster } from 'sonner';
 import { QueryProvider } from '@/providers/query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { GlobalError } from '@/components/global-error';
+import JotaiProvider from '@/providers/jotai-store';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -30,19 +32,23 @@ export default async function RootLayout({
         )}
       >
         <ErrorBoundary fallbackRender={GlobalError}>
-          <QueryProvider>
-            <WalletContextProvider>
-              <ThemeProvider
-                attribute='class'
-                defaultTheme='system'
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-                <Toaster />
-              </ThemeProvider>
-            </WalletContextProvider>
-          </QueryProvider>
+          <JotaiProvider>
+            <QueryProvider>
+              <Suspense fallback={<div>Loading...</div>}>
+                <WalletContextProvider>
+                  <ThemeProvider
+                    attribute='class'
+                    defaultTheme='system'
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    {children}
+                    <Toaster />
+                  </ThemeProvider>
+                </WalletContextProvider>
+              </Suspense>
+            </QueryProvider>
+          </JotaiProvider>
         </ErrorBoundary>
       </body>
     </html>
