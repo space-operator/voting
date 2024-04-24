@@ -11,15 +11,17 @@ import { useQuery } from '@tanstack/react-query';
 export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
   const [filterState, _] = useAtom(filterStateAtom);
 
-  const { data } = useQuery({
+  const { data, isSuccess } = useQuery({
     queryKey: ['realm-proposals', realmPk],
     queryFn: async () => await fetchProposalsByRealm(realmPk),
   });
 
+  
   const filteredProposals = useMemo(() => {
+    if (!isSuccess) return [];
     const proposals = JSON.parse(data) as ProgramAccount<Proposal>[];
     return filterProposals(proposals, filterState);
-  }, [filterState, data]);
+  }, [filterState, data, isSuccess]);
 
   return (
     <div>{filteredProposals.map((proposal) => proposal.account.name)}</div>

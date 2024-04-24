@@ -55,9 +55,7 @@ export const filterStateAtom = atomWithStorage<FilterState>(
   Object.keys(VotingTypes).reduce((acc, key) => {
     acc[key] = key === VotingTypes.Voting; // Initialize all filters as off
     return acc;
-  }, {} as FilterState),
-  undefined,
-  { getOnInit: true }
+  }, {} as FilterState)
 );
 
 export function FilterPopover() {

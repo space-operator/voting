@@ -14,7 +14,7 @@ export async function fetchProposalsByRealm(pubkey: string) {
 
   const data = await getAllProposals(connection, programId, realmId);
   //   console.log(data);
-  return JSON.stringify(data);
+  return JSON.stringify(data[0]);
 }
 
 // export function useProposalsByRealm(props: {
