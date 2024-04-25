@@ -7,6 +7,13 @@ import { filterProposals } from '@/app/api/filterProposals';
 import { useMemo } from 'react';
 import { fetchProposalsByRealm } from '@/app/api/getProposalsByRealm';
 import { useQuery } from '@tanstack/react-query';
+import {
+  ProposalCard,
+  ProposalCardContent,
+  ProposalCardHeader,
+  ProposalCardVote,
+} from './ui/proposal-card';
+import { ProgressVoteButton } from './voting-progress-button';
 
 export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
   const [filterState, _] = useAtom(filterStateAtom);
@@ -24,6 +31,18 @@ export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
   }, [filterState, data, isSuccess]);
 
   return (
-    <div>{filteredProposals.map((proposal) => proposal.account.name)}</div>
+    <div>
+      {filteredProposals.map((proposal) => (
+        <ProposalCard key={proposal.pubkey.toString()}>
+          <ProposalCardHeader>{proposal.account.name}</ProposalCardHeader>
+          <ProposalCardContent>
+            {proposal.account.descriptionLink}
+          </ProposalCardContent>
+          <ProposalCardVote>
+            <ProgressVoteButton />
+          </ProposalCardVote>
+        </ProposalCard>
+      ))}
+    </div>
   );
 };
