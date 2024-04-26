@@ -29,6 +29,7 @@ export const fmtTokenAmount = (c: BN, decimals?: number) =>
   c?.div(new BN(10).pow(new BN(decimals ?? 0))).toNumber() || 0;
 
 dayjs.extend(relativeTime);
+
 export const fmtUnixTime = (d: BN | BigNumber | number) =>
   //@ts-ignore
   dayjs(typeof d === 'number' ? d * 1000 : d.toNumber() * 1000).fromNow();
@@ -84,4 +85,3 @@ export const fmtTimeToString = ({
 
   return `${daysStr}${hoursStr}${minutesStr}${seconds}s`;
 };
-

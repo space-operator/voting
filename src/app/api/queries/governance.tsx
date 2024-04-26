@@ -1,17 +1,12 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { fetchRealmByPubkey } from '../getRealm';
+import { fetchRealmByPubkey } from './realm';
 import { fetchRealmConfigQuery } from './realmConfig';
 import { findPluginName } from '@/constants/plugins';
 import { GovernanceRole } from '@/types/governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Governance,
-  ProgramAccount,
-  VoteThreshold,
-  VoteThresholdType,
-  getGovernance,
-} from '@solana/spl-governance';
+import { getGovernance } from '@solana/spl-governance';
+import { governanceWithDefaults } from '@/VoteStakeRegistry/sdk/accounts';
 
 export const determineVotingPowerType = async (
   connection: Connection,
@@ -28,34 +23,6 @@ export const determineVotingPowerType = async (
       : config.account.councilTokenConfig.voterWeightAddin;
 
   return findPluginName(programId);
-};
-
-const governanceWithDefaults = (governance: ProgramAccount<Governance>) => {
-  const isGovernanceInNeedForDefaultValues =
-    governance.account.config.councilVoteThreshold.value === 0 &&
-    governance.account.config.councilVoteThreshold.type ===
-      VoteThresholdType.YesVotePercentage;
-  return isGovernanceInNeedForDefaultValues
-    ? ({
-        ...governance,
-        account: {
-          ...governance.account,
-          config: {
-            ...governance.account.config,
-            votingCoolOffTime: 0,
-            depositExemptProposalCount: 10,
-            councilVoteThreshold:
-              governance.account.config.communityVoteThreshold,
-            councilVetoVoteThreshold:
-              governance.account.config.communityVoteThreshold,
-            councilVoteTipping: governance.account.config.communityVoteTipping,
-            communityVetoVoteThreshold: new VoteThreshold({
-              type: VoteThresholdType.Disabled,
-            }),
-          },
-        },
-      } as ProgramAccount<Governance>)
-    : governance;
 };
 
 export const useGovernanceByPubkeyQuery = (pubkey: PublicKey | undefined) => {

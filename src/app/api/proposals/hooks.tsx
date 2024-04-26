@@ -1,10 +1,10 @@
 'use client';
 
-import { useConnection } from '@solana/wallet-adapter-react';
-import { useQuery } from '@tanstack/react-query';
-import { getAllProposals, getRealm } from '@solana/spl-governance';
 import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/governance';
+import { getAllProposals } from '@solana/spl-governance';
+import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
+import { useQuery } from '@tanstack/react-query';
 
 export const useProposalsByRealm = (pubkey: string) => {
   const { connection } = useConnection();

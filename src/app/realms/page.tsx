@@ -5,7 +5,7 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
-import { fetchRealms } from '../api/getRealms';
+import { fetchRealms } from '../api/queries/realms';
 
 export default async function Page() {
   const queryClient = new QueryClient();

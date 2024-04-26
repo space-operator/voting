@@ -34,8 +34,8 @@ import {
   TokenOwnerRecord,
   VoterWeightAction,
 } from '@solana/spl-governance';
-import { useTokenOwnerRecordsDelegatedToUser } from '@hooks/queries/tokenOwnerRecord';
 import { useTokenOwnerRecord } from './hooks/useTokenOwnerRecord';
+import { useTokenOwnerRecordsDelegatedToUser } from '@/app/api/queries/tokenOwnerRecord';
 
 /**
  * Represents the return type of the `useVoterWeightPlugins` hook.

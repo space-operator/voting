@@ -13,8 +13,8 @@ import {
   ProposalCardVote,
 } from './ui/proposal-card';
 import { ProgressVoteButton } from './voting-progress-button';
-import { useProposalsByRealm } from '@/app/api/useProposalsByRealm';
-import { useRealm } from '@/app/api/getRealm';
+import { useProposalsByRealm } from '@/app/api/queries/proposals/hooks';
+import { useRealm } from '@/app/api/queries/realm';
 
 export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
   const [filterState, _] = useAtom(filterStateAtom);

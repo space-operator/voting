@@ -4,7 +4,7 @@ import { PythClient } from '@pythnetwork/staking';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
 import { useQuery } from '@tanstack/react-query';
-import { determineVotingPowerType } from '../queries/governance';
+import { determineVotingPowerType } from './governance';
 
 /**
  * Returns undefined for everything except the Pyth DAO

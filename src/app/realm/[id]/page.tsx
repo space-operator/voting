@@ -1,4 +1,5 @@
-import { fetchProposalsByRealm } from '@/app/api/getProposalsByRealm';
+import { fetchProposalsByRealm } from '@/app/api/queries/proposals/query';
+
 import {
   dehydrate,
   HydrationBoundary,

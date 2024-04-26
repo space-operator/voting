@@ -9,8 +9,8 @@ import { Provider, Wallet } from '@coral-xyz/anchor';
 import { PythVoterWeightPluginClient } from './PythVoterWeightPluginClient';
 import { PublicKey } from '@solana/web3.js';
 import { VsrClient } from '../../VoteStakeRegistry/sdk/client';
-import { NftVoterClient } from '@utils/uiTypes/NftVoterClient';
-import { HeliumVsrClient } from '../../HeliumVotePlugin/sdk/client';
+// import { NftVoterClient } from '@utils/uiTypes/NftVoterClient';
+// import { HeliumVsrClient } from '../../HeliumVotePlugin/sdk/client';
 import { UnrecognisedVoterWeightPluginClient } from './UnrecognisedVoterWeightPluginClient';
 
 /**
@@ -36,10 +36,11 @@ export const loadClient = (
       return PythVoterWeightPluginClient.connect(provider, undefined, signer);
     case 'VSR':
       return VsrClient.connect(provider, programId);
-    case 'HeliumVSR':
-      return HeliumVsrClient.connect(provider, programId);
-    case 'NFT':
-      return NftVoterClient.connect(provider, programId);
+    // TODO: Add other voter weight plugins
+    // case 'HeliumVSR':
+    //   return HeliumVsrClient.connect(provider, programId);
+    // case 'NFT':
+    //   return NftVoterClient.connect(provider, programId);
     default:
       return UnrecognisedVoterWeightPluginClient.connect(provider, programId);
   }

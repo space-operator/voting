@@ -1,11 +1,11 @@
-import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/flags';
+import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/plugins';
 import { determineVotingPowerType } from '@/app/api/queries/governance';
 import useSelectedRealmPubkey from '@hooks/selectedRealm/useSelectedRealmPubkey';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
 import { useSelectedDelegatorStore } from 'stores/useSelectedDelegatorStore';
-import { useRealmParams } from './getRealm';
-import { useTokenOwnerRecordsDelegatedToUser } from './queries/tokenOwnerRecord';
+import { useRealmParams } from '@/app/api/queries/getRealm';
+import { useTokenOwnerRecordsDelegatedToUser } from '@/app/api/queries/tokenOwnerRecord';
 
 const useDelegators = (role: 'community' | 'council' | undefined) => {
   const { data: realm } = useRealmParams();

@@ -1,7 +1,7 @@
 import { queryClient } from '@/providers/query';
 import { getRealmConfigAddress, getRealmConfig } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { fetchRealmByPubkey } from '../getRealm';
+import { fetchRealmByPubkey } from './realm';
 
 export const fetchRealmConfigQuery = async (
   connection: Connection,

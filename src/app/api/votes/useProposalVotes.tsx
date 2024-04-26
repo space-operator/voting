@@ -5,10 +5,10 @@ import {
   Realm,
   VoteType,
 } from '@solana/spl-governance';
-import { useMaxVoteRecord } from './useMaxVoteRecord';
-import { useGovernanceByPubkeyQuery } from './queries/governance';
-import usePythScalingFactor from './PythNetwork/useScalingFactor';
-import useProgramVersion from './useProgramVersion';
+import { useMaxVoteRecord } from '@/app/api/useMaxVoteRecord';
+import { useGovernanceByPubkeyQuery } from '@/app/api/queries/governance';
+import usePythScalingFactor from '@/app/api/PythNetwork/useScalingFactor';
+import useProgramVersion from '../queries/programVersion';
 import { getProposalMaxVoteWeight } from '@/models/voteWeights';
 import { fmtBnMintDecimals } from '@/utils/units';
 import { calculatePct } from '@/utils/formatting';

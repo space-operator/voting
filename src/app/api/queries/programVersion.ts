@@ -2,14 +2,7 @@ import { getGovernanceProgramVersion } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { useQuery } from '@tanstack/react-query';
-
-export const programVersionQueryKeys = {
-  byProgramId: (endpoint: string, programId: PublicKey) => [
-    endpoint,
-    'programVersion',
-    programId.toString(),
-  ],
-};
+import { useRealmParams } from './realm';
 
 export function useProgramVersionByIdQuery(realmsProgramId: PublicKey) {
   const { connection } = useConnection();
@@ -28,3 +21,14 @@ export function useProgramVersionByIdQuery(realmsProgramId: PublicKey) {
 
   return query;
 }
+
+export const useProgramVersion = () => {
+  const { data: realm } = useRealmParams();
+  const queriedVersion = useProgramVersionByIdQuery(realm?.owner).data as
+    | 1
+    | 2
+    | 3
+    | undefined;
+  return queriedVersion;
+};
+export default useProgramVersion;

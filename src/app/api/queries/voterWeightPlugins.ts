@@ -10,7 +10,7 @@ import useDelegators from '@/app/api/useDelegators';
 import { BN_ZERO } from '@solana/spl-governance';
 import { TokenOwnerRecord } from '@solana/spl-governance/lib/governance/accounts';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { useRealmParams } from './getRealm';
+import { useRealmParams } from './realm';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { GovernanceRole } from '@/types/governance';
 
