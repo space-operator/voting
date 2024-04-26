@@ -1,13 +1,12 @@
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/governance';
 import { getAllProposals } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 
-const connection = new Connection(
-  process.env.NEXT_PUBLIC_HELIUS_URL,
-  'confirmed'
-);
-
-export async function fetchProposalsByRealm(pubkey: string) {
+export async function fetchProposalsByRealm(
+  pubkey: string,
+  rpcEndpoint: string
+) {
+  const connection = new Connection(rpcEndpoint);
   const realmId = new PublicKey(pubkey);
   const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 

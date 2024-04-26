@@ -1,0 +1,2 @@
+export const DEFAULT_GOVERNANCE_PROGRAM_ID =
+  'GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw';

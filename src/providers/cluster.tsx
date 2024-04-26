@@ -7,6 +7,8 @@ import {
 } from '@/constants';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl, Connection } from '@solana/web3.js';
+import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 import { useSearchParams } from 'next/navigation';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -36,7 +38,7 @@ export const DevnetCluster: Cluster = {
 export const MainnetCluster: Cluster = {
   type: ClusterType.Mainnet,
   connection: new Connection(MAINNET_RPC_ENDPOINT, 'recent'),
-  endpoint: clusterApiUrl('mainnet-beta'),
+  endpoint: MAINNET_RPC_ENDPOINT, //clusterApiUrl('mainnet-beta'),
   network: WalletAdapterNetwork.Mainnet,
   rpcEndpoint: MAINNET_RPC_ENDPOINT,
 };
@@ -73,6 +75,8 @@ export function ClusterProvider(props: Props) {
   const params = useSearchParams();
   const urlCluster = params.get('cluster');
 
+  // const [clusterState, setClusterState] = useAtom(clusterStateAtom);
+
   const [type, setType] = useState(
     typeof urlCluster === 'string' && urlCluster === 'devnet'
       ? ClusterType.Devnet
@@ -82,9 +86,12 @@ export function ClusterProvider(props: Props) {
   useEffect(() => {
     if (typeof urlCluster === 'string' && urlCluster === 'devnet') {
       setType(ClusterType.Devnet);
+      // setClusterState(DevnetCluster);
     } else {
       setType(ClusterType.Mainnet);
+      // setClusterState(MainnetCluster);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlCluster]);
 
   const cluster =
@@ -105,3 +112,8 @@ export function useCluster() {
   const value = useContext(context);
   return [value.cluster, value.setType, value.type] as const;
 }
+
+// export const clusterStateAtom = atomWithStorage<Cluster>(
+//   'cluster',
+//   DevnetCluster
+// );
