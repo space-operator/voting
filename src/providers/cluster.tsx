@@ -4,7 +4,7 @@ import {
   DEVNET_RPC_ENDPOINT,
   MAINNET_RPC_ENDPOINT,
   TESTNET_RPC_ENDPOINT,
-} from '@/constants';
+} from '@/constants/endpoints';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 import { useAtom } from 'jotai';

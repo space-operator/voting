@@ -1,5 +1,5 @@
 import { Realms } from '@/components/realms';
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/governance';
 import {
   HydrationBoundary,
   QueryClient,

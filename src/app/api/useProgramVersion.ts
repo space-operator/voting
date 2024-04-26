@@ -1,4 +1,4 @@
-import { useProgramVersionByIdQuery } from './queries/useProgramVersionQuery';
+import { useProgramVersionByIdQuery } from '@/app/api/queries/programVersion';
 import { useRealmParams } from './getRealm';
 
 const useProgramVersion = () => {

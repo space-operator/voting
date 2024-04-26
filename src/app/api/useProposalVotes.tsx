@@ -1,18 +1,25 @@
 import {
   ProgramAccount,
   Proposal,
+  ProposalState,
   Realm,
   VoteType,
 } from '@solana/spl-governance';
 import { useMaxVoteRecord } from './useMaxVoteRecord';
 import { useGovernanceByPubkeyQuery } from './queries/governance';
 import usePythScalingFactor from './PythNetwork/useScalingFactor';
+import useProgramVersion from './useProgramVersion';
+import { getProposalMaxVoteWeight } from '@/models/voteWeights';
+import { fmtBnMintDecimals } from '@/utils/units';
+import { calculatePct } from '@/utils/formatting';
+import BN from 'bn.js';
 
 // https://github.com/solana-labs/governance-ui/blob/f36f7bb95bbeef457f0da4afef904c00768a2bd1/hooks/useProposalVotes.tsx#L16
 export default function useProposalVotes(
   proposal: Proposal,
   realm: ProgramAccount<Realm>
 ) {
+  // TODO update to get mint into
   const mint = realm.account.communityMint;
   const councilMint = realm.account.config.councilMint;
 
@@ -75,16 +82,16 @@ export default function useProposalVotes(
     : getProposalMaxVoteWeight(realm.account, proposal, proposalMint);
 
   const minimumYesVotes =
-    fmtTokenAmount(maxVoteWeight, proposalMint.decimals) *
+    fmtBnMintDecimals(maxVoteWeight, proposalMint.decimals) *
     (voteThresholdPct / 100);
 
   const yesVotePct = calculatePct(proposal.getYesVoteCount(), maxVoteWeight);
   const isMultiProposal = proposal?.options?.length > 1;
   const yesVoteCount = !isMultiProposal
-    ? fmtTokenAmount(proposal.getYesVoteCount(), proposalMint.decimals)
+    ? fmtBnMintDecimals(proposal.getYesVoteCount(), proposalMint.decimals)
     : 0;
   const noVoteCount = !isMultiProposal
-    ? fmtTokenAmount(proposal.getNoVoteCount(), proposalMint.decimals)
+    ? fmtBnMintDecimals(proposal.getNoVoteCount(), proposalMint.decimals)
     : 0;
 
   const totalVoteCount = yesVoteCount + noVoteCount;
@@ -155,7 +162,7 @@ export default function useProposalVotes(
       veto: undefined,
     };
 
-  const vetoVoteCount = fmtTokenAmount(
+  const vetoVoteCount = fmtBnMintDecimals(
     proposal.vetoVoteWeight,
     vetoMintInfo.decimals
   );

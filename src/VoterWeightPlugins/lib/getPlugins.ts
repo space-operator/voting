@@ -1,12 +1,12 @@
-import { PublicKey, Connection } from '@solana/web3.js'
-import { fetchRealmConfigQuery } from '@hooks/queries/realmConfig'
-import { findPluginName, PluginName } from '@constants/plugins'
-import { loadClient } from '../clients/'
-import { Provider, Wallet } from '@coral-xyz/anchor'
-import { getRegistrarPDA as getPluginRegistrarPDA } from '@utils/plugin/accounts'
-import { PluginType, VoterWeightPluginInfo } from './types'
-import BN from 'bn.js'
-import { fetchRealmByPubkey } from '@hooks/queries/realm'
+import { PublicKey, Connection } from '@solana/web3.js';
+import { findPluginName, PluginName } from '@/constants/plugins';
+import { loadClient } from '../clients/';
+import { Provider, Wallet } from '@coral-xyz/anchor';
+import { getRegistrarPDA as getPluginRegistrarPDA } from '@/utils/plugins';
+import { PluginType, VoterWeightPluginInfo } from './types';
+import BN from 'bn.js';
+import { fetchRealmConfigQuery } from '@/app/api/queries/realmConfig';
+import { fetchRealmByPubkey } from '@/app/api/getRealm';
 
 const getInitialPluginProgramId = async (
   realmPublicKey: PublicKey,
@@ -14,22 +14,20 @@ const getInitialPluginProgramId = async (
   connection: Connection,
   type: PluginType
 ): Promise<PublicKey | undefined> => {
-  const config = await fetchRealmConfigQuery(connection, realmPublicKey)
-  const realm = await fetchRealmByPubkey(connection, realmPublicKey)
-  const kind = realm.result?.account.communityMint.equals(
-    governanceMintPublicKey
-  )
+  const config = await fetchRealmConfigQuery(connection, realmPublicKey);
+  const realm = await fetchRealmByPubkey(connection, realmPublicKey);
+  const kind = realm.account.communityMint.equals(governanceMintPublicKey)
     ? 'community'
-    : 'council'
+    : 'council';
 
   const governanceConfig =
-    config.result?.account?.[
+    config.account?.[
       kind === 'community' ? 'communityTokenConfig' : 'councilTokenConfig'
-    ]
+    ];
   return type === 'voterWeight'
     ? governanceConfig?.voterWeightAddin
-    : governanceConfig?.maxVoterWeightAddin
-}
+    : governanceConfig?.maxVoterWeightAddin;
+};
 
 const weightForWallet = async (
   client: any,
@@ -43,8 +41,8 @@ const weightForWallet = async (
       realmPublicKey,
       governanceMintPublicKey,
       wallet
-    )) as { voterWeight: BN } | null
-    return voterWeightRecord?.voterWeight
+    )) as { voterWeight: BN } | null;
+    return voterWeightRecord?.voterWeight;
   } else {
     // this is slightly inefficient, since this section does not depend on the input wallet
     // For wallets with a large amount of delegators, it might be noticeable if caching is not happening correctly.
@@ -52,10 +50,10 @@ const weightForWallet = async (
     const maxVoterWeightRecord = (await client.getMaxVoterWeightRecord(
       realmPublicKey,
       governanceMintPublicKey
-    )) as { maxVoterWeight: BN } | null
-    return maxVoterWeightRecord?.maxVoterWeight
+    )) as { maxVoterWeight: BN } | null;
+    return maxVoterWeightRecord?.maxVoterWeight;
   }
-}
+};
 
 export const getPlugins = async ({
   realmPublicKey,
@@ -65,31 +63,31 @@ export const getPlugins = async ({
   wallets,
   signer,
 }: {
-  realmPublicKey: PublicKey
-  governanceMintPublicKey: PublicKey
-  provider: Provider
-  type: PluginType
-  wallets: PublicKey[]
-  signer: Wallet
+  realmPublicKey: PublicKey;
+  governanceMintPublicKey: PublicKey;
+  provider: Provider;
+  type: PluginType;
+  wallets: PublicKey[];
+  signer: Wallet;
 }): Promise<VoterWeightPluginInfo[]> => {
-  const plugins: VoterWeightPluginInfo[] = []
+  const plugins: VoterWeightPluginInfo[] = [];
   let programId = await getInitialPluginProgramId(
     realmPublicKey,
     governanceMintPublicKey,
     provider.connection,
     type
-  )
+  );
 
   if (programId) {
     // build plugin list till we get null, which means we are at the end of the plugin chain
     do {
-      const pluginName = findPluginName(programId)
+      const pluginName = findPluginName(programId);
       const client = await loadClient(
         pluginName as PluginName,
         programId,
         provider,
         signer
-      )
+      );
 
       // obtain the currently stored on-chain voter weight or max voter weight depending on the passed-in type
       const weights: (BN | undefined)[] = await Promise.all(
@@ -102,19 +100,19 @@ export const getPlugins = async ({
             type
           )
         )
-      )
+      );
 
       const { registrar: registrarPublicKey } = getPluginRegistrarPDA(
         realmPublicKey,
         governanceMintPublicKey,
         programId,
         pluginName
-      )
+      );
 
       const registrarData = await client.getRegistrarAccount(
         realmPublicKey,
         governanceMintPublicKey
-      )
+      );
 
       plugins.push({
         client,
@@ -124,11 +122,11 @@ export const getPlugins = async ({
         weights,
         registrarPublicKey,
         params: registrarData ?? {},
-      })
+      });
 
-      programId = registrarData?.previousVoterWeightPluginProgramId
-    } while (programId)
+      programId = registrarData?.previousVoterWeightPluginProgramId;
+    } while (programId);
   }
 
-  return plugins.reverse()
-}
+  return plugins.reverse();
+};

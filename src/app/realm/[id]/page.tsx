@@ -9,7 +9,7 @@ import React from 'react';
 
 import { FilterPopover } from '@/components/filter-popover';
 import { DisplayProposals } from '@/components/display-proposals';
-import { MAINNET_RPC_ENDPOINT } from '@/constants';
+import { MAINNET_RPC_ENDPOINT } from '@/constants/endpoints';
 
 export default async function RealmPage({
   params,
