@@ -1,4 +1,4 @@
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/governance';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
 import { getAllProposals } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 

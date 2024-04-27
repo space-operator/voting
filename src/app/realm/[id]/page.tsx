@@ -1,5 +1,3 @@
-import { fetchProposalsByRealm } from '@/app/api/queries/proposals/query';
-
 import {
   dehydrate,
   HydrationBoundary,
@@ -11,6 +9,7 @@ import React from 'react';
 import { FilterPopover } from '@/components/filter-popover';
 import { DisplayProposals } from '@/components/display-proposals';
 import { MAINNET_RPC_ENDPOINT } from '@/constants/endpoints';
+import { fetchProposalsByRealm } from '@/app/api/proposals/query';
 
 export default async function RealmPage({
   params,

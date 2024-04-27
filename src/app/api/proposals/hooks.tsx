@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/governance';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
 import { getAllProposals } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';

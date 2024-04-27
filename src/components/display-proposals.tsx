@@ -3,18 +3,12 @@
 import { useAtom } from 'jotai/react';
 import { filterStateAtom } from './filter-popover';
 import { ProgramAccount, Proposal } from '@solana/spl-governance';
-import { filterProposals } from '@/app/api/filterProposals';
 import { useMemo } from 'react';
 
-import {
-  ProposalCard,
-  ProposalCardContent,
-  ProposalCardHeader,
-  ProposalCardVote,
-} from './ui/proposal-card';
-import { ProgressVoteButton } from './voting-progress-button';
-import { useProposalsByRealm } from '@/app/api/queries/proposals/hooks';
-import { useRealm } from '@/app/api/queries/realm';
+import { useRealm } from '@/app/api/governance/realm';
+import { filterProposals } from '@/utils/filterProposals';
+import { useProposalsByRealm } from '@/app/api/proposals/hooks';
+import { SingleProposal } from './proposal';
 
 export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
   const [filterState, _] = useAtom(filterStateAtom);
@@ -32,20 +26,7 @@ export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
     <div>
       <div className=''>{JSON.stringify(realm)}</div>
 
-      {filteredProposals.map((proposal) => newFunction(proposal))}
+      {filteredProposals.map((proposal) => SingleProposal(proposal))}
     </div>
   );
 };
-function newFunction(proposal: ProgramAccount<Proposal>) {
-  return (
-    <ProposalCard key={proposal.pubkey.toString()}>
-      <ProposalCardHeader>{proposal.account.name}</ProposalCardHeader>
-      <ProposalCardContent>
-        {proposal.account.descriptionLink}
-      </ProposalCardContent>
-      <ProposalCardVote>
-        <ProgressVoteButton />
-      </ProposalCardVote>
-    </ProposalCard>
-  );
-}

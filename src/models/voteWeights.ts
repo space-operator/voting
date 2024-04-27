@@ -1,11 +1,10 @@
 import BN from 'bn.js';
-import { MintInfo } from '@solana/spl-token';
+import { Mint } from '@solana/spl-token';
 import BigNumber from 'bignumber.js';
 import {
   GovernanceConfig,
   MintMaxVoteWeightSource,
   MintMaxVoteWeightSourceType,
-  Proposal,
   Realm,
   TokenOwnerRecord,
 } from '@solana/spl-governance';
@@ -474,8 +473,8 @@ export class SimpleGatedVoterWeight implements VoterWeightInterface {
 }
 
 /** Returns max VoteWeight for given mint and max source */
-function getMintMaxVoteWeight(
-  mint: MintInfo,
+export function getMintMaxVoteWeight(
+  mint: Mint,
   maxVoteWeightSource: MintMaxVoteWeightSource
 ) {
   if (maxVoteWeightSource.isFullSupply()) {
@@ -494,31 +493,4 @@ function getMintMaxVoteWeight(
     // absolute value
     return maxVoteWeightSource.value;
   }
-}
-
-/** Returns max vote weight for a proposal  */
-export function getProposalMaxVoteWeight(
-  realm: Realm,
-  proposal: Proposal,
-  governingTokenMint: MintInfo,
-  // For vetos we want to override the proposal.governingTokenMint
-  governingTokenMintPk?: PublicKey
-) {
-  // For finalized proposals the max is stored on the proposal in case it can change in the future
-  if (proposal.isVoteFinalized() && proposal.maxVoteWeight) {
-    return proposal.maxVoteWeight;
-  }
-
-  // Council votes are currently not affected by MaxVoteWeightSource
-  if (
-    (governingTokenMintPk ?? proposal.governingTokenMint).toBase58() ===
-    realm.config.councilMint?.toBase58()
-  ) {
-    return governingTokenMint.supply;
-  }
-
-  return getMintMaxVoteWeight(
-    governingTokenMint,
-    realm.config.communityMintMaxVoteWeightSource
-  );
 }

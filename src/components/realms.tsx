@@ -1,9 +1,8 @@
 'use client';
 
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants';
-import { fetchRealms } from '@/app/api/getRealms';
-import { Suspense } from 'react';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
 import { useQuery } from '@tanstack/react-query';
+import { fetchRealms } from '@/app/api/governance/realms';
 
 export function Realms() {
   const { data, isLoading } = useQuery({
