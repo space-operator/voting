@@ -29,8 +29,8 @@ interface Cluster {
 
 export const DevnetCluster: Cluster = {
   type: ClusterType.Devnet,
-  connection: new Connection(DEVNET_RPC_ENDPOINT, 'recent'),
-  endpoint: clusterApiUrl('devnet'),
+  connection: new Connection(DEVNET_RPC_ENDPOINT, 'confirmed'),
+  endpoint: DEVNET_RPC_ENDPOINT,//clusterApiUrl('devnet'),
   network: WalletAdapterNetwork.Devnet,
   rpcEndpoint: DEVNET_RPC_ENDPOINT,
 };

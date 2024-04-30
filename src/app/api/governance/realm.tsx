@@ -1,21 +1,22 @@
 'use client';
 
-import { realmAtom } from '@/components/display-proposals';
 import { ProgramAccount, Realm, getRealm } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
-import { atom, useAtom } from 'jotai';
+import {
+  UseSuspenseQueryResult,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 
 export function useRealm(
   pubkey: string
-): UseQueryResult<ProgramAccount<Realm>, Error> {
+): UseSuspenseQueryResult<ProgramAccount<Realm>, Error> {
   const { connection } = useConnection();
 
   const realmId = new PublicKey(pubkey);
 
-  const query = useQuery({
+  const query = useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['realm', realmId, connection.rpcEndpoint],
     queryFn: async () => await getRealm(connection, realmId),
@@ -26,9 +27,7 @@ export function useRealm(
 }
 
 export function useRealmParams() {
-  // const { id: pubkey } = useParams<{ id: string }>();
-  const [realm, setRealm] = useAtom(realmAtom);
-  console.log('useRealmParams', realm.pubkey.toString());
+  const { id: pubkey } = useParams<{ id: string }>();
 
-  return useRealm(realm.pubkey.toString());
+  return useRealm(pubkey);
 }

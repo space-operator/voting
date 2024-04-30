@@ -2,7 +2,7 @@
 
 import { PublicKey } from '@solana/web3.js';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   Governance,
   ProgramAccount,
@@ -44,14 +44,16 @@ export const governanceWithDefaults = (
 export const useGovernanceByPubkeyQuery = (pubkey: PublicKey | undefined) => {
   const { connection } = useConnection();
 
-  const query = useQuery({
+  const query = useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['realm-governance', pubkey, connection.rpcEndpoint],
     queryFn: async () => {
       const governance = await getGovernance(connection, pubkey);
+      console.log('governance', governance);
       return governanceWithDefaults(governance);
     },
   });
+  console.log('useGovernanceByPubkeyQuery', query);
 
   return query;
 };

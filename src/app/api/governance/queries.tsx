@@ -1,10 +1,15 @@
-import { MAINNET_RPC_ENDPOINT } from '@/constants/endpoints';
+import {
+  CURRENT_RPC_ENDPOINT,
+  DEVNET_RPC_ENDPOINT,
+  MAINNET_RPC_ENDPOINT,
+} from '@/constants/endpoints';
 import { queryClient } from '@/providers/query';
 import { ProgramAccount, Realm, getRealm } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { atom, useAtom } from 'jotai';
 
-const connection = new Connection(MAINNET_RPC_ENDPOINT, 'confirmed');
+// FIXME: use the correct endpoint
+const connection = new Connection(CURRENT_RPC_ENDPOINT, 'confirmed');
 
 export async function fetchRealm(pubkey: string) {
   const realmId = new PublicKey(pubkey);

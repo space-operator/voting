@@ -8,10 +8,10 @@ export async function fetchProposalsByRealm(
 ) {
   const connection = new Connection(rpcEndpoint);
   const realmId = new PublicKey(pubkey);
-  const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
+  const govProgramId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 
   // Response is an array of arrays and not consistent, need to flatten
-  const data = (await getAllProposals(connection, programId, realmId)).flat();
+  const data = (await getAllProposals(connection, govProgramId, realmId)).flat();
   console.log('prefetching', data.length);
   // Must stringify for server
   return JSON.stringify(data);

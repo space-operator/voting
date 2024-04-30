@@ -1,3 +1,5 @@
+'use client';
+
 import {
   getTokenOwnerRecord,
   getTokenOwnerRecordAddress,
@@ -6,6 +8,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { useQuery } from '@tanstack/react-query';
 import { useRealmParams } from '../governance/realm';
+import BN from 'bn.js';
 
 export const useUserCommunityTokenOwnerRecord = () => {
   const { data: tokenOwnerRecordPubkey } =
@@ -94,4 +97,14 @@ export const useAddressQuery_TokenOwnerRecord = (
       ),
     staleTime: Infinity,
   });
+};
+
+export const useVanillaGovpower = (
+  tokenOwnerRecordPk: PublicKey | undefined
+) => {
+  const { data: torAccount } =
+    useTokenOwnerRecordByPubkeyQuery(tokenOwnerRecordPk);
+  return torAccount
+    ? torAccount.account.governingTokenDepositAmount
+    : new BN(0);
 };

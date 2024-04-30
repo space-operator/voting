@@ -1,3 +1,5 @@
+'use client';
+
 import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/plugins';
 import { determineVotingPowerType } from '../voting/query';
 import { useConnection } from '@solana/wallet-adapter-react';
@@ -19,6 +21,7 @@ export const useDelegators = (role: 'community' | 'council' | undefined) => {
     torsDelegatedToUser?.filter((x) =>
       x.account.governingTokenMint.equals(relevantMint)
     );
+  console.log('useDelegators', relevantDelegators);
   return relevantDelegators;
 };
 /* 
@@ -67,4 +70,3 @@ export const useBatchedVoteDelegators = (
 
   return selectedDelegator ? [] : delegatorsIfSupported;
 };
-

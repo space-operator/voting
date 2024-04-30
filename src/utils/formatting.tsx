@@ -20,6 +20,20 @@ export const calculatePct = (c = new BN(0), total?: BN) => {
     .toNumber();
 };
 
+export const getPct = (amount: BigNumber, total: BigNumber) => {
+  if (amount.isZero()) {
+    return '0';
+  }
+
+  const pct = amount.shiftedBy(2).dividedBy(total);
+
+  if (pct.isLessThan(0.01)) {
+    return '<0.01';
+  }
+
+  return pct.toFixed(2);
+};
+
 /**
  * @deprecated
  * you shouldn't cast a BN to a number

@@ -1,8 +1,10 @@
+'use client';
+
 // 1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useRealmParams } from '../governance/realm';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   TokenOwnerRecord,
   booleanFilter,
@@ -14,10 +16,10 @@ import {
 export const useTokenOwnerRecordsDelegatedToUser = () => {
   const { connection } = useConnection();
   const realm = useRealmParams();
-  const wallet = useWallet().wallet.adapter;
-  const walletPk = wallet?.publicKey ?? undefined;
-  const enabled = realm !== undefined && walletPk !== undefined;
-  const query = useQuery({
+  const wallet = useWallet().wallet?.adapter;
+  const walletPk = wallet?.publicKey;
+
+  const query = useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'token_owned_record',
@@ -26,8 +28,6 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
       walletPk,
     ],
     queryFn: async () => {
-      if (!enabled) throw new Error();
-
       const realmFilter = pubkeyFilter(1, realm.data.pubkey);
       const hasDelegateFilter = booleanFilter(
         1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6,
@@ -37,6 +37,8 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
         1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6 + 1,
         walletPk
       );
+      console.log('realmFilter', realmFilter);
+      console.log('delegatedToUserFilter', delegatedToUserFilter);
       if (!realmFilter || !delegatedToUserFilter) throw new Error(); // unclear why this would ever happen, probably it just cannot
 
       const results = await getGovernanceAccounts(
@@ -57,7 +59,6 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
 
       return results;
     },
-    enabled,
   });
 
   return query;

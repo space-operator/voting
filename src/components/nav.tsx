@@ -1,6 +1,8 @@
 // 'use client';
 
 import Link from 'next/link';
+import { ModeToggle } from './dark-toggle';
+import ConnectWallet from './ui/connect';
 
 export default function Nav() {
   return (
@@ -20,6 +22,11 @@ export default function Nav() {
           Single Realm
         </div>
       </Link>
+      <div className='w-full items-center justify-between lg:flex'>
+        <div className='font-mono text-xl font-semibold'>Space Operator</div>
+        <ModeToggle />
+        <ConnectWallet />
+      </div>
     </div>
   );
 }

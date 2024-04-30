@@ -24,17 +24,15 @@ export default function useProposalVotes(
   // TODO update to get mint into
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
-  console.log(mint, councilMint, 'mint councilMint');
-  return;
   const maxVoteRecord = useMaxVoteRecord();
+  console.log('maxVoteRecord', maxVoteRecord);
+  return;
   const governance = useGovernanceByPubkeyQuery(proposal?.governance).data
     .account;
-
   // TODO add pyth - This is always undefined except for Pyth
   const pythScalingFactor: number | undefined = 1; //usePythScalingFactor();
 
   const programVersion = useProgramVersion();
-
   const proposalMint =
     proposal?.governingTokenMint.toBase58() ===
     realm?.account.communityMint.toBase58()

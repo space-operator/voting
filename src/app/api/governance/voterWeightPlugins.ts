@@ -59,7 +59,8 @@ export const useRealmVoterWeightPlugins = (
   role: GovernanceRole = 'community'
 ): UseRealmVoterWeightPluginsReturnType => {
   const { data: realm } = useRealmParams();
-  const wallet = useWallet().wallet.adapter as SignerWalletAdapter;
+  const { wallet } = useWallet();
+  const walletAdapter = wallet?.adapter as SignerWalletAdapter;
 
   const governanceMintPublicKey =
     role === 'community'
@@ -75,7 +76,7 @@ export const useRealmVoterWeightPlugins = (
   const walletPublicKeys = getWalletList(
     selectedDelegator,
     delegators?.map((programAccount) => programAccount.account),
-    wallet
+    walletAdapter
   );
 
   // if a delegator is selected, use it, otherwise use the currently connected wallet

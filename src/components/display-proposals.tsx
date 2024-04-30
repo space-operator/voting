@@ -11,21 +11,25 @@ import { useProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
+import { useParams } from 'next/navigation';
 
 export const realmAtom = atomWithStorage('realm', null);
 
-export function DisplayProposals({ realmPk }: { realmPk: string }) {
+export function DisplayProposals() {
+  const { id: realmPk } = useParams<{ id: string }>();
   const [filterState] = useAtom(filterStateAtom);
 
-  const { data, status } = useProposalsByRealm(realmPk);
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
+
+  const { data, status } = useProposalsByRealm(realmPk);
   const [_, setRealm] = useAtom(realmAtom);
 
   useEffect(() => {
     if (realm) {
+      console.log('setting realm', realm);
       setRealm(realm);
     }
-  }, [realm, setRealm]);
+  }, [realm, setRealm, isRealmSuccess]);
 
   const filteredProposals = useMemo(() => {
     const proposals = data ? (data as ProgramAccount<Proposal>[]) : [];
