@@ -37,7 +37,7 @@ export function DisplayProposals({ realmPk }: { realmPk: string }) {
     <div>
       <div className=''>{JSON.stringify(realm)}</div>
 
-      {filteredProposals.map((proposal) => SingleProposal(proposal, realm))}
+      {filteredProposals.map((proposal) => SingleProposal(proposal))}
     </div>
   );
 }

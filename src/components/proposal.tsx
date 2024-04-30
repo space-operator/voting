@@ -13,10 +13,10 @@ import { useRealmParams } from '@/app/api/governance/realm';
 
 export const SingleProposal = (
   proposal: ProgramAccount<Proposal>,
-  realm: ProgramAccount<Realm>
+  // realm: ProgramAccount<Realm>
 ) => {
+  const { data: realm } = useRealmParams();
   console.log('proposal', proposal, realm);
-  // const { data: realm } = useRealmParams();
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
   console.log(proposalVotes, 'proposalVotes');
