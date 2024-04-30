@@ -34,25 +34,25 @@ export default async function RootLayout({
         )}
       >
         <ErrorBoundary fallbackRender={GlobalError}>
-          <JotaiProvider>
-            <QueryProvider>
-              <Suspense fallback={<div>Loading...</div>}>
-                <ClusterProvider>
-                  <WalletContextProvider>
-                    <ThemeProvider
-                      attribute='class'
-                      defaultTheme='system'
-                      enableSystem
-                      disableTransitionOnChange
-                    >
-                      {children}
-                      <Toaster />
-                    </ThemeProvider>
-                  </WalletContextProvider>
-                </ClusterProvider>
-              </Suspense>
-            </QueryProvider>
-          </JotaiProvider>
+          <ClusterProvider>
+            <JotaiProvider>
+              <QueryProvider>
+                {/* <Suspense fallback={<div>Loading...</div>}> */}
+                <WalletContextProvider>
+                  <ThemeProvider
+                    attribute='class'
+                    defaultTheme='system'
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    {children}
+                    <Toaster />
+                  </ThemeProvider>
+                </WalletContextProvider>
+                {/* </Suspense> */}
+              </QueryProvider>
+            </JotaiProvider>
+          </ClusterProvider>
         </ErrorBoundary>
       </body>
     </html>

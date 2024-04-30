@@ -1,3 +1,5 @@
+'use client';
+
 import { getGovernanceProgramVersion } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';

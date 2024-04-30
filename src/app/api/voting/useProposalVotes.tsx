@@ -1,3 +1,5 @@
+'use client';
+
 import {
   ProgramAccount,
   Proposal,
@@ -22,7 +24,8 @@ export default function useProposalVotes(
   // TODO update to get mint into
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
-
+  console.log(mint, councilMint, 'mint councilMint');
+  return;
   const maxVoteRecord = useMaxVoteRecord();
   const governance = useGovernanceByPubkeyQuery(proposal?.governance).data
     .account;

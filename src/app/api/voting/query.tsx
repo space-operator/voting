@@ -1,5 +1,5 @@
 import { Connection, PublicKey } from '@solana/web3.js';
-import { fetchRealmByPubkey } from '../governance/realm';
+import { fetchRealmByPubkey } from '../governance/queries';
 import { fetchRealmConfigQuery } from '../governance/realmConfig';
 import { findPluginName } from '@/constants/plugins';
 import { GovernanceRole } from '@/types/governance';

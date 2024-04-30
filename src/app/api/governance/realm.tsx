@@ -1,61 +1,34 @@
-import { queryClient } from '@/providers/query';
-import { getRealm } from '@solana/spl-governance';
+'use client';
+
+import { realmAtom } from '@/components/display-proposals';
+import { ProgramAccount, Realm, getRealm } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { Connection, PublicKey } from '@solana/web3.js';
-import { useQuery } from '@tanstack/react-query';
+import { PublicKey } from '@solana/web3.js';
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { atom, useAtom } from 'jotai';
 import { useParams } from 'next/navigation';
 
-const connection = new Connection(process.env.HELIUS_MAINNET_URL, 'confirmed');
+export function useRealm(
+  pubkey: string
+): UseQueryResult<ProgramAccount<Realm>, Error> {
+  const { connection } = useConnection();
 
-export async function fetchRealm(pubkey: string) {
   const realmId = new PublicKey(pubkey);
 
-  const data = await getRealm(connection, realmId);
+  const query = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['realm', realmId, connection.rpcEndpoint],
+    queryFn: async () => await getRealm(connection, realmId),
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
 
-  return JSON.stringify(data);
+  return query;
 }
 
-export const fetchRealmByPubkey = async (
-  connection: Connection,
-  pubkey: PublicKey
-) => {
-  try {
-    const data = await queryClient.fetchQuery({
-      // eslint-disable-next-line @tanstack/query/exhaustive-deps
-      queryKey: ['realm', pubkey, connection.rpcEndpoint],
-      queryFn: async () => await getRealm(connection, pubkey),
-      staleTime: 1000 * 60 * 60, // 1 hour
-    });
+export function useRealmParams() {
+  // const { id: pubkey } = useParams<{ id: string }>();
+  const [realm, setRealm] = useAtom(realmAtom);
+  console.log('useRealmParams', realm.pubkey.toString());
 
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const useRealm = (pubkey: string) => {
-  const { connection } = useConnection();
-
-  const realmId = new PublicKey(pubkey);
-
-  return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['realm', pubkey, connection.rpcEndpoint],
-    queryFn: async () => await getRealm(connection, realmId),
-    staleTime: 1000 * 60 * 60, // 1 hour
-  });
-};
-
-export const useRealmParams = () => {
-  const { connection } = useConnection();
-  const pubkey = useParams<{ id: string }>().id;
-
-  const realmId = new PublicKey(pubkey);
-
-  return useQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['realm', pubkey, connection.rpcEndpoint],
-    queryFn: async () => await getRealm(connection, realmId),
-    staleTime: 1000 * 60 * 60, // 1 hour
-  });
-};
+  return useRealm(realm.pubkey.toString());
+}

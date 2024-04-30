@@ -1,3 +1,5 @@
+'use client';
+
 import { Mint, getMint } from '@solana/spl-token';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';

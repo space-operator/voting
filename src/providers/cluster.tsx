@@ -37,7 +37,7 @@ export const DevnetCluster: Cluster = {
 
 export const MainnetCluster: Cluster = {
   type: ClusterType.Mainnet,
-  connection: new Connection(MAINNET_RPC_ENDPOINT, 'recent'),
+  connection: new Connection(MAINNET_RPC_ENDPOINT, 'confirmed'),
   endpoint: MAINNET_RPC_ENDPOINT, //clusterApiUrl('mainnet-beta'),
   network: WalletAdapterNetwork.Mainnet,
   rpcEndpoint: MAINNET_RPC_ENDPOINT,

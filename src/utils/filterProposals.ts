@@ -14,6 +14,12 @@ export const filterProposals = (
   // councilMint: MintInfo | undefined,
   // communityMint: MintInfo | undefined
 ) => {
+  console.log('Type of proposals:', typeof proposals);
+  console.log('Is proposals an array?', Array.isArray(proposals));
+
+  if (!Array.isArray(proposals)) {
+    return []; // Return an empty array or handle the error as appropriate
+  }
   // const sortProposals = (proposalA: ProgramAccount<Proposal>, proposalB: ProgramAccount<Proposal>) => {
   //   const getTime = (proposal: ProgramAccount<Proposal>) =>
   //     proposal.account.votingCompletedAt ||

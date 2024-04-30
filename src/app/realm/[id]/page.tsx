@@ -2,9 +2,10 @@ import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
+  QueryErrorResetBoundary,
 } from '@tanstack/react-query';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import { FilterPopover } from '@/components/filter-popover';
 import { DisplayProposals } from '@/components/display-proposals';
@@ -28,9 +29,13 @@ export default async function RealmPage({
   return (
     <div className='p-4'>
       <FilterPopover />
-      {/* <HydrationBoundary state={dehydrate(queryClient)}> */}
-      <DisplayProposals realmPk={realmPk} />
-      {/* </HydrationBoundary> */}
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <QueryErrorResetBoundary>
+          <Suspense fallback={<div>Loading...</div>}>
+            <DisplayProposals realmPk={realmPk} />
+          </Suspense>
+        </QueryErrorResetBoundary>
+      </HydrationBoundary>
     </div>
   );
 }

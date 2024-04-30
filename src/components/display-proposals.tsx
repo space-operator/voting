@@ -2,31 +2,42 @@
 
 import { useAtom } from 'jotai/react';
 import { filterStateAtom } from './filter-popover';
-import { ProgramAccount, Proposal } from '@solana/spl-governance';
-import { useMemo } from 'react';
+import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
+import { useEffect, useMemo } from 'react';
 
 import { useRealm } from '@/app/api/governance/realm';
 import { filterProposals } from '@/utils/filterProposals';
 import { useProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal';
+import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
-export const DisplayProposals = ({ realmPk }: { realmPk: string }) => {
-  const [filterState, _] = useAtom(filterStateAtom);
+export const realmAtom = atomWithStorage('realm', null);
 
-  const { data, isSuccess } = useProposalsByRealm(realmPk);
+export function DisplayProposals({ realmPk }: { realmPk: string }) {
+  const [filterState] = useAtom(filterStateAtom);
+
+  const { data, status } = useProposalsByRealm(realmPk);
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
+  const [_, setRealm] = useAtom(realmAtom);
+
+  useEffect(() => {
+    if (realm) {
+      setRealm(realm);
+    }
+  }, [realm, setRealm]);
 
   const filteredProposals = useMemo(() => {
-    if (!isSuccess) return [];
-    const proposals = data as ProgramAccount<Proposal>[];
+    const proposals = data ? (data as ProgramAccount<Proposal>[]) : [];
+    console.log('proposals', proposals.length);
     return filterProposals(proposals, filterState);
-  }, [filterState, data, isSuccess]);
+  }, [filterState, data, status]);
 
   return (
     <div>
       <div className=''>{JSON.stringify(realm)}</div>
 
-      {filteredProposals.map((proposal) => SingleProposal(proposal))}
+      {filteredProposals.map((proposal) => SingleProposal(proposal, realm))}
     </div>
   );
-};
+}

@@ -1,3 +1,5 @@
+'use client';
+
 import { getMaxVoterWeightRecord } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
