@@ -35,7 +35,7 @@ export const useTokenOwnerRecordByPubkeyQuery = (
 
 export const useAddressQuery_CouncilTokenOwner = () => {
   const { data: realm } = useRealmParams();
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const selectedCouncilDelegator = undefined; // FIXME useSelectedDelegatorStore(
   // (s) => s.councilDelegator
   // );
@@ -56,7 +56,7 @@ export const useAddressQuery_CouncilTokenOwner = () => {
 
 export const useAddressQuery_CommunityTokenOwner = () => {
   const { data: realm } = useRealmParams();
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const selectedCommunityDelegator = undefined; // FIXME useSelectedDelegatorStore(
   // (s) => s.communityDelegator
   // );

@@ -1,12 +1,22 @@
 'use client';
 
 import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
-import { getAllProposals } from '@solana/spl-governance';
+import {
+  ProgramAccount,
+  Proposal,
+  getAllProposals,
+} from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import {
+  UseSuspenseQueryResult,
+  useQuery,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 
-export const useProposalsByRealm = (realmPk: string) => {
+export const useProposalsByRealm = (
+  realmPk: string
+): UseSuspenseQueryResult<ProgramAccount<Proposal>[], Error> => {
   const { connection } = useConnection();
 
   const realmId = new PublicKey(realmPk);

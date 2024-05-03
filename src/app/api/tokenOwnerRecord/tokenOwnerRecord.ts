@@ -16,10 +16,12 @@ import {
 export const useTokenOwnerRecordsDelegatedToUser = () => {
   const { connection } = useConnection();
   const realm = useRealmParams();
-  const wallet = useWallet().wallet?.adapter;
-  const walletPk = wallet?.publicKey;
+  const { wallet } = useWallet();
+  const walletPk = wallet?.adapter.publicKey;
+  const connected = !!wallet?.adapter.connected;
+  console.log('useTokenOwnerRecordsDelegatedToUser walletPk', walletPk);
 
-  const query = useSuspenseQuery({
+  const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'token_owned_record',
@@ -59,6 +61,7 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
 
       return results;
     },
+    enabled: connected,
   });
 
   return query;

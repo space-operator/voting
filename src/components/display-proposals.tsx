@@ -20,7 +20,7 @@ export function DisplayProposals() {
   const [filterState] = useAtom(filterStateAtom);
 
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
-
+  console.log(realm);
   const { data, status } = useProposalsByRealm(realmPk);
   const [_, setRealm] = useAtom(realmAtom);
 
@@ -32,16 +32,21 @@ export function DisplayProposals() {
   }, [realm, setRealm, isRealmSuccess]);
 
   const filteredProposals = useMemo(() => {
-    const proposals = data ? (data as ProgramAccount<Proposal>[]) : [];
-    console.log('proposals', proposals.length);
-    return filterProposals(proposals, filterState);
-  }, [filterState, data, status]);
+    const proposals = data;
+    console.log('proposals', proposals as ProgramAccount<Proposal>[]);
+    return filterProposals(
+      proposals,
+      filterState
+    ) as ProgramAccount<Proposal>[];
+  }, [filterState, data]);
 
   return (
     <div>
       <div className=''>{JSON.stringify(realm)}</div>
 
-      {filteredProposals.map((proposal) => SingleProposal(proposal))}
+      {filteredProposals.map((proposal: ProgramAccount<Proposal>) => (
+        <SingleProposal key={proposal.pubkey.toString()} proposal={proposal} />
+      ))}
     </div>
   );
 }

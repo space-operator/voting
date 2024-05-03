@@ -15,54 +15,57 @@ import { calculatePct } from '@/utils/formatting';
 import BN from 'bn.js';
 import { useMintInfo } from '../token/hooks';
 import { useGovernanceByPubkeyQuery } from '../governance/hooks';
+import { PublicKey } from '@solana/web3.js';
 
 // https://github.com/solana-labs/governance-ui/blob/f36f7bb95bbeef457f0da4afef904c00768a2bd1/hooks/useProposalVotes.tsx#L16
 export default function useProposalVotes(
   proposal: Proposal,
   realm: ProgramAccount<Realm>
 ) {
+  console.log(proposal, 'proposal');
   // TODO update to get mint into
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
   const maxVoteRecord = useMaxVoteRecord();
-  console.log('maxVoteRecord', maxVoteRecord);
-  return;
-  const governance = useGovernanceByPubkeyQuery(proposal?.governance).data
-    .account;
+  const governance = useGovernanceByPubkeyQuery(
+    new PublicKey(proposal.governance)
+  ).data.account;
+
   // TODO add pyth - This is always undefined except for Pyth
   const pythScalingFactor: number | undefined = 1; //usePythScalingFactor();
 
   const programVersion = useProgramVersion();
   const proposalMint =
-    proposal?.governingTokenMint.toBase58() ===
-    realm?.account.communityMint.toBase58()
+    new PublicKey(proposal.governingTokenMint).toBase58() ===
+    realm.account.communityMint.toBase58()
       ? mint
       : councilMint;
+
   // TODO: optimize using memo
-  if (
-    !realm ||
-    !proposal ||
-    !governance ||
-    !proposalMint ||
-    !programVersion ||
-    proposal.voteType != VoteType.SINGLE_CHOICE
-  )
-    return {
-      _programVersion: undefined,
-      voteThresholdPct: undefined,
-      yesVotePct: undefined,
-      yesVoteProgress: undefined,
-      yesVoteCount: undefined,
-      noVoteCount: undefined,
-      minimumYesVotes: undefined,
-      yesVotesRequired: undefined,
-      relativeNoVotes: undefined,
-      relativeYesVotes: undefined,
-    };
+  // if (
+  //   !realm ||
+  //   !proposal ||
+  //   !governance ||
+  //   !proposalMint ||
+  //   !programVersion ||
+  //   proposal.voteType != VoteType.SINGLE_CHOICE
+  // )
+  //   return {
+  //     _programVersion: undefined,
+  //     voteThresholdPct: undefined,
+  //     yesVotePct: undefined,
+  //     yesVoteProgress: undefined,
+  //     yesVoteCount: undefined,
+  //     noVoteCount: undefined,
+  //     minimumYesVotes: undefined,
+  //     yesVotesRequired: undefined,
+  //     relativeNoVotes: undefined,
+  //     relativeYesVotes: undefined,
+  //   };
 
   const isCommunityVote =
-    proposal?.governingTokenMint.toBase58() ===
-    realm?.account.communityMint.toBase58();
+    new PublicKey(proposal.governingTokenMint).toBase58() ===
+    realm.account.communityMint.toBase58();
   const isPluginCommunityVoting = maxVoteRecord && isCommunityVote;
 
   const voteThresholdPct = isCommunityVote

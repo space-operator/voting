@@ -8,7 +8,7 @@ import {
 import { FC, ReactNode, useCallback, useMemo } from 'react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { useCluster } from './cluster';
-require('@solana/wallet-adapter-react-ui/styles.css');
+import '@solana/wallet-adapter-react-ui/styles.css';
 
 export const WalletContextProvider: FC<{ children: ReactNode }> = ({
   children,

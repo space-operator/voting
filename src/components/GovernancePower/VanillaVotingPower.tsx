@@ -8,7 +8,7 @@ import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
 import BN from 'bn.js';
 // import { useSelectedDelegatorStore } from 'stores/useSelectedDelegatorStore';
-import clsx from 'clsx';
+
 import { GoverningTokenType } from '@solana/spl-governance';
 
 import { useRealmParams } from '@/app/api/governance/realm';
@@ -112,7 +112,7 @@ export default function VanillaVotingPower({
   );
 
   // TODO check, using Jupiter token list on Realm
-  // const tokenMetadata = 
+  // const tokenMetadata =
   const tokenName = realm?.account.name ?? '';
 
   const disabled =
@@ -124,7 +124,7 @@ export default function VanillaVotingPower({
 
   return (
     <div
-      className={clsx(
+      className={cn(
         props.className,
         hideIfZero && totalAmount.isZero() && 'hidden',
         disabled && 'hidden'

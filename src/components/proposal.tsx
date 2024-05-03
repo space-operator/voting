@@ -12,28 +12,26 @@ import useProposalVotes from '@/app/api/voting/useProposalVotes';
 import { useRealmParams } from '@/app/api/governance/realm';
 import { Suspense } from 'react';
 
-export const SingleProposal = (
-  proposal: ProgramAccount<Proposal>
-  // realm: ProgramAccount<Realm>
-) => {
+import { FC } from 'react';
+
+interface SingleProposalProps {
+  proposal: ProgramAccount<Proposal>;
+}
+
+export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
   const { data: realm } = useRealmParams();
-  console.log('proposal', proposal, realm);
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
 
   return (
-    // <Suspense fallback={<div>Loading...</div>}>
-      <ProposalCard key={proposal.pubkey.toString()}>
-        <ProposalCardHeader>
-          {proposal.account.name} - {realm.pubkey.toString()}
-        </ProposalCardHeader>
-        <ProposalCardContent>
-          {JSON.stringify(proposalVotes)}
-        </ProposalCardContent>
-        <ProposalCardVote>
-          <ProgressVoteButton />
-        </ProposalCardVote>
-      </ProposalCard>
-    // </Suspense>
+    <ProposalCard>
+      <ProposalCardHeader>
+        {proposal.account.name} - {realm.pubkey.toString()}
+      </ProposalCardHeader>
+      <ProposalCardContent>{JSON.stringify(proposalVotes)}</ProposalCardContent>
+      <ProposalCardVote>
+        <ProgressVoteButton />
+      </ProposalCardVote>
+    </ProposalCard>
   );
 };

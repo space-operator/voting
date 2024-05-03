@@ -20,7 +20,7 @@ export const usePlugins = (
   args: Args
 ): UseQueryResult<VoterWeightPlugins, unknown> => {
   const { connection } = useConnection();
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const signer = wallet as unknown as Wallet;
   const provider =
     wallet &&
@@ -35,6 +35,7 @@ export const usePlugins = (
 
   // Cache plugin loading with react-query
   return useQuery<VoterWeightPlugins>({
+    enabled: !!wallet,
     queryKey: queryKeys,
     queryFn: async () => {
       if (!args.walletPublicKeys || !provider)

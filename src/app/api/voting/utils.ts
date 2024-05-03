@@ -20,14 +20,16 @@ export function getProposalMaxVoteWeight(
 
   // Council votes are currently not affected by MaxVoteWeightSource
   if (
-    (governingTokenMintPk ?? proposal.governingTokenMint).toBase58() ===
-    realm.config.councilMint?.toBase58()
+    (
+      governingTokenMintPk ?? new PublicKey(proposal.governingTokenMint)
+    ).toBase58() === realm.config.councilMint?.toBase58()
   ) {
     return governingTokenMint.supply;
   }
-
-  return getMintMaxVoteWeight(
+  const maxVoteWeight = getMintMaxVoteWeight(
     governingTokenMint,
     realm.config.communityMintMaxVoteWeightSource
   );
+  console.log('maxVoteWeight', maxVoteWeight);
+  return maxVoteWeight;
 }

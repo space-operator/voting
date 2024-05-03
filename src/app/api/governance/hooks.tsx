@@ -41,8 +41,9 @@ export const governanceWithDefaults = (
     : governance;
 };
 
-export const useGovernanceByPubkeyQuery = (pubkey: PublicKey | undefined) => {
+export const useGovernanceByPubkeyQuery = (pubkey: PublicKey) => {
   const { connection } = useConnection();
+  console.log('governance', pubkey);
 
   const query = useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps

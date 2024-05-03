@@ -12,7 +12,7 @@ export async function fetchProposalsByRealm(
 
   // Response is an array of arrays and not consistent, need to flatten
   const data = (await getAllProposals(connection, govProgramId, realmId)).flat();
-  console.log('prefetching', data.length);
+  console.log('prefetching, data length', data.length);
   // Must stringify for server
   return JSON.stringify(data);
 }

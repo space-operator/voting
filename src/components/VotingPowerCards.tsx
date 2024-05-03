@@ -40,7 +40,7 @@ export const VotingPowerCards: FC<VotingCardProps> = (props) => {
     );
   }
 
-  return <>{cards}</>;
+  return <div>{cards}</div>;
 };
 
 /****

@@ -35,7 +35,7 @@ export const Deposit = ({ role }: { role: 'community' | 'council' }) => {
         more {tokenName} tokens in your wallet. Do you want to deposit them to
         increase your voting power in this Dao?
       </div>
-      {/* TODO */}
+      {/* TODO add deposit token flow*/}
       {/* <DepositTokensButton className='mt-4 w-48' role={role} as='secondary' /> */}
     </>
   );
