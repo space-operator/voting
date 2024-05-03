@@ -21,3 +21,7 @@ export const DEFAULT_NFT_VOTER_PLUGIN_V2 =
 export const JUPITER_REFERRAL_PK = new PublicKey(
   'EV4qhLE2yPKdUPdQ74EWJUn21xT3eGQxG3DRR1g9NNFc'
 );
+
+export const splRepo =
+  'https://raw.githubusercontent.com/solana-labs/governance-ui/main/public';
+export const realmsJson = '/realms/mainnet-beta.json';
