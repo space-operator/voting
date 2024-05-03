@@ -12,6 +12,7 @@ import { DisplayProposals } from '@/components/display-proposals';
 import { CURRENT_RPC_ENDPOINT, DEVNET_RPC_ENDPOINT, MAINNET_RPC_ENDPOINT } from '@/constants/endpoints';
 import { fetchProposalsByRealm } from '@/app/api/proposals/query';
 import { GovernancePowerCard } from '@/components/GovernancePower';
+import { ProgramAccount, Proposal } from '@solana/spl-governance';
 
 export default async function RealmPage({
   params,

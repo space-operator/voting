@@ -137,6 +137,12 @@ export const useRealmVoterWeightPlugins = (
     return nonAggregatedResult.voterWeightPks?.[walletIndex];
   };
 
+  console.log(
+    'useRealmVoterWeightPlugins',
+    nonAggregatedResult,
+    totalCalculatedVoterWeight,
+
+  );
   return {
     ...nonAggregatedResult,
     totalCalculatedVoterWeight,

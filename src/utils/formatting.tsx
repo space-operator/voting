@@ -10,14 +10,17 @@ export function abbreviateAddress(address: PublicKey | string, size = 5) {
 }
 
 export const calculatePct = (c = new BN(0), total?: BN) => {
-  if (total?.isZero()) {
-    return 0;
-  }
+  try {
+    const newTotal = new BN(total ?? new BN(1));
+    if (newTotal.isZero()) {
+      return 0;
+    }
 
-  return new BN(100)
-    .mul(c)
-    .div(total ?? new BN(1))
-    .toNumber();
+    return new BN(100).mul(c).div(newTotal).toNumber();
+  } catch (error) {
+    console.error('Error calculating percentage:', c, total, error);
+    return 0; // or handle the error appropriately
+  }
 };
 
 export const getPct = (amount: BigNumber, total: BigNumber) => {
@@ -45,8 +48,12 @@ export const fmtTokenAmount = (c: BN, decimals?: number) =>
 dayjs.extend(relativeTime);
 
 export const fmtUnixTime = (d: BN | BigNumber | number) =>
-  //@ts-ignore
-  dayjs(typeof d === 'number' ? d * 1000 : d.toNumber() * 1000).fromNow();
+  dayjs(
+    typeof d === 'number'
+      ? d * 1000
+      : new BN(d as unknown as string, 'hex').toNumber() * 1000
+    // @ts-ignore
+  ).fromNow();
 
 export function precision(a) {
   if (!isFinite(a)) return 0;

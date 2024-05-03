@@ -24,6 +24,7 @@ export function getTimestampFromHours(hours: number) {
 }
 
 export function fmtBnMintDecimals(amount: BN, decimals: number) {
+  console.log('fmtBnMintDecimals', amount, decimals);
   return new BigNumber(amount.toString()).shiftedBy(-decimals).toFormat();
 }
 

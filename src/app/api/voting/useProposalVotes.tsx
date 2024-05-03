@@ -6,6 +6,7 @@ import {
   ProposalState,
   Realm,
   VoteType,
+  VoteTypeKind,
 } from '@solana/spl-governance';
 import { useMaxVoteRecord } from '@/app/api/voting/useMaxVoteRecord';
 import { useProgramVersion } from '@/app/api/programVersion/hooks';
@@ -17,15 +18,34 @@ import { useMintInfo } from '../token/hooks';
 import { useGovernanceByPubkeyQuery } from '../governance/hooks';
 import { PublicKey } from '@solana/web3.js';
 
+export interface ProposalVotesResult {
+  _programVersion: number | undefined;
+  voteThresholdPct: number | undefined;
+  yesVotePct: number | undefined;
+  yesVoteProgress: number | undefined;
+  yesVoteCount: number | undefined;
+  noVoteCount: number | undefined;
+  relativeYesVotes: number | undefined;
+  relativeNoVotes: number | undefined;
+  minimumYesVotes: number | undefined;
+  yesVotesRequired: number | undefined;
+  veto?: {
+    votesRequired: string | undefined;
+    voteCount: string;
+    voteProgress: number | undefined;
+  };
+}
+
 // https://github.com/solana-labs/governance-ui/blob/f36f7bb95bbeef457f0da4afef904c00768a2bd1/hooks/useProposalVotes.tsx#L16
 export default function useProposalVotes(
   proposal: Proposal,
   realm: ProgramAccount<Realm>
-) {
+): ProposalVotesResult {
   console.log(proposal, 'proposal');
   // TODO update to get mint into
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
+  // TODO fix delegator
   const maxVoteRecord = useMaxVoteRecord();
   const governance = useGovernanceByPubkeyQuery(
     new PublicKey(proposal.governance)
@@ -42,31 +62,34 @@ export default function useProposalVotes(
       : councilMint;
 
   // TODO: optimize using memo
-  // if (
-  //   !realm ||
-  //   !proposal ||
-  //   !governance ||
-  //   !proposalMint ||
-  //   !programVersion ||
-  //   proposal.voteType != VoteType.SINGLE_CHOICE
-  // )
-  //   return {
-  //     _programVersion: undefined,
-  //     voteThresholdPct: undefined,
-  //     yesVotePct: undefined,
-  //     yesVoteProgress: undefined,
-  //     yesVoteCount: undefined,
-  //     noVoteCount: undefined,
-  //     minimumYesVotes: undefined,
-  //     yesVotesRequired: undefined,
-  //     relativeNoVotes: undefined,
-  //     relativeYesVotes: undefined,
-  //   };
+  if (
+    !realm ||
+    !proposal ||
+    !governance ||
+    !proposalMint ||
+    !programVersion ||
+    proposal.voteType.type != VoteTypeKind.SingleChoice
+  )
+    return {
+      _programVersion: undefined,
+      voteThresholdPct: undefined,
+      yesVotePct: undefined,
+      yesVoteProgress: undefined,
+      yesVoteCount: undefined,
+      noVoteCount: undefined,
+      minimumYesVotes: undefined,
+      yesVotesRequired: undefined,
+      relativeNoVotes: undefined,
+      relativeYesVotes: undefined,
+    };
 
   const isCommunityVote =
     new PublicKey(proposal.governingTokenMint).toBase58() ===
     realm.account.communityMint.toBase58();
+
+  // TODO ??
   const isPluginCommunityVoting = maxVoteRecord && isCommunityVote;
+  console.log('isPluginCommunityVoting', isPluginCommunityVoting);
 
   const voteThresholdPct = isCommunityVote
     ? governance.config.communityVoteThreshold.value
@@ -89,21 +112,28 @@ export default function useProposalVotes(
   const minimumYesVotes =
     parseFloat(fmtBnMintDecimals(maxVoteWeight as BN, proposalMint.decimals)) *
     (voteThresholdPct / 100);
+  console.log(typeof maxVoteWeight, maxVoteWeight);
+  console.log(proposal.getYesVoteCount());
+
+  // Needed workarounds to get the correct values and attached methods
+  const yesVote = new BN(proposal.getYesVoteCount(), 'hex');
+  const noVote = new BN(proposal.getNoVoteCount(), 'hex');
 
   const yesVotePct = calculatePct(
-    proposal.getYesVoteCount(),
-    maxVoteWeight as BN
+    yesVote,
+    typeof maxVoteWeight === 'bigint'
+      ? new BN(maxVoteWeight.toString())
+      : maxVoteWeight
   );
   const isMultiProposal = proposal?.options?.length > 1;
+
   const yesVoteCount = !isMultiProposal
-    ? parseFloat(
-        fmtBnMintDecimals(proposal.getYesVoteCount(), proposalMint.decimals)
-      )
+    ? parseFloat(fmtBnMintDecimals(yesVote, proposalMint.decimals))
     : 0;
+
+  //
   const noVoteCount = !isMultiProposal
-    ? parseFloat(
-        fmtBnMintDecimals(proposal.getNoVoteCount(), proposalMint.decimals)
-      )
+    ? parseFloat(fmtBnMintDecimals(noVote, proposalMint.decimals))
     : 0;
 
   const totalVoteCount = yesVoteCount + noVoteCount;

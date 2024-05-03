@@ -19,7 +19,7 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
   const { wallet } = useWallet();
   const walletPk = wallet?.adapter.publicKey;
   const connected = !!wallet?.adapter.connected;
-  console.log('useTokenOwnerRecordsDelegatedToUser walletPk', walletPk);
+  // console.log('useTokenOwnerRecordsDelegatedToUser walletPk', walletPk);
 
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
