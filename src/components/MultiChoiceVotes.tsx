@@ -8,7 +8,7 @@ import { fmtBnMintDecimals } from '@/utils/units';
 import { CheckCircleIcon, ChevronRight } from 'lucide-react';
 import { useMintInfo } from '@/app/api/token/hooks';
 
-const MultiChoiceVotes = ({
+export const MultiChoiceVotes = ({
   proposal,
   limit,
 }: {
@@ -31,6 +31,7 @@ const MultiChoiceVotes = ({
   );
 
   const isComplete = proposal.state === ProposalState.Completed;
+  
   let highestWeight = new BN(0);
 
   for (const option of proposal.options) {
@@ -43,7 +44,7 @@ const MultiChoiceVotes = ({
   const last = proposal.options.length - 1;
 
   return (
-    <div className='border border-fgd-4 rounded-md'>
+    <div className='pb-4 px-6 border border-fgd-4 rounded-md'>
       {proposal.options.slice(0, limit).map((option, index) => {
         const optionVotes = option.voteWeight;
         const optionWeightPct = totalVoteWeight.isZero() // dont divide by zero
@@ -104,5 +105,3 @@ const MultiChoiceVotes = ({
     </div>
   );
 };
-
-export default MultiChoiceVotes;

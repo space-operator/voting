@@ -2,8 +2,8 @@
 
 import { useFlowStore } from '@/stores/loaded-flow';
 import { CodeEditor } from './editor';
-import { SelectNetwork } from './select-network';
-import { Button } from './ui/button';
+import { SelectNetwork } from '../select-network';
+import { Button } from '../ui/button';
 import { baseUrl } from '@/lib/utils';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useJsonForm } from '@/stores/json-form';

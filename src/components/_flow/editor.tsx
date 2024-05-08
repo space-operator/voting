@@ -4,7 +4,7 @@ import { useJsonForm } from '@/stores/json-form';
 import dynamic from 'next/dynamic';
 
 import Editor from '@monaco-editor/react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { useTheme } from 'next-themes';
 
 export function CodeEditor() {

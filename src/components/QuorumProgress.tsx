@@ -1,4 +1,10 @@
 import { CircleHelpIcon } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 type Props = {
   progress?: number;
@@ -19,18 +25,30 @@ const QuorumProgress = ({
   tooltip,
   voteKindTitle,
 }: Props & GenericProps) => {
+  const isQuorumMet = typeof progress !== 'undefined' && progress < 100;
+
   return (
     <div className={`${showBg ? 'bg-bkg-1 p-3' : ''} rounded-md`}>
       <div className='flex items-center'>
         <div className='w-full'>
           <div className='flex items-center'>
             <p className='text-fgd-2 mb-0 mr-1.5'>{quorumTitle} Quorum</p>
-            <CircleHelpIcon className='cursor-help h-5 text-fgd-2 w-5' />
-            {/* add tooltip  */}
-            {/* <Tooltip content={tooltip}>
-            </Tooltip> */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <CircleHelpIcon className='cursor-help h-5 text-fgd-2 w-5' />
+                </TooltipTrigger>
+                <TooltipContent>{tooltip}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-          {typeof progress !== 'undefined' && progress < 100 ? (
+          {isQuorumMet ? (
+            <div className='flex items-center'>
+              <p className='font-bold mb-0 text-fgd-1'>
+                Required approval achieved
+              </p>
+            </div>
+          ) : (
             <p className='font-bold mb-0 text-fgd-1'>{`${(
               votesRequired ?? 0
             ).toLocaleString(undefined, {
@@ -38,17 +56,9 @@ const QuorumProgress = ({
             })} ${(progress ?? 0) > 0 ? 'more' : ''} ${voteKindTitle} vote${
               ((votesRequired as number) ?? 0) > 1 ? 's' : ''
             } required`}</p>
-          ) : (
-            <div className='flex items-center'>
-              <CircleHelpIcon className='flex-shrink-0 h-5 mr-1.5 text-green w-5' />
-              <p className='font-bold mb-0 text-fgd-1'>
-                Required approval achieved
-              </p>
-            </div>
           )}
         </div>
       </div>
-      {/* {progress < 100 ? ( */}
       <div className='bg-bkg-4 h-2 flex flex-grow mt-2.5 rounded w-full'>
         <div
           style={{
@@ -59,7 +69,6 @@ const QuorumProgress = ({
           } flex rounded`}
         ></div>
       </div>
-      {/* ) : null} */}
     </div>
   );
 };

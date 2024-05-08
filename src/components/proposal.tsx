@@ -22,9 +22,9 @@ import { Suspense } from 'react';
 import { FC } from 'react';
 import ProposalTimeStatus from './ProposalTimeStatus';
 import ProposalStateBadge from './ProposalStateBadge';
-import MultiChoiceVotes from './MultiChoiceVotes';
-import VoteResults from './VoteResults';
-import { ApprovalProgress, VetoProgress } from './QuorumProgress';
+import { MultiChoiceVotes } from './MultiChoiceVotes';
+import { SingleChoiceVote } from './SingleChoiceVote';
+import VotePanel from './voting/VotePanel';
 
 interface SingleProposalProps {
   proposal: ProgramAccount<Proposal>;
@@ -35,9 +35,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
 
-  const isMulti =
-    proposal.account.voteType.type !== VoteTypeKind.SingleChoice &&
-    proposal.account.accountType === GovernanceAccountType.ProposalV2;
+  const isMulti = isMultipleChoice(proposal);
 
   return (
     <ProposalCard>
@@ -46,51 +44,26 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
         <ProposalStateBadge proposal={proposal.account} />
         <ProposalTimeStatus proposal={proposal.account} />
       </ProposalCardHeader>
-      <ProposalCardContent>
-        {JSON.stringify(proposalVotes)}
-        {proposal.account.state === ProposalState.Voting ? (
-          isMulti ? (
-            <div className='pb-4 px-6'>
-              <MultiChoiceVotes proposal={proposal.account} limit={3} />
-            </div>
-          ) : (
-            <div className='border-t border-fgd-4 flex flex-col lg:flex-row mt-2 p-4 gap-x-4 gap-y-3'>
-              <div className='w-full lg:w-auto flex-1'>
-                <VoteResults isListView proposal={proposal.account} />
-              </div>
-              <div className='border-r border-fgd-4 hidden lg:block' />
-              <div className='w-full lg:w-auto flex-1'>
-                <ApprovalProgress
-                  progress={proposalVotes.yesVoteProgress}
-                  votesRequired={proposalVotes.yesVotesRequired}
-                />
-              </div>
-              {proposalVotes._programVersion !== undefined &&
-              // @asktree: here is some typescript gore because typescript doesn't know that a number being > 3 means it isn't 1 or 2
-              proposalVotes._programVersion !== 1 &&
-              proposalVotes._programVersion !== 2 &&
-              proposalVotes.veto !== undefined &&
-              (proposalVotes.veto.voteProgress ?? 0) > 0 ? (
-                <>
-                  <div className='border-r border-fgd-4 hidden lg:block' />
-
-                  <div className='w-full lg:w-auto flex-1'>
-                    <VetoProgress
-                      progress={proposalVotes.veto.voteProgress}
-                      votesRequired={proposalVotes.veto.votesRequired}
-                    />
-                  </div>
-                </>
-              ) : undefined}
-            </div>
-          )
-        ) : (
-          ''
-        )}
-      </ProposalCardContent>
+      <ProposalCardContent>{JSON.stringify(proposalVotes)}</ProposalCardContent>
       <ProposalCardVote>
-        <ProgressVoteButton />
+        {proposal.account.state === ProposalState.Voting &&
+          (isMulti ? (
+            <MultiChoiceVotes proposal={proposal.account} limit={3} />
+          ) : (
+            <SingleChoiceVote
+              proposal={proposal}
+              proposalVotes={proposalVotes}
+            />
+          ))}
+        {/* <VotePanel proposal={proposal} /> */}
       </ProposalCardVote>
     </ProposalCard>
   );
 };
+
+export function isMultipleChoice(proposal: ProgramAccount<Proposal>) {
+  return (
+    proposal.account.voteType.type !== VoteTypeKind.SingleChoice &&
+    proposal.account.accountType === GovernanceAccountType.ProposalV2
+  );
+}

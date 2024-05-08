@@ -4,7 +4,7 @@ import { FC, use, useCallback, useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { encode as base58Encode } from 'bs58';
-import { restClient, wsClient } from '../utils/client';
+import { restClient, wsClient } from '../../utils/client';
 import { StartFlowUnverifiedOutput } from '@space-operator/client/dist/module/types/rest/start-flow-unverified';
 import { convertSocketData } from '@/lib/websocket';
 import { useFlowStore } from '@/stores/loaded-flow';

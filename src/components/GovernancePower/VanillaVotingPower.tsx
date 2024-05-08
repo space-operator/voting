@@ -18,7 +18,12 @@ import {
   useAddressQuery_CouncilTokenOwner,
   useVanillaGovpower,
 } from '@/app/api/tokenOwnerRecord/hooks';
-import { TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 import {
   ExclamationTriangleIcon,
   QuestionMarkCircledIcon,
@@ -135,13 +140,15 @@ export default function VanillaVotingPower({
           <ExclamationTriangleIcon className='flex-shrink-0 h-5 w-5 mr-2' />
           Unrecognized plugin
           <TooltipProvider>
-            <TooltipTrigger asChild>
-              <QuestionMarkCircledIcon className='cursor-help h-5 ml-1 w-4' />
-            </TooltipTrigger>
-            <TooltipContent>
-              This DAO uses an unrecognised vote weight plugin - your vote
-              weight may be shown incorrectly in the UI
-            </TooltipContent>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <QuestionMarkCircledIcon className='cursor-help h-5 ml-1 w-4' />
+              </TooltipTrigger>
+              <TooltipContent>
+                This DAO uses an unrecognised vote weight plugin - your vote
+                weight may be shown incorrectly in the UI
+              </TooltipContent>
+            </Tooltip>
           </TooltipProvider>
         </div>
       )}

@@ -20,7 +20,7 @@ export function DisplayProposals() {
   const [filterState] = useAtom(filterStateAtom);
 
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
-  console.log(realm);
+
   const { data, status } = useProposalsByRealm(realmPk);
   const [_, setRealm] = useAtom(realmAtom);
 
@@ -33,7 +33,7 @@ export function DisplayProposals() {
 
   const filteredProposals = useMemo(() => {
     const proposals = data;
-    console.log('proposals', proposals as ProgramAccount<Proposal>[]);
+
     return filterProposals(
       proposals,
       filterState
