@@ -3,7 +3,7 @@ import VoteResultsBar from './VoteResultsBar';
 import useProposalVotes, {
   ProposalVotesResult,
 } from '@/app/api/voting/useProposalVotes';
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 
 type VoteResultsProps = {
   isListView?: boolean;

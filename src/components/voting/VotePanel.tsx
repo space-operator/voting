@@ -71,13 +71,13 @@ const VotePanel = ({ proposal }: { proposal: ProgramAccount<Proposal> }) => {
         </div>
       )}
       {/* START: Note that these components control for themselves whether they are displayed and may not be visible */}
-      <YouVoted quorum='electoral' />
+      {/* <YouVoted quorum='electoral' proposal={proposal} /> */}
       {proposal && isMulti ? (
         <CastMultiVoteButtons proposal={proposal} />
       ) : (
         <CastVoteButtons proposal={proposal} />
       )}
-      <YouVoted quorum='veto' />
+      {/* <YouVoted quorum='veto' proposal={proposal} /> */}
       {!isMulti && <VetoButtons />}
       {/* END */}
     </>

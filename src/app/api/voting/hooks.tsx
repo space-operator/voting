@@ -5,6 +5,7 @@ import {
   ProgramAccount,
   Proposal,
   ProposalState,
+  VoteThresholdType,
 } from '@solana/spl-governance';
 import dayjs from 'dayjs';
 import { BN } from 'bn.js';
@@ -14,11 +15,13 @@ import {
   useUserCommunityTokenOwnerRecord,
   useUserCouncilTokenOwnerRecord,
 } from '../tokenOwnerRecord/hooks';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import {
   useHasVoteTimeExpired,
   useProposalVoteRecordQuery,
 } from '../voteRecord/hooks';
+import { useMemo } from 'react';
+import { useGovernanceByPubkeyQuery } from '../governance/hooks';
 
 export const useIsVoting = ({
   proposal,
@@ -58,9 +61,7 @@ export function isInCoolOffTime(
       dayjs().isAfter(mainVotingEndedAt * 1000)
     : undefined;
 
-  return (
-    !!isInCoolOffTime && proposal!.state !== ProposalState.Defeated
-  );
+  return !!isInCoolOffTime && proposal!.state !== ProposalState.Defeated;
 }
 
 const useHasAnyVotingPower = (role: 'community' | 'council' | undefined) => {
@@ -92,7 +93,7 @@ export const useCanVote = ({
   const hasAllVoterWeightRecords = (plugins?.voterWeight ?? []).every(
     (plugin) => plugin.weights !== undefined
   );
-  const isVoteCast = !!ownVoteRecord?.found;
+  const isVoteCast = !!ownVoteRecord;
 
   const hasMinAmountToVote = useHasAnyVotingPower(votingPop);
 
@@ -146,7 +147,7 @@ export const useVotingPop = (proposalGoverningMint: PublicKey) => {
 */
 export const useVetoingPop = () => {
   const tokenRole = useVotingPop();
-  const governance = useProposalGovernanceQuery().data?.result;
+  const governance = useGovernanceByPubkeyQuery();
   const { data: realm } = useRealmParams();
   const vetoingPop = useMemo(() => {
     if (governance === undefined) return undefined;
@@ -165,4 +166,14 @@ export const useVetoingPop = () => {
   }, [governance, tokenRole, realm?.account.config.councilMint]);
 
   return vetoingPop;
+};
+
+export const useUserVetoTokenRecord = () => {
+  const ownTokenRecord = useUserCommunityTokenOwnerRecord().data;
+  const ownCouncilTokenRecord = useUserCouncilTokenOwnerRecord().data;
+
+  const vetoingPop = useVetoingPop();
+  const voterTokenRecord =
+    vetoingPop === 'community' ? ownTokenRecord : ownCouncilTokenRecord;
+  return voterTokenRecord;
 };

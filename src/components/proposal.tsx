@@ -16,7 +16,7 @@ import {
 } from './ui/proposal-card';
 import { ProgressVoteButton } from './voting-progress-button';
 import useProposalVotes from '@/app/api/voting/useProposalVotes';
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 import { Suspense } from 'react';
 
 import { FC } from 'react';
@@ -55,7 +55,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
               proposalVotes={proposalVotes}
             />
           ))}
-        {/* <VotePanel proposal={proposal} /> */}
+        <VotePanel proposal={proposal} />
       </ProposalCardVote>
     </ProposalCard>
   );

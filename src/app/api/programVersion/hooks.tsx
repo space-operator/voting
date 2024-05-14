@@ -4,7 +4,7 @@ import { getGovernanceProgramVersion } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 
 export function useProgramVersionByIdQuery(realmsProgramId: PublicKey) {
   const { connection } = useConnection();

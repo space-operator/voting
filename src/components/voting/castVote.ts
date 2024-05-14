@@ -3,7 +3,7 @@ import {
   Keypair,
   PublicKey,
   TransactionInstruction,
-} from '@solana/web3.js'
+} from '@solana/web3.js';
 import {
   ChatMessageBody,
   GovernanceAccountType,
@@ -16,29 +16,29 @@ import {
   withPostChatMessage,
   withCreateTokenOwnerRecord,
   getVoteRecordAddress,
-} from '@solana/spl-governance'
-import { ProgramAccount } from '@solana/spl-governance'
-import { RpcContext } from '@solana/spl-governance'
+} from '@solana/spl-governance';
+import { ProgramAccount } from '@solana/spl-governance';
+import { RpcContext } from '@solana/spl-governance';
 
-import { Vote } from '@solana/spl-governance'
+import { Vote } from '@solana/spl-governance';
 
-import { withCastVote } from '@solana/spl-governance'
-
+import { withCastVote } from '@solana/spl-governance';
+import { fetchProgramVersion } from '@/app/api/programVersion/queries';
 
 const getVetoTokenMint = (
   proposal: ProgramAccount<Proposal>,
   realm: ProgramAccount<Realm>
 ) => {
-  const communityMint = realm.account.communityMint
-  const councilMint = realm.account.config.councilMint
-  const governingMint = proposal.account.governingTokenMint
+  const communityMint = realm.account.communityMint;
+  const councilMint = realm.account.config.councilMint;
+  const governingMint = proposal.account.governingTokenMint;
   const vetoTokenMint = governingMint.equals(communityMint)
     ? councilMint
-    : communityMint
+    : communityMint;
   if (vetoTokenMint === undefined)
-    throw new Error('There is no token that can veto this proposal')
-  return vetoTokenMint
-}
+    throw new Error('There is no token that can veto this proposal');
+  return vetoTokenMint;
+};
 
 const createDelegatorVote = async ({
   connection,
@@ -49,38 +49,38 @@ const createDelegatorVote = async ({
   vote,
   votingPlugin,
 }: {
-  connection: Connection
-  realmPk: PublicKey
-  proposalPk: PublicKey
-  tokenOwnerRecordPk: PublicKey
-  userPk: PublicKey
-  vote: Vote
-  votingPlugin: VotingClient | undefined
+  connection: Connection;
+  realmPk: PublicKey;
+  proposalPk: PublicKey;
+  tokenOwnerRecordPk: PublicKey;
+  userPk: PublicKey;
+  vote: Vote;
+  votingPlugin: VotingClient | undefined;
 }) => {
   //
-  const realm = (await fetchRealmByPubkey(connection, realmPk)).result
-  if (!realm) throw new Error()
+  const realm = (await fetchRealmByPubkey(connection, realmPk)).result;
+  if (!realm) throw new Error();
   const proposal = (await fetchProposalByPubkeyQuery(connection, proposalPk))
-    .result
-  if (!proposal) throw new Error()
+    .result;
+  if (!proposal) throw new Error();
 
   if (
     !DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN[
       findPluginName(votingPlugin?.client?.program.programId)
     ]
   )
-    throw new Error()
+    throw new Error();
 
-  const programVersion = await fetchProgramVersion(connection, realm.owner)
+  const programVersion = await fetchProgramVersion(connection, realm.owner);
 
-  const castVoteIxs: TransactionInstruction[] = []
+  const castVoteIxs: TransactionInstruction[] = [];
 
   const pluginAddresses = await votingPlugin?.withCastPluginVote(
     castVoteIxs,
     proposal,
     tokenOwnerRecordPk
     //createCastNftVoteTicketIxs
-  )
+  );
   await withCastVote(
     castVoteIxs,
     realm.owner,
@@ -96,10 +96,10 @@ const createDelegatorVote = async ({
     userPk,
     pluginAddresses?.voterWeightPk,
     pluginAddresses?.maxVoterWeightRecord
-  )
+  );
 
-  return castVoteIxs
-}
+  return castVoteIxs;
+};
 
 const createTokenOwnerRecordIfNeeded = async ({
   connection,
@@ -108,23 +108,23 @@ const createTokenOwnerRecordIfNeeded = async ({
   payer,
   governingTokenMint,
 }: {
-  connection: Connection
-  realmPk: PublicKey
-  tokenOwnerRecordPk: PublicKey
-  payer: PublicKey
-  governingTokenMint: PublicKey
+  connection: Connection;
+  realmPk: PublicKey;
+  tokenOwnerRecordPk: PublicKey;
+  payer: PublicKey;
+  governingTokenMint: PublicKey;
 }) => {
-  const realm = await fetchRealmByPubkey(connection, realmPk)
-  if (!realm.result) throw new Error()
-  const version = await fetchProgramVersion(connection, realm.result.owner)
+  const realm = await fetchRealmByPubkey(connection, realmPk);
+  if (!realm.result) throw new Error();
+  const version = await fetchProgramVersion(connection, realm.result.owner);
 
   const tokenOwnerRecord = await fetchTokenOwnerRecordByPubkey(
     connection,
     tokenOwnerRecordPk
-  )
-  if (tokenOwnerRecord.result) return []
+  );
+  if (tokenOwnerRecord.result) return [];
   // create token owner record
-  const ixs: TransactionInstruction[] = []
+  const ixs: TransactionInstruction[] = [];
   await withCreateTokenOwnerRecord(
     ixs,
     realm.result.owner,
@@ -133,9 +133,9 @@ const createTokenOwnerRecordIfNeeded = async ({
     payer,
     governingTokenMint,
     payer
-  )
-  return ixs
-}
+  );
+  return ixs;
+};
 
 export async function castVote(
   { connection, wallet, programId, walletPubkey }: RpcContext,
@@ -149,29 +149,29 @@ export async function castVote(
   voteWeights?: number[],
   additionalTokenOwnerRecords?: PublicKey[]
 ) {
-  const chatMessageSigners: Keypair[] = []
+  const chatMessageSigners: Keypair[] = [];
 
-  const createCastNftVoteTicketIxs: TransactionInstruction[] = []
-  const createPostMessageTicketIxs: TransactionInstruction[] = []
+  const createCastNftVoteTicketIxs: TransactionInstruction[] = [];
+  const createPostMessageTicketIxs: TransactionInstruction[] = [];
 
-  const governanceAuthority = walletPubkey
-  const payer = walletPubkey
+  const governanceAuthority = walletPubkey;
+  const payer = walletPubkey;
   // Explicitly request the version before making RPC calls to work around race conditions in resolving
   // the version for RealmInfo
-  const programVersion = await fetchProgramVersion(connection, programId)
+  const programVersion = await fetchProgramVersion(connection, programId);
 
-  const pluginCastVoteIxs: TransactionInstruction[] = []
+  const pluginCastVoteIxs: TransactionInstruction[] = [];
   //will run only if any plugin is connected with realm
   const plugin = await votingPlugin?.withCastPluginVote(
     pluginCastVoteIxs,
     proposal,
     tokenOwnerRecord,
     createCastNftVoteTicketIxs
-  )
+  );
 
   const isMulti =
     proposal.account.voteType !== VoteType.SINGLE_CHOICE &&
-    proposal.account.accountType === GovernanceAccountType.ProposalV2
+    proposal.account.accountType === GovernanceAccountType.ProposalV2;
 
   // It is not clear that defining these extraneous fields, `deny` and `veto`, is actually necessary.
   // See:  https://discord.com/channels/910194960941338677/910630743510777926/1044741454175674378
@@ -180,9 +180,9 @@ export async function castVote(
         voteType: VoteKind.Approve,
         approveChoices: proposal.account.options.map((_o, index) => {
           if (voteWeights?.includes(index)) {
-            return new VoteChoice({ rank: 0, weightPercentage: 100 })
+            return new VoteChoice({ rank: 0, weightPercentage: 100 });
           } else {
-            return new VoteChoice({ rank: 0, weightPercentage: 0 })
+            return new VoteChoice({ rank: 0, weightPercentage: 0 });
           }
         }),
         deny: undefined,
@@ -214,14 +214,14 @@ export async function castVote(
         veto: undefined,
         deny: undefined,
         approveChoices: undefined,
-      })
+      });
 
   const tokenMint =
     voteKind === VoteKind.Veto
       ? getVetoTokenMint(proposal, realm)
-      : proposal.account.governingTokenMint
+      : proposal.account.governingTokenMint;
 
-  const castVoteIxs: TransactionInstruction[] = []
+  const castVoteIxs: TransactionInstruction[] = [];
   await withCastVote(
     castVoteIxs,
     programId,
@@ -237,7 +237,7 @@ export async function castVote(
     payer,
     plugin?.voterWeightPk,
     plugin?.maxVoterWeightRecord
-  )
+  );
 
   const delegatorCastVoteAtoms =
     additionalTokenOwnerRecords &&
@@ -252,12 +252,12 @@ export async function castVote(
                 realm.owner,
                 proposal.pubkey,
                 tokenOwnerRecordPk
-              )
+              );
               const voteRecord = await fetchVoteRecordByPubkey(
                 connection,
                 voteRecordPk
-              )
-              if (voteRecord.found) return undefined
+              );
+              if (voteRecord.found) return undefined;
 
               return createDelegatorVote({
                 connection,
@@ -267,21 +267,21 @@ export async function castVote(
                 userPk: walletPubkey,
                 vote,
                 votingPlugin: votingPlugin,
-              })
+              });
             })
           )
         ).filter((x): x is NonNullable<typeof x> => x !== undefined)
-      : []
+      : [];
 
-  const pluginPostMessageIxs: TransactionInstruction[] = []
-  const postMessageIxs: TransactionInstruction[] = []
+  const pluginPostMessageIxs: TransactionInstruction[] = [];
+  const postMessageIxs: TransactionInstruction[] = [];
+
   if (message) {
-
     const plugin = await votingPlugin?.withUpdateVoterWeightRecord(
       pluginPostMessageIxs,
       'commentProposal',
       createPostMessageTicketIxs
-    )
+    );
 
     await withPostChatMessage(
       postMessageIxs,
@@ -297,18 +297,19 @@ export async function castVote(
       undefined,
       message,
       plugin?.voterWeightPk
-    )
+    );
   }
 
-  const isNftVoter = votingPlugin?.client instanceof NftVoterClient
-  const isHeliumVoter = votingPlugin?.client instanceof HeliumVsrClient
+  const isNftVoter = votingPlugin?.client instanceof NftVoterClient;
+  const isHeliumVoter = votingPlugin?.client instanceof HeliumVsrClient;
+  
   const tokenOwnerRecordIxs = await createTokenOwnerRecordIfNeeded({
     connection,
     realmPk: realm.pubkey,
     tokenOwnerRecordPk: tokenOwnerRecord,
     payer,
     governingTokenMint: tokenMint,
-  })
+  });
 
   if (!isNftVoter && !isHeliumVoter) {
     const batch1 = [
@@ -317,11 +318,11 @@ export async function castVote(
       ...castVoteIxs,
       ...pluginPostMessageIxs,
       ...postMessageIxs,
-    ]
+    ];
     // chunk size chosen conservatively. "Atoms" refers to atomic clusters of instructions (namely, updatevoterweight? + vote)
     const delegatorBatches = chunks(delegatorCastVoteAtoms, 2).map((x) =>
       x.flat()
-    )
+    );
     const actions = [batch1, ...delegatorBatches].map((ixs) => ({
       instructionsSet: ixs.map((ix) => ({
         transactionInstruction: ix,
@@ -330,7 +331,7 @@ export async function castVote(
         ),
       })),
       sequenceType: SequenceType.Parallel,
-    }))
+    }));
 
     await sendTransactionsV3({
       connection,
@@ -339,11 +340,11 @@ export async function castVote(
       callbacks: {
         afterAllTxConfirmed: () => {
           if (runAfterConfirmation) {
-            runAfterConfirmation()
+            runAfterConfirmation();
           }
         },
       },
-    })
+    });
   }
 
   // we need to chunk instructions
@@ -357,7 +358,7 @@ export async function castVote(
         ...postMessageIxs,
       ],
       2
-    )
+    );
 
     const ixsChunks = chunkerz.map((txBatch, batchIdx) => {
       return {
@@ -367,8 +368,8 @@ export async function castVote(
           batchIdx
         ),
         sequenceType: SequenceType.Sequential,
-      }
-    })
+      };
+    });
 
     await sendTransactionsV3({
       connection,
@@ -377,33 +378,31 @@ export async function castVote(
       callbacks: {
         afterAllTxConfirmed: () => {
           if (runAfterConfirmation) {
-            runAfterConfirmation()
+            runAfterConfirmation();
           }
         },
       },
-    })
+    });
   }
 
   // we need to chunk instructions
   if (isNftVoter) {
-    const {
-      openNftVotingCountingModal,
-      closeNftVotingCountingModal,
-    } = useNftProposalStore.getState()
+    const { openNftVotingCountingModal, closeNftVotingCountingModal } =
+      useNftProposalStore.getState();
 
     const createNftVoteTicketsChunks = chunks(
       [...createCastNftVoteTicketIxs, ...createPostMessageTicketIxs],
       1
-    )
+    );
 
     // last element of pluginCastVoteIxs
-    const last = pluginCastVoteIxs[pluginCastVoteIxs.length - 1]
+    const last = pluginCastVoteIxs[pluginCastVoteIxs.length - 1];
     // everything except last element of pluginCastVoteIxs
-    const nftCountingChunks = pluginCastVoteIxs.slice(0, -1)
-    const voteChunk = [last, ...castVoteIxs] // the final nft-voter.CastNftVote instruction has to in same tx as the vote
+    const nftCountingChunks = pluginCastVoteIxs.slice(0, -1);
+    const voteChunk = [last, ...castVoteIxs]; // the final nft-voter.CastNftVote instruction has to in same tx as the vote
     const chunkedIxs = [...chunks(nftCountingChunks, 2), voteChunk].filter(
       (x) => x.length > 0
-    )
+    );
 
     // note that we are not chunking postMessageIxs, not yet supported (somehow)
 
@@ -416,7 +415,7 @@ export async function castVote(
             batchIdx
           ),
           sequenceType: SequenceType.Parallel,
-        }
+        };
       }),
       ...chunkedIxs.map((txBatch, batchIdx) => {
         return {
@@ -426,9 +425,9 @@ export async function castVote(
             batchIdx
           ),
           sequenceType: SequenceType.Sequential,
-        }
+        };
       }),
-    ]
+    ];
     const totalVoteCost = await calcCostOfNftVote(
       connection,
       message,
@@ -437,14 +436,14 @@ export async function castVote(
       votingPlugin,
       realm.pubkey,
       walletPubkey
-    )
+    );
     const hasEnoughSol = await checkHasEnoughSolToVote(
       totalVoteCost,
       walletPubkey,
       connection
-    )
+    );
     if (!hasEnoughSol) {
-      return
+      return;
     }
 
     await sendTransactionsV3({
@@ -453,19 +452,19 @@ export async function castVote(
       transactionInstructions: instructionsChunks,
       callbacks: {
         afterFirstBatchSign: () => {
-          instructionsChunks.length > 2 ? openNftVotingCountingModal() : null
+          instructionsChunks.length > 2 ? openNftVotingCountingModal() : null;
         },
         afterAllTxConfirmed: () => {
           if (runAfterConfirmation) {
-            runAfterConfirmation()
+            runAfterConfirmation();
           }
           closeNftVotingCountingModal(
             votingPlugin.client as NftVoterClient,
             proposal,
             wallet.publicKey!
-          )
+          );
         },
       },
-    })
+    });
   }
 }

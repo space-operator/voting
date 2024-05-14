@@ -3,7 +3,7 @@ import { Proposal, ProposalState } from '@solana/spl-governance';
 import { BN } from '@coral-xyz/anchor';
 
 import BigNumber from 'bignumber.js';
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 import { fmtBnMintDecimals } from '@/utils/units';
 import { CheckCircleIcon, ChevronRight } from 'lucide-react';
 import { useMintInfo } from '@/app/api/token/hooks';
@@ -31,7 +31,7 @@ export const MultiChoiceVotes = ({
   );
 
   const isComplete = proposal.state === ProposalState.Completed;
-  
+
   let highestWeight = new BN(0);
 
   for (const option of proposal.options) {

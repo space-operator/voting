@@ -10,7 +10,7 @@ import { useDelegators } from '@/app/api/delegators/useDelegators';
 import { BN_ZERO } from '@solana/spl-governance';
 import { TokenOwnerRecord } from '@solana/spl-governance/lib/governance/accounts';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { useRealmParams } from './realm';
+import { useRealmParams } from '../realm/hooks';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { GovernanceRole } from '@/types/governance';
 
@@ -140,8 +140,7 @@ export const useRealmVoterWeightPlugins = (
   console.log(
     'useRealmVoterWeightPlugins',
     nonAggregatedResult,
-    totalCalculatedVoterWeight,
-
+    totalCalculatedVoterWeight
   );
   return {
     ...nonAggregatedResult,

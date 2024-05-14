@@ -10,7 +10,16 @@ import { useSubmitVote } from './useSubmitVote';
 import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
 import { PublicKey } from '@solana/web3.js';
 import { useProposalVoteRecordQuery } from '@/app/api/voteRecord/hooks';
-import { ThumbsUpIcon } from 'lucide-react';
+import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
+import { Button } from '../ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import VoteCommentModal from './VoteCommentModal';
+import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
 
 export const CastVoteButtons = ({
   proposal,
@@ -20,13 +29,13 @@ export const CastVoteButtons = ({
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [vote, setVote] = useState<'yes' | 'no' | null>(null);
 
-  const realmInfo = useSelectedRealmInfo();
+  const realmInfo = useSelectedRealmRegistryEntry();
   const governance = useGovernanceByPubkeyQuery(
     new PublicKey(proposal.account.governance)
   ).data;
 
   const allowDiscussion = realmInfo?.allowDiscussion ?? true;
-  const { submitting, submitVote } = useSubmitVote();
+  const { submitting, submitVote } = useSubmitVote({ proposal });
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
@@ -34,11 +43,11 @@ export const CastVoteButtons = ({
     proposal: proposal,
   });
 
-  const isVoteCast = !!ownVoteRecord?.found;
+  const isVoteCast = !!ownVoteRecord;
 
   const isVoting = useIsVoting({ proposal, governance });
 
-  const inCoolOffTime = isInCoolOffTime(proposal, governance);
+  const inCoolOffTime = isInCoolOffTime(proposal.account, governance.account);
 
   const handleVote = async (vote: 'yes' | 'no') => {
     setVote(vote);
@@ -65,32 +74,42 @@ export const CastVoteButtons = ({
           } items-center gap-5`}
         >
           {(isVoting || !inCoolOffTime) && (
-            <Button
-              tooltipMessage={tooltipContent}
-              className='w-1/2'
-              onClick={() => handleVote('yes')}
-              disabled={!canVote || submitting}
-              isLoading={submitting}
-            >
-              <div className='flex flex-row items-center justify-center'>
-                <ThumbsUpIcon className='h-4 w-4 mr-2' />
-                Vote Yes
-              </div>
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className='w-1/2'
+                    onClick={() => handleVote('yes')}
+                    disabled={!canVote || submitting}
+                  >
+                    <div className='flex flex-row items-center justify-center'>
+                      <ThumbsUpIcon className='h-4 w-4 mr-2' />
+                      Vote Yes
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{tooltipContent}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
 
-          <Button
-            tooltipMessage={tooltipContent}
-            className='w-1/2'
-            onClick={() => handleVote('no')}
-            disabled={!canVote || submitting}
-            isLoading={submitting}
-          >
-            <div className='flex flex-row items-center justify-center'>
-              <ThumbDownIcon className='h-4 w-4 mr-2' />
-              Vote No
-            </div>
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className='w-1/2'
+                  onClick={() => handleVote('no')}
+                  disabled={!canVote || submitting}
+                >
+                  <div className='flex flex-row items-center justify-center'>
+                    <ThumbsDownIcon className='h-4 w-4 mr-2' />
+                    Vote No
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{tooltipContent}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

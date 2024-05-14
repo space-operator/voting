@@ -10,7 +10,7 @@ import {
 } from '../tokenOwnerRecord/hooks';
 import { useQuery } from '@tanstack/react-query';
 import { getVoteRecord, getVoteRecordAddress } from '@solana/spl-governance';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import { useVotingPop } from '../voting/hooks';
 
 export const useProposalVoteRecordQuery = ({

@@ -5,7 +5,7 @@ import { determineVotingPowerType } from '../voting/query';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
 // import { useSelectedDelegatorStore } from 'stores/useSelectedDelegatorStore';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import { useTokenOwnerRecordsDelegatedToUser } from '../tokenOwnerRecord/tokenOwnerRecord';
 
 export const useDelegators = (role: 'community' | 'council' | undefined) => {

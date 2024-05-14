@@ -1,7 +1,7 @@
 'use client';
 
 import { useConnection } from '@solana/wallet-adapter-react';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { getRealmConfig, getRealmConfigAddress } from '@solana/spl-governance';
 

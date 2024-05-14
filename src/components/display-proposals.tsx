@@ -5,7 +5,7 @@ import { filterStateAtom } from './filter-popover';
 import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
 import { useEffect, useMemo } from 'react';
 
-import { useRealm } from '@/app/api/governance/realm';
+import { useRealm } from '@/app/api/realm/hooks';
 import { filterProposals } from '@/utils/filterProposals';
 import { useProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal';

@@ -7,7 +7,7 @@ import {
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { useQuery } from '@tanstack/react-query';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import BN from 'bn.js';
 
 export const useUserCommunityTokenOwnerRecord = () => {

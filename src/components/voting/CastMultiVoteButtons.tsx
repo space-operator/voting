@@ -6,6 +6,15 @@ import { PublicKey } from '@solana/web3.js';
 import { useSubmitVote } from './useSubmitVote';
 import { useProposalVoteRecordQuery } from '@/app/api/voteRecord/hooks';
 import { CheckCircleIcon } from 'lucide-react';
+import { Button } from '../ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import VoteCommentModal from './VoteCommentModal';
+import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
 
 export const CastMultiVoteButtons = ({
   proposal,
@@ -14,9 +23,9 @@ export const CastMultiVoteButtons = ({
 }) => {
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [vote, setVote] = useState<'yes' | 'no' | null>(null);
-  const realmInfo = useSelectedRealmInfo();
+  const realmInfo = useSelectedRealmRegistryEntry();
   const allowDiscussion = realmInfo?.allowDiscussion ?? true;
-  const { submitting, submitVote } = useSubmitVote();
+  const { submitting, submitVote } = useSubmitVote({ proposal });
   const { data: governance } = useGovernanceByPubkeyQuery(
     new PublicKey(proposal.account.governance)
   );
@@ -30,7 +39,7 @@ export const CastMultiVoteButtons = ({
   const [optionStatus, setOptionStatus] = useState<boolean[]>(
     new Array(proposal.account.options.length).fill(false)
   );
-  const isVoteCast = !!ownVoteRecord?.found;
+  const isVoteCast = !!ownVoteRecord;
   const isVoting = useIsVoting({ proposal, governance });
 
   const nota = '$$_NOTA_$$';
@@ -100,9 +109,11 @@ export const CastMultiVoteButtons = ({
           {proposal.account.options.map((option, index) => {
             return (
               <div className='w-full' key={index}>
-                <SecondaryButton
-                  tooltipMessage={tooltipContent}
-                  className={`
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className={`
                     ${
                       optionStatus[index]
                         ? 'bg-primary-light text-bkg-2 hover:text-bkg-2 hover:border-primary-light'
@@ -110,38 +121,46 @@ export const CastMultiVoteButtons = ({
                     }
                     rounded-lg w-full
                   `}
-                  onClick={() => handleOption(index)}
-                  disabled={!canVote || submitting}
-                  isLoading={submitting}
-                >
-                  {optionStatus[index] && (
-                    <CheckCircleIcon className='inline w-4 mr-1' />
-                  )}
-                  {option.label === nota && index === last
-                    ? 'None of the Above'
-                    : option.label}
-                </SecondaryButton>
+                        onClick={() => handleOption(index)}
+                        disabled={!canVote || submitting}
+                      >
+                        {optionStatus[index] && (
+                          <CheckCircleIcon className='inline w-4 mr-1' />
+                        )}
+                        {option.label === nota && index === last
+                          ? 'None of the Above'
+                          : option.label}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{tooltipContent}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             );
           })}
           <div className='text-xs'>
             Note: You can select one or more options
           </div>
-          <Button
-            tooltipMessage={
-              tooltipContent === '' && !selectedOptions.length
-                ? `Select at least one option to vote`
-                : tooltipContent
-            }
-            className='w-full'
-            onClick={() => handleVote('yes')}
-            disabled={!canVote || submitting || !selectedOptions.length}
-            isLoading={submitting}
-          >
-            <div className='flex flex-row items-center justify-center'>
-              Vote
-            </div>
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className='w-full'
+                  onClick={() => handleVote('yes')}
+                  disabled={!canVote || submitting || !selectedOptions.length}
+                >
+                  <div className='flex flex-row items-center justify-center'>
+                    Vote
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {tooltipContent === '' && !selectedOptions.length
+                  ? `Select at least one option to vote`
+                  : tooltipContent}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 

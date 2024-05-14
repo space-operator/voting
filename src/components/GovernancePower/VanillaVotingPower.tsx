@@ -11,7 +11,7 @@ import BN from 'bn.js';
 
 import { GoverningTokenType } from '@solana/spl-governance';
 
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 import { useRealmConfigQuery } from '@/app/api/realmConfig/hooks';
 import {
   useAddressQuery_CommunityTokenOwner,

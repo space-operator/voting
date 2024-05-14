@@ -1,6 +1,6 @@
 'use client';
 
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
 import { useRealmConfigQuery } from '@/app/api/realmConfig/hooks';
 import { determineVotingPowerType } from '@/app/api/voting/query';

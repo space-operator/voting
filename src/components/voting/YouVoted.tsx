@@ -1,5 +1,7 @@
 import {
   GovernanceAccountType,
+  ProgramAccount,
+  Proposal,
   VoteKind,
   VoteType,
   withFinalizeVote,
@@ -11,25 +13,60 @@ import { ProposalState } from '@solana/spl-governance';
 import { RpcContext } from '@solana/spl-governance';
 import { useRealmParams } from '@/app/api/governance/realm';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import {
+  isInCoolOffTime,
+  useIsVoting,
+  useUserVetoTokenRecord,
+  useVoterTokenRecord,
+} from '@/app/api/voting/hooks';
+import {
+  useHasVoteTimeExpired,
+  useProposalVoteRecordQuery,
+} from '@/app/api/voteRecord/hooks';
+import { useMaxVoteRecord } from '@/app/api/voting/useMaxVoteRecord';
+import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
+import { Button } from '../ui/button';
+import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
+import { useVotingClientForGoverningTokenMint } from '@/app/api/votingClient/hooks';
+import assertUnreachable from '@/utils/errors';
+import {
+  BanIcon,
+  CheckCircleIcon,
+  MinusCircleIcon,
+  ThumbsDownIcon,
+  ThumbsUpIcon,
+} from 'lucide-react';
 
-export const YouVoted = ({ quorum }: { quorum: 'electoral' | 'veto' }) => {
-  const proposal = useRouteProposalQuery().data?.result;
+export const YouVoted = ({
+  quorum,
+  proposal,
+}: {
+  quorum: 'electoral' | 'veto';
+  proposal: ProgramAccount<Proposal>;
+}) => {
   const { data: realm } = useRealmParams();
-  const { realmInfo } = useRealm();
+  const realmInfo = useSelectedRealmRegistryEntry();
   const wallet = useWallet().wallet.adapter;
   const { connection } = useConnection();
   const connected = !!wallet?.connected;
 
-  const governance = useProposalGovernanceQuery().data?.result;
+  const governance = useGovernanceByPubkeyQuery(
+    proposal.account.governance
+  ).data;
   const maxVoterWeight = useMaxVoteRecord()?.pubkey || undefined;
   const hasVoteTimeExpired = useHasVoteTimeExpired(governance, proposal!);
-  const isVoting = useIsVoting();
-  const isInCoolOffTime = useIsInCoolOffTime();
+  const isVoting = useIsVoting({ proposal, governance });
+  const inCoolOffTime = isInCoolOffTime(proposal.account, governance.account);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data } = useProposalVoteRecordQuery(quorum);
-  const ownVoteRecord = data?.result;
-  const electoralVoterTokenRecord = useVoterTokenRecord();
+  const { data: proposalVoteRecord } = useProposalVoteRecordQuery({
+    quorum,
+    proposal,
+  });
+  const ownVoteRecord = proposalVoteRecord;
+  const electoralVoterTokenRecord = useVoterTokenRecord({
+    proposal: proposal.account,
+  });
   const vetoVotertokenRecord = useUserVetoTokenRecord();
   const voterTokenRecord =
     quorum === 'electoral' ? electoralVoterTokenRecord : vetoVotertokenRecord;
@@ -57,65 +94,62 @@ export const YouVoted = ({ quorum }: { quorum: 'electoral' | 'veto' }) => {
       : 'The proposal is not in a valid state to execute this action.'
     : '';
 
+  // TODO add withdraw vote
   const submitRelinquishVote = async () => {
-    if (
-      realm === undefined ||
-      proposal === undefined ||
-      voterTokenRecord === undefined ||
-      ownVoteRecord === undefined ||
-      ownVoteRecord === null
-    )
-      return;
-
-    const rpcContext = new RpcContext(
-      proposal!.owner,
-      getProgramVersionForRealm(realmInfo!),
-      wallet!,
-      connection.current,
-      connection.endpoint
-    );
-
-    try {
-      setIsLoading(true);
-      const instructions: TransactionInstruction[] = [];
-
-      //we want to finalize only if someone try to withdraw after voting time ended
-      //but its before finalize state
-      if (
-        proposal !== undefined &&
-        proposal?.account.state === ProposalState.Voting &&
-        hasVoteTimeExpired &&
-        !isInCoolOffTime
-      ) {
-        await withFinalizeVote(
-          instructions,
-          realmInfo!.programId,
-          getProgramVersionForRealm(realmInfo!),
-          realm!.pubkey,
-          proposal.account.governance,
-          proposal.pubkey,
-          proposal.account.tokenOwnerRecord,
-          proposal.account.governingTokenMint,
-          maxVoterWeight
-        );
-      }
-
-      await relinquishVote(
-        rpcContext,
-        realm.pubkey,
-        proposal,
-        voterTokenRecord.pubkey,
-        ownVoteRecord.pubkey,
-        instructions,
-        votingClient
-      );
-      queryClient.invalidateQueries({
-        queryKey: proposalQueryKeys.all(connection.endpoint),
-      });
-    } catch (ex) {
-      console.error("Can't relinquish vote", ex);
-    }
-    setIsLoading(false);
+    // if (
+    //   realm === undefined ||
+    //   proposal === undefined ||
+    //   voterTokenRecord === undefined ||
+    //   ownVoteRecord === undefined ||
+    //   ownVoteRecord === null
+    // )
+    //   return;
+    // const rpcContext = new RpcContext(
+    //   proposal!.owner,
+    //   getProgramVersionForRealm(realmInfo!),
+    //   wallet!,
+    //   connection.current,
+    //   connection.endpoint
+    // );
+    // try {
+    //   setIsLoading(true);
+    //   const instructions: TransactionInstruction[] = [];
+    //   //we want to finalize only if someone try to withdraw after voting time ended
+    //   //but its before finalize state
+    //   if (
+    //     proposal !== undefined &&
+    //     proposal?.account.state === ProposalState.Voting &&
+    //     hasVoteTimeExpired &&
+    //     !inCoolOffTime
+    //   ) {
+    //     await withFinalizeVote(
+    //       instructions,
+    //       realmInfo!.programId,
+    //       getProgramVersionForRealm(realmInfo!),
+    //       realm!.pubkey,
+    //       proposal.account.governance,
+    //       proposal.pubkey,
+    //       proposal.account.tokenOwnerRecord,
+    //       proposal.account.governingTokenMint,
+    //       maxVoterWeight
+    //     );
+    //   }
+    //   await relinquishVote(
+    //     rpcContext,
+    //     realm.pubkey,
+    //     proposal,
+    //     voterTokenRecord.pubkey,
+    //     ownVoteRecord.pubkey,
+    //     instructions,
+    //     votingClient
+    //   );
+    //   queryClient.invalidateQueries({
+    //     queryKey: proposalQueryKeys.all(connection.endpoint),
+    //   });
+    // } catch (ex) {
+    //   console.error("Can't relinquish vote", ex);
+    // }
+    // setIsLoading(false);
   };
 
   const vote = ownVoteRecord?.account.vote;
@@ -143,7 +177,7 @@ export const YouVoted = ({ quorum }: { quorum: 'electoral' | 'veto' }) => {
                   >
                     <div className='flex flex-row gap-2 justify-center'>
                       <div>
-                        <CheckmarkFilled />
+                        <CheckCircleIcon />
                       </div>
                       <div>
                         {proposal?.account.options[index].label === nota
@@ -156,48 +190,48 @@ export const YouVoted = ({ quorum }: { quorum: 'electoral' | 'veto' }) => {
               ) : null
             )
           ) : (
-            <Tooltip content={`You voted "Yes"`}>
-              <div className='flex flex-row items-center justify-center rounded-full border border-[#8EFFDD] p-2 mt-2'>
-                <ThumbUpIcon className='h-4 w-4 fill-[#8EFFDD]' />
-              </div>
-            </Tooltip>
+            // <Tooltip content={`You voted "Yes"`}>
+            <div className='flex flex-row items-center justify-center rounded-full border border-[#8EFFDD] p-2 mt-2'>
+              <ThumbsUpIcon className='h-4 w-4 fill-[#8EFFDD]' />
+            </div>
+            // </Tooltip>
           )
         ) : vote.voteType === VoteKind.Deny ? (
-          <Tooltip content={`You voted "No"`}>
-            <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
-              <ThumbDownIcon className='h-4 w-4 fill-[#FF7C7C]' />
-            </div>
-          </Tooltip>
-        ) : vote.voteType === VoteKind.Veto ? (
-          <Tooltip content={`You voted "Veto"`}>
-            <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
-              <BanIcon className='h-4 w-4 fill-[#FF7C7C]' />
-            </div>
-          </Tooltip>
-        ) : vote.voteType === VoteKind.Abstain ? (
-          <Tooltip content={`You voted "Abstain"`}>
-            <div className='flex flex-row items-center justify-center rounded-full border border-gray-400 p-2 mt-2'>
-              <MinusCircleIcon className='h-4 w-4 fill-gray-400' />
-            </div>
-          </Tooltip>
+          // <Tooltip content={`You voted "No"`}>
+          <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
+            <ThumbsDownIcon className='h-4 w-4 fill-[#FF7C7C]' />
+          </div>
+        ) : // </Tooltip>
+        vote.voteType === VoteKind.Veto ? (
+          // <Tooltip content={`You voted "Veto"`}>
+          <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
+            <BanIcon className='h-4 w-4 fill-[#FF7C7C]' />
+          </div>
+        ) : // </Tooltip>
+        vote.voteType === VoteKind.Abstain ? (
+          // <Tooltip content={`You voted "Abstain"`}>
+          <div className='flex flex-row items-center justify-center rounded-full border border-gray-400 p-2 mt-2'>
+            <MinusCircleIcon className='h-4 w-4 fill-gray-400' />
+          </div>
         ) : (
+          // </Tooltip>
           assertUnreachable(vote.voteType as never)
         )}
       </div>
-      {(isVoting || isInCoolOffTime) && (
+      {(isVoting || inCoolOffTime) && (
         <div className='items-center justify-center flex w-full gap-5'>
           <div className='flex flex-col gap-6 items-center'>
             <Button
               className='min-w-[200px]'
-              isLoading={isLoading}
-              tooltipMessage={withdrawTooltipContent}
+              // isLoading={isLoading}
+              // tooltipMessage={withdrawTooltipContent}
               onClick={() => submitRelinquishVote()}
               disabled={!isWithdrawEnabled || isLoading}
             >
               Withdraw Vote
             </Button>
 
-            {isInCoolOffTime && (
+            {inCoolOffTime && (
               <div className='text-xs'>
                 Warning: If you withdraw your vote now you can only deny the
                 proposal its not possible to vote yes during cool off time

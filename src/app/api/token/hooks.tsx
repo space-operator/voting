@@ -17,7 +17,7 @@ import {
   useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import { useAsync } from 'react-async-hook';
 
 // get the mint info for a token

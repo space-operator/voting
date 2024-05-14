@@ -25,3 +25,7 @@ export const JUPITER_REFERRAL_PK = new PublicKey(
 export const splRepo =
   'https://raw.githubusercontent.com/solana-labs/governance-ui/main/public';
 export const realmsJson = '/realms/mainnet-beta.json';
+
+export declare const PROGRAM_VERSION_V1 = 1;
+export declare const PROGRAM_VERSION_V2 = 2;
+export declare const PROGRAM_VERSION_V3 = 3;

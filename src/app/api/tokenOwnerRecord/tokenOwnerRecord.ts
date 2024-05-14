@@ -3,7 +3,7 @@
 // 1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { useRealmParams } from '../governance/realm';
+import { useRealmParams } from '../realm/hooks';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   TokenOwnerRecord,

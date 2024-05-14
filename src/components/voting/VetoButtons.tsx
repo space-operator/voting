@@ -1,7 +1,12 @@
 import { useProposalVoteRecordQuery } from '@/app/api/voteRecord/hooks';
-import { isInCoolOffTime, useIsVoting } from '@/app/api/voting/hooks';
+import {
+  isInCoolOffTime,
+  useIsVoting,
+  useVetoingPop,
+} from '@/app/api/voting/hooks';
 import { VoteKind } from '@solana/spl-governance';
 import { useState } from 'react';
+import { useSubmitVote } from './useSubmitVote';
 
 const useIsVetoable = (): undefined | boolean => {
   const vetoingPop = useVetoingPop();
@@ -38,7 +43,7 @@ const useCanVeto = ():
     return { canVeto: false, message: 'You must connect your wallet' };
 
   // Did you already veto?
-  if (userVetoRecord?.found)
+  if (userVetoRecord)
     return { canVeto: false, message: 'You already voted' };
 
   // Do you have any voting power?
@@ -63,7 +68,7 @@ const VetoButtons = () => {
   const [openModal, setOpenModal] = useState(false);
   const { data: userVetoRecord } = useProposalVoteRecordQuery({
     quorum: 'veto',
-    proposal
+    proposal,
   });
   const { submitting, submitVote } = useSubmitVote();
 
@@ -77,7 +82,7 @@ const VetoButtons = () => {
     }
   };
 
-  return vetoable && vetoingPop && !userVetoRecord?.found ? (
+  return vetoable && vetoingPop && !userVetoRecord ? (
     <>
       <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
         <div className='flex flex-col items-center justify-center'>

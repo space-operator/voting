@@ -6,7 +6,7 @@ import { getRegistrarPDA as getPluginRegistrarPDA } from '@/utils/plugins';
 import { PluginType, VoterWeightPluginInfo } from './types';
 import BN from 'bn.js';
 import { fetchRealmConfigQuery } from '@/app/api/governance/realmConfig';
-import { fetchRealmByPubkey } from '@/app/api/governance/queries';
+import { fetchRealmByPubkey } from '@/app/api/realm/queries';
 
 const getInitialPluginProgramId = async (
   realmPublicKey: PublicKey,

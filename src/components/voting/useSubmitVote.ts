@@ -16,20 +16,32 @@ import { TransactionInstruction } from '@solana/web3.js';
 
 import { useMemo } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useBatchedVoteDelegators } from '@/app/api/delegators/useDelegators';
+import { queryClient } from '@/providers/query';
+import {
+  useRealmParams,
+  useSelectedRealmRegistryEntry,
+} from '@/app/api/realm/hooks';
+import { getProgramVersionForRealm } from '@/types/realm';
+import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
+import { useVotingClients } from '@/app/api/votingClient/hooks';
+import { castVote } from './castVote';
 
-export const useSubmitVote = () => {
-  const wallet = useWallet().wallet.adapter;
+export const useSubmitVote = ({
+  proposal,
+}: {
+  proposal: ProgramAccount<Proposal>;
+}) => {
+  const wallet = useWallet().wallet.adapter as SignerWalletAdapter;
   const { connection } = useConnection();
-  const {data:realm} = useRealmParams();
-  
-  const proposal = useRouteProposalQuery().data?.result;
-  const { realmInfo } = useRealm();
-  const { closeNftVotingCountingModal } = useNftProposalStore.getState();
-  const votingClients = useVotingClients(); // TODO this should be passed the role
-  const { nftClient } = useNftClient();
+  const { data: realm } = useRealmParams();
 
-  const isNftPlugin = !!nftClient;
+  const realmInfo = useSelectedRealmRegistryEntry();
+  const votingClients = useVotingClients(); // TODO this should be passed the role
+  // const { closeNftVotingCountingModal } = useNftProposalStore.getState();
+  // const { nftClient } = useNftClient();
+
+  // const isNftPlugin = !!nftClient;
 
   const selectedCommunityDelegator = useSelectedDelegatorStore(
     (s) => s.communityDelegator
@@ -129,19 +141,18 @@ export const useSubmitVote = () => {
         });
         msg &&
           queryClient.invalidateQueries({
-            queryKey: [connection.cluster, 'ChatMessages'],
+            queryKey: [connection.rpcEndpoint, 'ChatMessages'],
           });
       } catch (e) {
         console.error(e);
-        notify({ type: 'error', message: e.message });
       } finally {
-        if (isNftPlugin) {
-          closeNftVotingCountingModal(
-            votingClient.client as NftVoterClient,
-            proposal!,
-            wallet!.publicKey!
-          );
-        }
+        // if (isNftPlugin) {
+        //   closeNftVotingCountingModal(
+        //     votingClient.client as NftVoterClient,
+        //     proposal!,
+        //     wallet!.publicKey!
+        //   );
+        // }
       }
     }
   );
@@ -159,102 +170,3 @@ type VoteArgs = {
   proposal: ProgramAccount<Proposal>;
   comment?: string;
 };
-
-/** This is WIP and shouldn't be used
- * @deprecated
- */
-export const useCreateVoteIxs = () => {
-  // get info
-  const programVersion = useProgramVersion();
-  const realm = useRealmQuery().data?.result;
-  const wallet = useWalletOnePointOh();
-  const getVotingTokenOwnerRecords = useVotingTokenOwnerRecords();
-  const votingClients = useVotingClients();
-
-  // get delegates
-
-  // api
-  const walletPk = wallet?.publicKey ?? undefined;
-  return useMemo(
-    () =>
-      realm !== undefined &&
-      programVersion !== undefined &&
-      walletPk !== undefined
-        ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          async ({ voteKind, governingBody, proposal, comment }: VoteArgs) => {
-            const instructions: TransactionInstruction[] = [];
-
-            const governingTokenMint =
-              governingBody === 'community'
-                ? realm.account.communityMint
-                : realm.account.config.councilMint;
-            if (governingTokenMint === undefined)
-              throw new Error(`no mint for ${governingBody} governing body`);
-
-            const votingClient = votingClients(governingBody);
-            const vote = formatVote(voteKind);
-
-            const votingTors = await getVotingTokenOwnerRecords(governingBody);
-            for (const torPk of votingTors) {
-              //will run only if any plugin is connected with realm
-              const votingPluginHelpers = await votingClient.withCastPluginVote(
-                instructions,
-                proposal,
-                torPk
-              );
-
-              await withCastVote(
-                instructions,
-                realm.owner,
-                programVersion,
-                realm.pubkey,
-                proposal.account.governance,
-                proposal.pubkey,
-                proposal.account.tokenOwnerRecord,
-                torPk,
-                walletPk,
-                governingTokenMint,
-                vote,
-                walletPk,
-                votingPluginHelpers?.voterWeightPk,
-                votingPluginHelpers?.maxVoterWeightRecord
-              );
-
-              return instructions;
-            }
-          }
-        : undefined,
-    [getVotingTokenOwnerRecords, programVersion, realm, votingClients, walletPk]
-  );
-};
-
-const formatVote = (voteKind: VoteKind) =>
-  // It is not clear that defining these extraneous fields, `deny` and `veto`, is actually necessary.
-  // See:  https://discord.com/channels/910194960941338677/910630743510777926/1044741454175674378
-  voteKind === VoteKind.Approve
-    ? new Vote({
-        voteType: VoteKind.Approve,
-        approveChoices: [new VoteChoice({ rank: 0, weightPercentage: 100 })],
-        deny: undefined,
-        veto: undefined,
-      })
-    : voteKind === VoteKind.Deny
-    ? new Vote({
-        voteType: VoteKind.Deny,
-        approveChoices: undefined,
-        deny: true,
-        veto: undefined,
-      })
-    : voteKind == VoteKind.Veto
-    ? new Vote({
-        voteType: VoteKind.Veto,
-        veto: true,
-        deny: undefined,
-        approveChoices: undefined,
-      })
-    : new Vote({
-        voteType: VoteKind.Abstain,
-        veto: undefined,
-        deny: undefined,
-        approveChoices: undefined,
-      });

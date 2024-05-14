@@ -1,7 +1,7 @@
 'use client';
 
 import { BigNumber } from 'bignumber.js';
-import { useRealmParams } from '@/app/api/governance/realm';
+import { useRealmParams } from '@/app/api/realm/hooks';
 import {
   useMintInfo,
   useTokenMetadata,
