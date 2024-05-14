@@ -22,6 +22,7 @@ import {
 } from '../voteRecord/hooks';
 import { useMemo } from 'react';
 import { useGovernanceByPubkeyQuery } from '../governance/hooks';
+import { useDelegatorAwareVoterWeight } from '../useDelegatorAwareVoterWeight';
 
 export const useIsVoting = ({
   proposal,
@@ -87,7 +88,10 @@ export const useCanVote = ({
     quorum: 'electoral',
     proposal,
   });
+  console.log('ownVoteRecord', ownVoteRecord);
+
   const voterTokenRecord = useVoterTokenRecord({ proposal: proposal.account });
+
   const { plugins } = useRealmVoterWeightPlugins(votingPop);
 
   const hasAllVoterWeightRecords = (plugins?.voterWeight ?? []).every(
@@ -96,6 +100,7 @@ export const useCanVote = ({
   const isVoteCast = !!ownVoteRecord;
 
   const hasMinAmountToVote = useHasAnyVotingPower(votingPop);
+  console.log('hasMinAmountToVote', hasMinAmountToVote);
 
   const canVote =
     connected &&

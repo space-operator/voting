@@ -44,7 +44,7 @@ export const MultiChoiceVotes = ({
   const last = proposal.options.length - 1;
 
   return (
-    <div className='pb-4 px-6 border border-fgd-4 rounded-md'>
+    <div className='pb-4 px-6 border rounded-md'>
       {proposal.options.slice(0, limit).map((option, index) => {
         const optionVotes = option.voteWeight;
         const optionWeightPct = totalVoteWeight.isZero() // dont divide by zero
@@ -52,7 +52,7 @@ export const MultiChoiceVotes = ({
           : optionVotes.muln(1000).div(totalVoteWeight);
 
         return (
-          <div className='border-b border-fgd-4 p-5' key={index}>
+          <div className='border-b border p-5' key={index}>
             <div className='flex flex-row justify-between gap-2'>
               <div className='flex flex-row justify-start'>
                 <div>

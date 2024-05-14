@@ -40,7 +40,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
   return (
     <ProposalCard>
       <ProposalCardHeader>
-        {proposal.account.name} - {realm.pubkey.toString()}
+        {proposal.account.name} - {proposal.pubkey.toString()}
         <ProposalStateBadge proposal={proposal.account} />
         <ProposalTimeStatus proposal={proposal.account} />
       </ProposalCardHeader>

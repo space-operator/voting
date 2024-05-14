@@ -31,6 +31,7 @@ export const CastMultiVoteButtons = ({
   );
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });
+  console.log('canVote', canVote);
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
     quorum: 'electoral',
     proposal,
@@ -116,8 +117,8 @@ export const CastMultiVoteButtons = ({
                         className={`
                     ${
                       optionStatus[index]
-                        ? 'bg-primary-light text-bkg-2 hover:text-bkg-2 hover:border-primary-light'
-                        : 'bg-transparent'
+                        ? 'bg-primary text-bkg-2 hover:text-bkg-2 hover:border-primary'
+                        : ''
                     }
                     rounded-lg w-full
                   `}

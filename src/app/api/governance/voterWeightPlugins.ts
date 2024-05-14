@@ -13,6 +13,11 @@ import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useRealmParams } from '../realm/hooks';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { GovernanceRole } from '@/types/governance';
+import { useAtomValue } from 'jotai';
+import {
+  communityDelegatorAtom,
+  councilDelegatorAtom,
+} from '@/components/SelectPrimaryDelegators';
 
 export type UseRealmVoterWeightPluginsReturnType =
   UseVoterWeightPluginsReturnType & {
@@ -67,17 +72,18 @@ export const useRealmVoterWeightPlugins = (
       ? realm?.account.communityMint
       : realm?.account.config.councilMint;
 
-  const selectedDelegator = undefined; // FIXME
-  // useSelectedDelegatorStore((s) =>
-  //   role === 'community' ? s.communityDelegator : s.councilDelegator
-  // );
+  const selectedDelegator = useAtomValue(
+    role === 'community' ? communityDelegatorAtom : councilDelegatorAtom
+  );
 
   const delegators = useDelegators(role);
+
   const walletPublicKeys = getWalletList(
     selectedDelegator,
     delegators?.map((programAccount) => programAccount.account),
     walletAdapter
   );
+  console.log('walletPublicKeys', walletPublicKeys);
 
   // if a delegator is selected, use it, otherwise use the currently connected wallet
   const nonAggregatedResult = useVoterWeightPlugins({
@@ -85,6 +91,7 @@ export const useRealmVoterWeightPlugins = (
     governanceMintPublicKey,
     walletPublicKeys,
   });
+  console.log('nonAggregatedResult', nonAggregatedResult);
 
   const totalCalculatedVoterWeight = nonAggregatedResult.calculatedVoterWeights
     ?.length
@@ -113,6 +120,7 @@ export const useRealmVoterWeightPlugins = (
         };
       })
     : undefined;
+  console.log('totalCalculatedVoterWeight', totalCalculatedVoterWeight);
 
   // This requires that the index of the wallet in the list of wallets remains consistent with the output voter weights,
   // while not ideal, this is simpler than the alternative, which would be to return a map of wallet public keys to voter weights

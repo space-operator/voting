@@ -9,6 +9,11 @@ import { PublicKey } from '@solana/web3.js';
 import { useQuery } from '@tanstack/react-query';
 import { useRealmParams } from '../realm/hooks';
 import BN from 'bn.js';
+import { useAtom, useAtomValue } from 'jotai';
+import {
+  communityDelegatorAtom,
+  councilDelegatorAtom,
+} from '@/components/SelectPrimaryDelegators';
 
 export const useUserCommunityTokenOwnerRecord = () => {
   const { data: tokenOwnerRecordPubkey } =
@@ -36,13 +41,11 @@ export const useTokenOwnerRecordByPubkeyQuery = (
 export const useAddressQuery_CouncilTokenOwner = () => {
   const { data: realm } = useRealmParams();
   const wallet = useWallet().wallet?.adapter;
-  const selectedCouncilDelegator = undefined; // FIXME useSelectedDelegatorStore(
-  // (s) => s.councilDelegator
-  // );
+  const selectedCouncilDelegator = useAtomValue(councilDelegatorAtom);
 
   // if we have a council token delegator selected (this is rare), use that. otherwise use user wallet.
   const owner =
-    selectedCouncilDelegator !== undefined
+    selectedCouncilDelegator !== PublicKey.default
       ? selectedCouncilDelegator
       : wallet?.publicKey ?? undefined;
 
@@ -57,13 +60,11 @@ export const useAddressQuery_CouncilTokenOwner = () => {
 export const useAddressQuery_CommunityTokenOwner = () => {
   const { data: realm } = useRealmParams();
   const wallet = useWallet().wallet?.adapter;
-  const selectedCommunityDelegator = undefined; // FIXME useSelectedDelegatorStore(
-  // (s) => s.communityDelegator
-  // );
+  const selectedCommunityDelegator = useAtomValue(communityDelegatorAtom);
 
   // if we have a community token delegator selected (this is rare), use that. otherwise use user wallet.
   const owner =
-    selectedCommunityDelegator !== undefined
+    selectedCommunityDelegator !== PublicKey.default
       ? selectedCommunityDelegator
       : // I wanted to eliminate `null` as a possible type
         wallet?.publicKey ?? undefined;

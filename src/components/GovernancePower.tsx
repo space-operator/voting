@@ -3,7 +3,7 @@
 import { useRealmParams } from '@/app/api/realm/hooks';
 import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
 import { useRealmConfigQuery } from '@/app/api/realmConfig/hooks';
-import { determineVotingPowerType } from '@/app/api/voting/query';
+import { getVotingPowerType } from '@/app/api/voting/query';
 import { PluginName } from '@/constants/plugins';
 import { GoverningTokenType } from '@solana/spl-governance';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
@@ -101,7 +101,7 @@ export default function GovernancePowerForRole({
     if (realmPk === undefined) return undefined;
     // if there are multiple plugins, show the generic plugin voting power
     if ((plugins?.voterWeight.length ?? 0) > 1) return 'composite';
-    return determineVotingPowerType(connection, realmPk, role);
+    return getVotingPowerType(connection, realmPk, role);
   }, [connection, realmPk, role]);
 
   if (connected && kind === undefined && !props.hideIfZero) {

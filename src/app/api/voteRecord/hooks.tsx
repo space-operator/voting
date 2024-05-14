@@ -30,6 +30,8 @@ export const useProposalVoteRecordQuery = ({
       : tokenRole === 'community'
       ? community
       : council;
+
+      
   const veto =
     tokenRole === undefined
       ? undefined
@@ -53,7 +55,7 @@ export const useVoteRecordByPubkeyQuery = (pubkey: PublicKey | undefined) => {
   const enabled = pubkey !== undefined;
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['vote-record', pubkey, connection.rpcEndpoint],
+    queryKey: ['proposal-vote-record', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getVoteRecord(connection, pubkey),
     enabled,
   });

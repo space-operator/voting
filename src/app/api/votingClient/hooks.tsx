@@ -3,6 +3,11 @@ import { useRealmVoterWeightPlugins } from '../governance/voterWeightPlugins';
 import { useRealmParams } from '../realm/hooks';
 import { GovernanceRole } from '@/types/governance';
 import { PublicKey } from '@solana/web3.js';
+import {
+  communityDelegatorAtom,
+  councilDelegatorAtom,
+} from '@/components/SelectPrimaryDelegators';
+import { useAtom } from 'jotai';
 
 /**
  * The Voting Client encapsulates plugin-specific voting logic not currently encapsulated in the individual plugins, and exposed by the
@@ -18,12 +23,10 @@ export const useVotingClients = () => {
   const { data: realm } = useRealmParams();
   const wallet = useWallet().wallet.adapter;
 
-  const selectedCouncilDelegator = useSelectedDelegatorStore(
-    (s) => s.councilDelegator
-  );
-  const selectedCommunityDelegator = useSelectedDelegatorStore(
-    (s) => s.communityDelegator
-  );
+  const [selectedCommunityDelegator, __] = useAtom(communityDelegatorAtom);
+
+  const [selectedCouncilDelegator, _] = useAtom(councilDelegatorAtom);
+
   const councilWallet = selectedCouncilDelegator ?? wallet?.publicKey;
   const communityWallet = selectedCommunityDelegator ?? wallet?.publicKey;
 

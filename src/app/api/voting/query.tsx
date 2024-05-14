@@ -4,7 +4,7 @@ import { fetchRealmConfigQuery } from '../governance/realmConfig';
 import { findPluginName } from '@/constants/plugins';
 import { GovernanceRole } from '@/types/governance';
 
-export const determineVotingPowerType = async (
+export const getVotingPowerType = async (
   connection: Connection,
   realmPk: PublicKey,
   role: GovernanceRole

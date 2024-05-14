@@ -1,7 +1,7 @@
 'use client';
 
 import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/plugins';
-import { determineVotingPowerType } from '../voting/query';
+import { getVotingPowerType } from '../voting/query';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useAsync } from 'react-async-hook';
 // import { useSelectedDelegatorStore } from 'stores/useSelectedDelegatorStore';
@@ -48,7 +48,7 @@ export const useBatchedVoteDelegators = (
   const delegators = useDelegators(role);
   const { result: plugin } = useAsync(
     async () =>
-      role && realmPk && determineVotingPowerType(connection, realmPk, role),
+      role && realmPk && getVotingPowerType(connection, realmPk, role),
     [connection, realmPk, role]
   );
   const batchVoteSupported =

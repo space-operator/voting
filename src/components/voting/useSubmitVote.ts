@@ -26,6 +26,11 @@ import { getProgramVersionForRealm } from '@/types/realm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useVotingClients } from '@/app/api/votingClient/hooks';
 import { castVote } from './castVote';
+import { useAtom } from 'jotai';
+import {
+  communityDelegatorAtom,
+  councilDelegatorAtom,
+} from '../SelectPrimaryDelegators';
 
 export const useSubmitVote = ({
   proposal,
@@ -43,12 +48,10 @@ export const useSubmitVote = ({
 
   // const isNftPlugin = !!nftClient;
 
-  const selectedCommunityDelegator = useSelectedDelegatorStore(
-    (s) => s.communityDelegator
-  );
-  const selectedCouncilDelegator = useSelectedDelegatorStore(
-    (s) => s.councilDelegator
-  );
+  const [selectedCommunityDelegator, __] = useAtom(communityDelegatorAtom);
+
+  const [selectedCouncilDelegator, _] = useAtom(councilDelegatorAtom);
+
   const communityDelegators = useBatchedVoteDelegators('community');
   const councilDelegators = useBatchedVoteDelegators('council');
 
@@ -69,8 +72,8 @@ export const useSubmitVote = ({
         proposal.owner,
         getProgramVersionForRealm(realmInfo!),
         wallet!,
-        connection.current,
-        connection.endpoint
+        connection,
+        connection.rpcEndpoint
       );
 
       const msg = comment
@@ -81,9 +84,10 @@ export const useSubmitVote = ({
         : undefined;
 
       const confirmationCallback = async () => {
-        await queryClient.invalidateQueries(
-          voteRecordQueryKeys.all(connection.cluster)
-        );
+        // TODO
+        // await queryClient.invalidateQueries(
+        //   voteRecordQueryKeys.all(connection.cluster)
+        // );
       };
 
       const relevantMint =
@@ -136,9 +140,11 @@ export const useSubmitVote = ({
           voteWeights,
           relevantDelegators
         );
-        queryClient.invalidateQueries({
-          queryKey: proposalQueryKeys.all(connection.current.rpcEndpoint),
-        });
+
+        // TODO
+        // queryClient.invalidateQueries({
+        //   queryKey: proposalQueryKeys.all(connection.current.rpcEndpoint),
+        // });
         msg &&
           queryClient.invalidateQueries({
             queryKey: [connection.rpcEndpoint, 'ChatMessages'],

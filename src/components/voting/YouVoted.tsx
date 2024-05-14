@@ -11,7 +11,6 @@ import { useState } from 'react';
 
 import { ProposalState } from '@solana/spl-governance';
 import { RpcContext } from '@solana/spl-governance';
-import { useRealmParams } from '@/app/api/governance/realm';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   isInCoolOffTime,
@@ -26,7 +25,7 @@ import {
 import { useMaxVoteRecord } from '@/app/api/voting/useMaxVoteRecord';
 import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
 import { Button } from '../ui/button';
-import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
+import { useRealmParams, useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
 import { useVotingClientForGoverningTokenMint } from '@/app/api/votingClient/hooks';
 import assertUnreachable from '@/utils/errors';
 import {
