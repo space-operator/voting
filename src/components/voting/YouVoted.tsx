@@ -25,7 +25,10 @@ import {
 import { useMaxVoteRecord } from '@/app/api/voting/useMaxVoteRecord';
 import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
 import { Button } from '../ui/button';
-import { useRealmParams, useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
+import {
+  useRealmParams,
+  useSelectedRealmRegistryEntry,
+} from '@/app/api/realm/hooks';
 import { useVotingClientForGoverningTokenMint } from '@/app/api/votingClient/hooks';
 import assertUnreachable from '@/utils/errors';
 import {
@@ -45,16 +48,22 @@ export const YouVoted = ({
 }) => {
   const { data: realm } = useRealmParams();
   const realmInfo = useSelectedRealmRegistryEntry();
-  const wallet = useWallet().wallet.adapter;
+
+  const { wallet } = useWallet();
   const { connection } = useConnection();
-  const connected = !!wallet?.connected;
+
+  const connected = !!wallet.adapter.connected;
 
   const governance = useGovernanceByPubkeyQuery(
     proposal.account.governance
   ).data;
+
   const maxVoterWeight = useMaxVoteRecord()?.pubkey || undefined;
-  const hasVoteTimeExpired = useHasVoteTimeExpired(governance, proposal!);
+  const hasVoteTimeExpired = useHasVoteTimeExpired(governance, proposal);
+  console.log('hasVoteTimeExpired', hasVoteTimeExpired);
+
   const isVoting = useIsVoting({ proposal, governance });
+
   const inCoolOffTime = isInCoolOffTime(proposal.account, governance.account);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -62,16 +71,24 @@ export const YouVoted = ({
     quorum,
     proposal,
   });
+  console.log('proposalVoteRecord', proposalVoteRecord);
   const ownVoteRecord = proposalVoteRecord;
   const electoralVoterTokenRecord = useVoterTokenRecord({
     proposal: proposal.account,
   });
-  const vetoVotertokenRecord = useUserVetoTokenRecord();
+  console.log('electoralVoterTokenRecord', electoralVoterTokenRecord);
+  const vetoVotertokenRecord = useUserVetoTokenRecord({
+    proposal,
+  });
+  console.log('vetoVotertokenRecord', vetoVotertokenRecord);
+
   const voterTokenRecord =
     quorum === 'electoral' ? electoralVoterTokenRecord : vetoVotertokenRecord;
-  const votingClient = useVotingClientForGoverningTokenMint(
-    proposal?.account.governingTokenMint
-  );
+
+  // TODO: fix this
+  // const votingClient = useVotingClientForGoverningTokenMint(
+  //   proposal?.account.governingTokenMint
+  // );
 
   const isWithdrawEnabled =
     connected &&
@@ -84,6 +101,8 @@ export const YouVoted = ({
       proposal!.account.state === ProposalState.Succeeded ||
       proposal!.account.state === ProposalState.Executing ||
       proposal!.account.state === ProposalState.Defeated);
+
+  console.log('isWithdrawEnabled', isWithdrawEnabled);
 
   const withdrawTooltipContent = !connected
     ? 'You need to connect your wallet'
@@ -158,6 +177,7 @@ export const YouVoted = ({
     proposal?.account.accountType === GovernanceAccountType.ProposalV2;
 
   const nota = '$$_NOTA_$$';
+  console.log('vote', vote);
 
   return vote !== undefined ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>

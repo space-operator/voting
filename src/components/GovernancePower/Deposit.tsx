@@ -7,6 +7,7 @@ import {
   useTokenMetadata,
   useUserGovTokenAccountQuery,
 } from '@/app/api/token/hooks';
+import { DepositTokensButton } from './DepositTokensButton';
 
 /** Contextual deposit, shows only if relevant */
 export const Deposit = ({ role }: { role: 'community' | 'council' }) => {
@@ -35,8 +36,7 @@ export const Deposit = ({ role }: { role: 'community' | 'council' }) => {
         more {tokenName} tokens in your wallet. Do you want to deposit them to
         increase your voting power in this Dao?
       </div>
-      {/* TODO add deposit token flow*/}
-      {/* <DepositTokensButton className='mt-4 w-48' role={role} as='secondary' /> */}
+      <DepositTokensButton className='mt-4 w-48' role={role}  />
     </>
   );
 };

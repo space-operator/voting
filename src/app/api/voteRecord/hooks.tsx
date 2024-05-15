@@ -100,7 +100,7 @@ export const useAddressQuery_VoteRecord = (
 };
 
 export const useHasVoteTimeExpired = (
-  governance: ProgramAccount<Governance> | undefined,
+  governance: ProgramAccount<Governance>,
   proposal: ProgramAccount<Proposal>
 ) => {
   return useIsBeyondTimestamp(

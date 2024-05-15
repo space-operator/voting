@@ -79,3 +79,13 @@ export const useGetAccount = (pubkey: PublicKey | undefined) => {
 
   return query;
 };
+
+
+export function useGoverningTokenMint(
+  governingTokenRole: 'community' | 'council'
+) {
+  const realm = useRealmParams().data;
+  return governingTokenRole === 'community'
+    ? realm?.account.communityMint
+    : realm?.account.config.councilMint;
+}

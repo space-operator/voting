@@ -26,7 +26,7 @@ import { getProgramVersionForRealm } from '@/types/realm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
 import { useVotingClients } from '@/app/api/votingClient/hooks';
 import { castVote } from './castVote';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import {
   communityDelegatorAtom,
   councilDelegatorAtom,
@@ -48,9 +48,9 @@ export const useSubmitVote = ({
 
   // const isNftPlugin = !!nftClient;
 
-  const [selectedCommunityDelegator, __] = useAtom(communityDelegatorAtom);
+  const selectedCommunityDelegator = useAtomValue(communityDelegatorAtom);
 
-  const [selectedCouncilDelegator, _] = useAtom(councilDelegatorAtom);
+  const selectedCouncilDelegator = useAtomValue(councilDelegatorAtom);
 
   const communityDelegators = useBatchedVoteDelegators('community');
   const councilDelegators = useBatchedVoteDelegators('council');

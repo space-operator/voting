@@ -124,7 +124,7 @@ export const useCanVote = ({
 };
 
 export const useVoterTokenRecord = ({ proposal }: { proposal: Proposal }) => {
-  const votingPop = useVotingPop(proposal?.governingTokenMint);
+  const votingPop = useVotingPop(proposal.governingTokenMint);
 
   const ownTokenRecord = useUserCommunityTokenOwnerRecord().data;
   const ownCouncilTokenRecord = useUserCouncilTokenOwnerRecord().data;
@@ -152,9 +152,10 @@ export const useVotingPop = (proposalGoverningMint: PublicKey) => {
 /*
   returns: undefined if loading, false if nobody can veto, 'council' if council can veto, 'community' if community can veto
 */
-export const useVetoingPop = () => {
-  const tokenRole = useVotingPop();
-  const governance = useGovernanceByPubkeyQuery();
+export const useVetoingPop = (proposal: ProgramAccount<Proposal>) => {
+  const tokenRole = useVotingPop(proposal.account.governingTokenMint);
+  console.log('tokenRole', tokenRole);
+  const governance = useGovernanceByPubkeyQuery(proposal.account.governance).data;
   const { data: realm } = useRealmParams();
   const vetoingPop = useMemo(() => {
     if (governance === undefined) return undefined;
@@ -171,15 +172,19 @@ export const useVetoingPop = () => {
       ? 'community'
       : undefined;
   }, [governance, tokenRole, realm?.account.config.councilMint]);
-
+  console.log('vetoingPop', vetoingPop);
   return vetoingPop;
 };
 
-export const useUserVetoTokenRecord = () => {
+export const useUserVetoTokenRecord = ({
+  proposal,
+}: {
+  proposal: ProgramAccount<Proposal>;
+}) => {
   const ownTokenRecord = useUserCommunityTokenOwnerRecord().data;
   const ownCouncilTokenRecord = useUserCouncilTokenOwnerRecord().data;
 
-  const vetoingPop = useVetoingPop();
+  const vetoingPop = useVetoingPop(proposal);
   const voterTokenRecord =
     vetoingPop === 'community' ? ownTokenRecord : ownCouncilTokenRecord;
   return voterTokenRecord;
