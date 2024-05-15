@@ -33,6 +33,12 @@ import { abbreviateAddress, getPct } from '@/utils/formatting';
 import { useMintInfo, useTokenMetadata } from '@/app/api/token/hooks';
 import { cn } from '@/lib/utils';
 import { getVanillaGovpower } from '@/app/api/tokenOwnerRecord/queries';
+import { useAtomValue } from 'jotai';
+import {
+  communityDelegatorAtom,
+  councilDelegatorAtom,
+} from '../SelectPrimaryDelegators';
+import { PublicKey } from '@solana/web3.js';
 
 interface Props {
   className?: string;
@@ -67,16 +73,15 @@ export default function VanillaVotingPower({
   const personalAmount = useVanillaGovpower(relevantTOR);
 
   // If the user is using a delegator, we want to show that and not count the other delegators
-  const selectedDelegator = undefined;
-  // useSelectedDelegatorStore((s) =>
-  //   role === 'community' ? s.communityDelegator : s.councilDelegator
-  // );
+  const selectedDelegator = useAtomValue(
+    role === 'community' ? communityDelegatorAtom : councilDelegatorAtom
+  );
 
   const { data: torsDelegatedToUser } = useTokenOwnerRecordsDelegatedToUser();
 
   const { result: delegatorsAmount } = useAsync(
     async () =>
-      selectedDelegator !== undefined
+      selectedDelegator !== PublicKey.default
         ? new BN(0)
         : torsDelegatedToUser === undefined || relevantMint === undefined
         ? undefined
@@ -163,7 +168,7 @@ export default function VanillaVotingPower({
               {formattedTotal ?? 0}
             </div>
             <div className='text-xs text-fgd-3'>
-              {selectedDelegator !== undefined ? (
+              {selectedDelegator !== PublicKey.default ? (
                 // if we're acting as a specific delegator, show that instead of the delegator aggregation
                 <>(as {abbreviateAddress(selectedDelegator)})</>
               ) : formattedDelegatorsAmount !== undefined &&

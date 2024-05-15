@@ -7,6 +7,8 @@ import { useAsync } from 'react-async-hook';
 // import { useSelectedDelegatorStore } from 'stores/useSelectedDelegatorStore';
 import { useRealmParams } from '../realm/hooks';
 import { useTokenOwnerRecordsDelegatedToUser } from '../tokenOwnerRecord/tokenOwnerRecord';
+import { communityDelegatorAtom, councilDelegatorAtom } from '@/components/SelectPrimaryDelegators';
+import { useAtomValue } from 'jotai';
 
 export const useDelegators = (role: 'community' | 'council' | undefined) => {
   const { data: realm } = useRealmParams();
@@ -63,10 +65,9 @@ export const useBatchedVoteDelegators = (
       : delegators;
 
   // If the user is selecting a specific delegator, we want to just use that and not count the other delegators
-  const selectedDelegator = undefined; // FIXME
-  // useSelectedDelegatorStore((s) =>
-  //   role === 'community' ? s.communityDelegator : s.councilDelegator
-  // );
+  const selectedDelegator = useAtomValue(
+    role === 'community' ? communityDelegatorAtom : councilDelegatorAtom
+  );
 
   return selectedDelegator ? [] : delegatorsIfSupported;
 };

@@ -24,8 +24,8 @@ import VetoButtons from './VetoButtons';
 import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
 
 const VotePanel = ({ proposal }: { proposal: ProgramAccount<Proposal> }) => {
-  const wallet = useWallet().wallet.adapter;
-  const connected = !!wallet?.connected;
+  const { wallet } = useWallet();
+  const connected = !!wallet?.adapter.connected;
 
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
     quorum: 'electoral',

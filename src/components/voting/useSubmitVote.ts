@@ -37,7 +37,7 @@ export const useSubmitVote = ({
 }: {
   proposal: ProgramAccount<Proposal>;
 }) => {
-  const wallet = useWallet().wallet.adapter as SignerWalletAdapter;
+  const wallet = useWallet()?.wallet.adapter as SignerWalletAdapter;
   const { connection } = useConnection();
   const { data: realm } = useRealmParams();
 

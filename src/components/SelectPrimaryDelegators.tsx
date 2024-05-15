@@ -64,13 +64,6 @@ const SelectPrimaryDelegators = () => {
     [delegatesArray, councilMintAddr]
   );
 
-  // const {
-  //   councilDelegator,
-  //   communityDelegator,
-  //   setCommunityDelegator,
-  //   setCouncilDelegator,
-  // } = useSelectedDelegatorStore();
-
   const handleCouncilSelect = (councilWalletPk: string | undefined) => {
     const pubkey =
       councilWalletPk !== undefined

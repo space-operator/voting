@@ -68,6 +68,8 @@ export function isInCoolOffTime(
 const useHasAnyVotingPower = (role: 'community' | 'council' | undefined) => {
   const voterWeight = useDelegatorAwareVoterWeight(role ?? 'community');
   const { isReady } = useRealmVoterWeightPlugins(role);
+  console.log('voterWeight', voterWeight);
+  console.log('isReady', isReady);
   return (
     isReady && !!voterWeight?.value && voterWeight.value?.isZero() === false
   );

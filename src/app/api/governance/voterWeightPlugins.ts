@@ -47,7 +47,7 @@ const getWalletList = (
   if (!wallet?.publicKey) return [];
 
   // if selectedDelegator is not set, this means "yourself + all delegators"
-  if (selectedDelegator) {
+  if (selectedDelegator !== PublicKey.default) {
     return [selectedDelegator];
   }
 

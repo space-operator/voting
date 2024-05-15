@@ -8,6 +8,7 @@ import {
 } from '@/components/SelectPrimaryDelegators';
 import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/plugins';
 import { useRealmVoterWeightPlugins } from './governance/voterWeightPlugins';
+import { PublicKey } from '@solana/web3.js';
 
 export const useDelegatorAwareVoterWeight = (
   role: GovernanceRole
@@ -17,19 +18,17 @@ export const useDelegatorAwareVoterWeight = (
   // if batch is on, and these are undefined, it means "yourself + all delegators"
   // if batch is off, and these are undefined, it means "yourself only"
   // if batch is on, and yourself only is picked, the selectedDelegator will be the current logged-in wallet
-  const selectedCommunityDelegator = useAtomValue(communityDelegatorAtom);
-  const selectedCouncilDelegator = useAtomValue(councilDelegatorAtom);
 
-  const selectedDelegatorForRole =
-    role === 'community'
-      ? selectedCommunityDelegator
-      : selectedCouncilDelegator;
-      
+  const selectedDelegatorForRole = useAtomValue(
+    role === 'community' ? communityDelegatorAtom : councilDelegatorAtom
+  );
+  console.log('selectedDelegatorForRole', selectedDelegatorForRole);
   const votingWallet =
-    (role === 'community'
-      ? selectedCommunityDelegator
-      : selectedCouncilDelegator) ?? wallet?.publicKey;
+    selectedDelegatorForRole === PublicKey.default
+      ? wallet?.publicKey
+      : selectedDelegatorForRole;
 
+  console.log('votingWallet', votingWallet);
   const { plugins, totalCalculatedVoterWeight, voterWeightForWallet } =
     useRealmVoterWeightPlugins(role);
 
@@ -41,7 +40,7 @@ export const useDelegatorAwareVoterWeight = (
     !lastPlugin || DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN[lastPlugin?.name];
 
   // the user has selected "yourself + all delegators" and the plugin supports batch voting
-  if (supportsBatchVoting && !selectedDelegatorForRole) {
+  if (supportsBatchVoting && selectedDelegatorForRole !== PublicKey.default) {
     return totalCalculatedVoterWeight;
   }
 
