@@ -2,12 +2,14 @@ import { useAsyncCallback } from 'react-async-hook';
 import {
   ChatMessageBody,
   ChatMessageBodyType,
+  GovernanceAccountType,
   ProgramAccount,
   Proposal,
   RpcContext,
   Vote,
   VoteChoice,
   VoteKind,
+  VoteType,
   getTokenOwnerRecordAddress,
   withCastVote,
 } from '@solana/spl-governance';
@@ -31,6 +33,10 @@ import {
   communityDelegatorAtom,
   councilDelegatorAtom,
 } from '../SelectPrimaryDelegators';
+import { useFlowEvents } from '../_flow/vote-button';
+import { getVetoTokenMint } from '@/utils/helpers';
+import { prepFlowInputs } from '../_flow/helpers';
+import { Value } from '@space-operator/client';
 
 export const useSubmitVote = ({
   proposal,
@@ -42,7 +48,7 @@ export const useSubmitVote = ({
   const { data: realm } = useRealmParams();
 
   const realmInfo = useSelectedRealmRegistryEntry();
-  const votingClients = useVotingClients(); // TODO this should be passed the role
+  // const votingClients = useVotingClients(); // TODO this should be passed the role
   // const { closeNftVotingCountingModal } = useNftProposalStore.getState();
   // const { nftClient } = useNftClient();
 
@@ -55,9 +61,11 @@ export const useSubmitVote = ({
   const communityDelegators = useBatchedVoteDelegators('community');
   const councilDelegators = useBatchedVoteDelegators('council');
 
+  const { logs, startFlow } = useFlowEvents();
+
   const { error, loading, execute } = useAsyncCallback(
     async ({
-      vote,
+      vote: voteKind,
       comment,
       voteWeights,
     }: {
@@ -67,14 +75,6 @@ export const useSubmitVote = ({
     }) => {
       if (!proposal) throw new Error();
       if (!realm) throw new Error();
-
-      const rpcContext = new RpcContext(
-        proposal.owner,
-        getProgramVersionForRealm(realmInfo!),
-        wallet!,
-        connection,
-        connection.rpcEndpoint
-      );
 
       const msg = comment
         ? new ChatMessageBody({
@@ -91,7 +91,7 @@ export const useSubmitVote = ({
       };
 
       const relevantMint =
-        vote !== VoteKind.Veto
+        voteKind !== VoteKind.Veto
           ? // if its not a veto, business as usual
             proposal.account.governingTokenMint
           : // if it is a veto, the vetoing mint is the opposite of the governing mint
@@ -126,20 +126,122 @@ export const useSubmitVote = ({
         role === 'community' ? communityDelegators : councilDelegators
       )?.map((x) => x.pubkey);
 
-      const votingClient = votingClients(role);
+      // const votingClient = votingClients(role);
+
+      const isMulti =
+        proposal.account.voteType !== VoteType.SINGLE_CHOICE &&
+        proposal.account.accountType === GovernanceAccountType.ProposalV2;
+
+      // It is not clear that defining these extraneous fields, `deny` and `veto`, is actually necessary.
+      // See:  https://discord.com/channels/910194960941338677/910630743510777926/1044741454175674378
+      const formattedVote = isMulti
+        ? new Vote({
+            voteType: VoteKind.Approve,
+            approveChoices: proposal.account.options.map((_o, index) => {
+              if (voteWeights?.includes(index)) {
+                return new VoteChoice({ rank: 0, weightPercentage: 100 });
+              } else {
+                return new VoteChoice({ rank: 0, weightPercentage: 0 });
+              }
+            }),
+            deny: undefined,
+            veto: undefined,
+          })
+        : voteKind === VoteKind.Approve
+        ? new Vote({
+            voteType: VoteKind.Approve,
+            approveChoices: [
+              new VoteChoice({ rank: 0, weightPercentage: 100 }),
+            ],
+            deny: undefined,
+            veto: undefined,
+          })
+        : voteKind === VoteKind.Deny
+        ? new Vote({
+            voteType: VoteKind.Deny,
+            approveChoices: undefined,
+            deny: true,
+            veto: undefined,
+          })
+        : voteKind == VoteKind.Veto
+        ? new Vote({
+            voteType: VoteKind.Veto,
+            veto: true,
+            deny: undefined,
+            approveChoices: undefined,
+          })
+        : new Vote({
+            voteType: VoteKind.Abstain,
+            veto: undefined,
+            deny: undefined,
+            approveChoices: undefined,
+          });
+
+      function convertVoteToRust(vote: Vote): any {
+        switch (vote.voteType) {
+          case VoteKind.Approve:
+            if (vote.approveChoices) {
+              const choices = vote.approveChoices.map((choice) => ({
+                rank: choice.rank,
+                weight_percentage: choice.weightPercentage,
+              }));
+              return { Approve: choices };
+            }
+            break;
+          case VoteKind.Deny:
+            return { Deny: null };
+          case VoteKind.Abstain:
+            return { Abstain: null };
+          case VoteKind.Veto:
+            return { Veto: null };
+        }
+        throw new Error('Invalid vote type');
+      }
+      const tokenMint =
+        voteKind === VoteKind.Veto
+          ? getVetoTokenMint(proposal, realm)
+          : proposal.account.governingTokenMint;
+
+      // TODO plugin
+      // const pluginCastVoteIxs: TransactionInstruction[] = [];
+      // //will run only if any plugin is connected with realm
+      // const plugin = await votingPlugin?.withCastPluginVote(
+      //   pluginCastVoteIxs,
+      //   proposal,
+      //   tokenOwnerRecord,
+      //   createCastNftVoteTicketIxs
+      // );
+
       try {
-        await castVote(
-          rpcContext,
-          realm,
-          proposal,
-          tokenOwnerRecordPk,
-          vote,
-          msg,
-          votingClient,
-          confirmationCallback,
-          voteWeights,
-          relevantDelegators
-        );
+        const flowId = 2140;
+
+        const inputBody = new Value({
+          private_key: 'WALLET',
+          realm: realm.pubkey,
+          governance: proposal.account.governance,
+          proposal: proposal.pubkey,
+          proposal_owner_record: proposal.account.tokenOwnerRecord,
+          voter_token_owner_record: tokenOwnerRecordPk,
+          governance_authority: 'WALLET',
+          vote_governing_token_mint: tokenMint,
+          voter_weight_record: null, //plugin?.voterWeightPk,
+          max_voter_weight_record: null, //plugin?.maxVoterWeightRecord,
+          vote: convertVoteToRust(formattedVote),
+        }).M;
+        await startFlow(flowId, prepFlowInputs(inputBody, wallet));
+
+        // await castVote(
+        //   rpcContext,
+        //   realm,
+        //   proposal,
+        //   tokenOwnerRecordPk,
+        //   vote,
+        //   msg,
+        //   votingClient,
+        //   confirmationCallback,
+        //   voteWeights,
+        //   relevantDelegators
+        // );
 
         // TODO
         // queryClient.invalidateQueries({

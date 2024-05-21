@@ -20,6 +20,7 @@ import {
 } from '../ui/tooltip';
 import VoteCommentModal from './VoteCommentModal';
 import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
+import { useFlowEvents } from '../_flow/vote-button';
 
 export const CastVoteButtons = ({
   proposal,
@@ -35,6 +36,7 @@ export const CastVoteButtons = ({
   ).data;
 
   const allowDiscussion = realmInfo?.allowDiscussion ?? true;
+  console.log('proposal', proposal);
   const { submitting, submitVote } = useSubmitVote({ proposal });
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });

@@ -51,6 +51,8 @@ const VotePanel = ({ proposal }: { proposal: ProgramAccount<Proposal> }) => {
     proposal?.account.voteType !== VoteType.SINGLE_CHOICE &&
     proposal?.account.accountType === GovernanceAccountType.ProposalV2;
 
+  console.log('vote panel, proposal', proposal);
+
   return (
     <>
       {didNotVote && (

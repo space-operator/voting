@@ -25,20 +25,7 @@ import { Vote } from '@solana/spl-governance';
 import { withCastVote } from '@solana/spl-governance';
 import { fetchProgramVersion } from '@/app/api/programVersion/queries';
 
-const getVetoTokenMint = (
-  proposal: ProgramAccount<Proposal>,
-  realm: ProgramAccount<Realm>
-) => {
-  const communityMint = realm.account.communityMint;
-  const councilMint = realm.account.config.councilMint;
-  const governingMint = proposal.account.governingTokenMint;
-  const vetoTokenMint = governingMint.equals(communityMint)
-    ? councilMint
-    : communityMint;
-  if (vetoTokenMint === undefined)
-    throw new Error('There is no token that can veto this proposal');
-  return vetoTokenMint;
-};
+
 
 const createDelegatorVote = async ({
   connection,

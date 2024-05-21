@@ -1,6 +1,7 @@
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
 import { gistApi } from '@/utils/github';
 import { arweaveDescriptionApi } from '@/utils/arweave';
+import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
 
 export function capitalize(str?: string) {
   return str ? str?.charAt(0).toUpperCase() + str?.slice(1) : str;
@@ -107,4 +108,17 @@ export const getProposalDepositPk = (
   return proposalDeposit;
 };
 
-
+export const getVetoTokenMint = (
+  proposal: ProgramAccount<Proposal>,
+  realm: ProgramAccount<Realm>
+) => {
+  const communityMint = realm.account.communityMint;
+  const councilMint = realm.account.config.councilMint;
+  const governingMint = proposal.account.governingTokenMint;
+  const vetoTokenMint = governingMint.equals(communityMint)
+    ? councilMint
+    : communityMint;
+  if (vetoTokenMint === undefined)
+    throw new Error('There is no token that can veto this proposal');
+  return vetoTokenMint;
+};

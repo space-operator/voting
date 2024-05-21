@@ -24,7 +24,10 @@ export const CastMultiVoteButtons = ({
   const [showVoteModal, setShowVoteModal] = useState(false);
   const [vote, setVote] = useState<'yes' | 'no' | null>(null);
   const realmInfo = useSelectedRealmRegistryEntry();
-  const allowDiscussion = realmInfo?.allowDiscussion ?? true;
+  // TODO changed default to false for testing
+  const allowDiscussion = realmInfo?.allowDiscussion ?? false;
+  console.log('allowDiscussion', allowDiscussion);
+
   const { submitting, submitVote } = useSubmitVote({ proposal });
   const { data: governance } = useGovernanceByPubkeyQuery(
     new PublicKey(proposal.account.governance)
@@ -165,14 +168,14 @@ export const CastMultiVoteButtons = ({
         </div>
       </div>
 
-      {showVoteModal && vote ? (
+      {/* {showVoteModal && vote ? (
         <VoteCommentModal
           isOpen={showVoteModal}
           onClose={() => setShowVoteModal(false)}
           vote={VoteKind.Approve}
           isMulti={selectedOptions}
         />
-      ) : null}
+      ) : null} */}
     </div>
   ) : null;
 };

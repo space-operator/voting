@@ -21,6 +21,7 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
   isOpen,
   vote,
   isMulti,
+  proposal
 }) => {
   const [comment, setComment] = useState('');
   const { submitting, submitVote } = useSubmitVote();
@@ -29,7 +30,7 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
 
   const handleSubmit = async () => {
     await submitVote({
-      vote,
+      voteKind: vote,
       comment,
       voteWeights: isMulti,
     });

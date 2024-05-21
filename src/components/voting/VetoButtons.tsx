@@ -43,8 +43,7 @@ const useCanVeto = ():
     return { canVeto: false, message: 'You must connect your wallet' };
 
   // Did you already veto?
-  if (userVetoRecord)
-    return { canVeto: false, message: 'You already voted' };
+  if (userVetoRecord) return { canVeto: false, message: 'You already voted' };
 
   // Do you have any voting power?
   const hasMinAmountToVote =
@@ -77,7 +76,7 @@ const VetoButtons = () => {
       setOpenModal(true);
     } else {
       submitVote({
-        vote: VoteKind.Veto,
+        voteKind: VoteKind.Veto,
       });
     }
   };
