@@ -38,6 +38,10 @@ import {
   ThumbsDownIcon,
   ThumbsUpIcon,
 } from 'lucide-react';
+import { relinquishVote } from '@/app/api/relinquishVote';
+import { Value } from '@space-operator/client';
+import { prepFlowInputs } from '../_flow/helpers';
+import { useFlowEvents } from '../_flow/vote-button';
 
 export const YouVoted = ({
   quorum,
@@ -48,11 +52,12 @@ export const YouVoted = ({
 }) => {
   const { data: realm } = useRealmParams();
   const realmInfo = useSelectedRealmRegistryEntry();
+  const { logs, startFlow } = useFlowEvents();
 
-  const { wallet } = useWallet();
+  const wallet = useWallet().wallet.adapter;
   const { connection } = useConnection();
 
-  const connected = !!wallet.adapter.connected;
+  const connected = !!wallet.connected;
 
   const governance = useGovernanceByPubkeyQuery(
     proposal.account.governance
@@ -114,14 +119,14 @@ export const YouVoted = ({
 
   // TODO add withdraw vote
   const submitRelinquishVote = async () => {
-    // if (
-    //   realm === undefined ||
-    //   proposal === undefined ||
-    //   voterTokenRecord === undefined ||
-    //   ownVoteRecord === undefined ||
-    //   ownVoteRecord === null
-    // )
-    //   return;
+    if (
+      realm === undefined ||
+      proposal === undefined ||
+      voterTokenRecord === undefined ||
+      ownVoteRecord === undefined ||
+      ownVoteRecord === null
+    )
+      return;
     // const rpcContext = new RpcContext(
     //   proposal!.owner,
     //   getProgramVersionForRealm(realmInfo!),
@@ -129,45 +134,54 @@ export const YouVoted = ({
     //   connection.current,
     //   connection.endpoint
     // );
-    // try {
-    //   setIsLoading(true);
-    //   const instructions: TransactionInstruction[] = [];
-    //   //we want to finalize only if someone try to withdraw after voting time ended
-    //   //but its before finalize state
-    //   if (
-    //     proposal !== undefined &&
-    //     proposal?.account.state === ProposalState.Voting &&
-    //     hasVoteTimeExpired &&
-    //     !inCoolOffTime
-    //   ) {
-    //     await withFinalizeVote(
-    //       instructions,
-    //       realmInfo!.programId,
-    //       getProgramVersionForRealm(realmInfo!),
-    //       realm!.pubkey,
-    //       proposal.account.governance,
-    //       proposal.pubkey,
-    //       proposal.account.tokenOwnerRecord,
-    //       proposal.account.governingTokenMint,
-    //       maxVoterWeight
-    //     );
-    //   }
-    //   await relinquishVote(
-    //     rpcContext,
-    //     realm.pubkey,
-    //     proposal,
-    //     voterTokenRecord.pubkey,
-    //     ownVoteRecord.pubkey,
-    //     instructions,
-    //     votingClient
-    //   );
-    //   queryClient.invalidateQueries({
-    //     queryKey: proposalQueryKeys.all(connection.endpoint),
-    //   });
-    // } catch (ex) {
-    //   console.error("Can't relinquish vote", ex);
-    // }
-    // setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const instructions: TransactionInstruction[] = [];
+      // TODO
+      //we want to finalize only if someone try to withdraw after voting time ended
+      //but its before finalize state
+      // if (
+      //   proposal !== undefined &&
+      //   proposal?.account.state === ProposalState.Voting &&
+      //   hasVoteTimeExpired &&
+      //   !inCoolOffTime
+      // ) {
+      //   await withFinalizeVote(
+      //     instructions,
+      //     realmInfo!.programId,
+      //     getProgramVersionForRealm(realmInfo!),
+      //     realm!.pubkey,
+      //     proposal.account.governance,
+      //     proposal.pubkey,
+      //     proposal.account.tokenOwnerRecord,
+      //     proposal.account.governingTokenMint,
+      //     maxVoterWeight
+      //   );
+      // }
+
+      const flowId = 2151;
+
+      const inputBody = new Value({
+        private_key: 'WALLET',
+        realm: realm.pubkey,
+        governance: proposal.account.governance,
+        proposal: proposal.pubkey,
+        token_owner_record: voterTokenRecord.pubkey,
+        vote_governing_token_mint: proposal.account.governingTokenMint,
+        governance_authority: 'WALLET',
+        beneficiary: 'WALLET',
+      }).M;
+      console.log('inputBody', inputBody);
+
+      await startFlow(flowId, prepFlowInputs(inputBody, wallet));
+
+      // queryClient.invalidateQueries({
+      //   queryKey: proposalQueryKeys.all(connection.endpoint),
+      // });
+    } catch (err) {
+      console.error("Can't relinquish vote", err);
+    }
+    setIsLoading(false);
   };
 
   const vote = ownVoteRecord?.account.vote;
@@ -262,3 +276,6 @@ export const YouVoted = ({
     </div>
   ) : null;
 };
+function startFlow(flowId: number, arg1: any) {
+  throw new Error('Function not implemented.');
+}

@@ -238,7 +238,7 @@ export const useSubmitVote = ({
           vote: convertVoteToRust(formattedVote),
         }).M;
         console.log('inputBody', inputBody);
-        ``;
+        
 
         await startFlow(flowId, prepFlowInputs(inputBody, wallet));
 
