@@ -37,6 +37,8 @@ import { useFlowEvents } from '../_flow/vote-button';
 import { getVetoTokenMint } from '@/utils/helpers';
 import { prepFlowInputs } from '../_flow/helpers';
 import { Value } from '@space-operator/client';
+import { fetchProgramVersion } from '@/app/api/programVersion/queries';
+import { PublicKey } from '@solana/web3.js';
 
 export const useSubmitVote = ({
   proposal,
@@ -112,7 +114,9 @@ export const useSubmitVote = ({
           : selectedCouncilDelegator;
 
       const actingAsWalletPk =
-        relevantSelectedDelegator ?? wallet?.publicKey ?? undefined;
+        relevantSelectedDelegator === PublicKey.default
+          ? wallet?.publicKey
+          : relevantSelectedDelegator ?? undefined;
       if (!actingAsWalletPk) throw new Error();
 
       const tokenOwnerRecordPk = await getTokenOwnerRecordAddress(
@@ -202,6 +206,11 @@ export const useSubmitVote = ({
           ? getVetoTokenMint(proposal, realm)
           : proposal.account.governingTokenMint;
 
+      const programVersion = await fetchProgramVersion(
+        connection,
+        proposal.owner
+      );
+      console.log('programVersion', programVersion);
       // TODO plugin
       // const pluginCastVoteIxs: TransactionInstruction[] = [];
       // //will run only if any plugin is connected with realm
@@ -228,6 +237,9 @@ export const useSubmitVote = ({
           max_voter_weight_record: null, //plugin?.maxVoterWeightRecord,
           vote: convertVoteToRust(formattedVote),
         }).M;
+        console.log('inputBody', inputBody);
+        ``;
+
         await startFlow(flowId, prepFlowInputs(inputBody, wallet));
 
         // await castVote(
