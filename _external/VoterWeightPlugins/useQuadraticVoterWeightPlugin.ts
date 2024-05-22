@@ -1,7 +1,7 @@
 import { QV_PLUGINS_PKS } from '@/constants/plugins';
 
 import { useVoterWeightPluginReadinessReturnType } from './lib/types';
-import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
+import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 
 export interface useQuadraticVoterWeightPluginReturnType
   extends useVoterWeightPluginReadinessReturnType {

@@ -1,6 +1,6 @@
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from "@/constants/programs";
-import { getAllProposals } from "@solana/spl-governance";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
+import { getAllProposals } from '@solana/spl-governance';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 // Prefetch
 export async function prefetchAllProposalsByRealm(
@@ -27,7 +27,8 @@ export function getAllProposalsQuery(
   realmId: PublicKey
 ) {
   return {
-    queryKey: ["allProposals", realmPk, connection.rpcEndpoint],
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['allProposals', realmPk, connection.rpcEndpoint],
     queryFn: async () =>
       (await getAllProposals(connection, programId, realmId)).flat(),
     staleTime: 1000 * 60 * 60,

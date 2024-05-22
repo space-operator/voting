@@ -18,7 +18,6 @@ import { TransactionInstruction } from '@solana/web3.js';
 
 import { useMemo } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { useBatchedVoteDelegators } from '@/app/api/delegators/useDelegators';
 import { queryClient } from '@/providers/query';
 import {
   useRealmFromParams,
@@ -26,8 +25,7 @@ import {
 } from '@/app/api/realm/hooks';
 import { getProgramVersionForRealm } from '@/types/realm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { useVotingClients } from '@/app/api/votingClient/hooks';
-import { castVote } from './castVote';
+
 import { useAtom, useAtomValue } from 'jotai';
 import {
   communityDelegatorAtom,
@@ -39,6 +37,7 @@ import { prepFlowInputs } from '../_flow/helpers';
 import { Value } from '@space-operator/client';
 import { fetchProgramVersion } from '@/app/api/programVersion/queries';
 import { PublicKey } from '@solana/web3.js';
+import { useBatchedVoteDelegators } from '@/app/api/delegators/hooks';
 
 export const useSubmitVote = ({
   proposal,

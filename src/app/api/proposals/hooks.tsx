@@ -9,7 +9,7 @@ import {
   useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { getAllProposalsQuery } from "./query";
+import { getAllProposalsQuery } from "./queries";
 
 export const useAllProposalsByRealm = (
   realmPk: string

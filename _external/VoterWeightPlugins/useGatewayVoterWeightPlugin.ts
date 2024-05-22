@@ -3,7 +3,7 @@ import { GATEWAY_PLUGINS_PKS } from '@/constants/plugins';
 import { useVoterWeightPluginReadinessReturnType } from './lib/types';
 import { PublicKey } from '@solana/web3.js';
 import { GatewayClient } from '@solana/governance-program-library';
-import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
+import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 
 export interface useGatewayVoterWeightPluginReturnType
   extends useVoterWeightPluginReadinessReturnType {

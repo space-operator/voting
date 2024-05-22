@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   GovernanceAccountType,
@@ -7,24 +7,24 @@ import {
   ProposalState,
   Realm,
   VoteTypeKind,
-} from "@solana/spl-governance";
+} from '@solana/spl-governance';
 import {
   ProposalCard,
   ProposalCardHeader,
   ProposalCardContent,
   ProposalCardVote,
-} from "./ui/proposal-card";
-import { ProgressVoteButton } from "./voting-progress-button";
-import useProposalVotes from "@/app/api/voting/useProposalVotes";
-import { useRealmFromParams } from "@/app/api/realm/hooks";
-import { Suspense } from "react";
+} from './ui/proposal-card';
+import { ProgressVoteButton } from './voting-progress-button';
+import { useRealmFromParams } from '@/app/api/realm/hooks';
+import { Suspense } from 'react';
 
-import { FC } from "react";
-import ProposalTimeStatus from "./ProposalTimeStatus";
-import ProposalStateBadge from "./ProposalStateBadge";
-import { MultiChoiceVotes } from "./MultiChoiceVotes";
-import { SingleChoiceVote } from "./SingleChoiceVote";
-import VotePanel from "./voting/VotePanel";
+import { FC } from 'react';
+import ProposalTimeStatus from './ProposalTimeStatus';
+import ProposalStateBadge from './ProposalStateBadge';
+import { MultiChoiceVotes } from './MultiChoiceVotes';
+import { SingleChoiceVote } from './SingleChoiceVote';
+import VotePanel from './voting/VotePanel';
+import useProposalVotes from '@/app/api/proposalVotes/hooks';
 
 interface SingleProposalProps {
   proposal: ProgramAccount<Proposal>;

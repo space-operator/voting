@@ -120,6 +120,7 @@ export const CastVoteButtons = ({
           isOpen={showVoteModal}
           onClose={() => setShowVoteModal(false)}
           vote={vote === "yes" ? VoteKind.Approve : VoteKind.Deny}
+          proposal={proposal}
         />
       ) : null}
     </div>

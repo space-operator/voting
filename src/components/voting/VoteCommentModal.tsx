@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from 'react';
-import { VoteKind } from '@solana/spl-governance';
+import { ProgramAccount, Proposal, VoteKind } from '@solana/spl-governance';
 import { useSubmitVote } from './useSubmitVote';
 
 interface VoteCommentModalProps {
@@ -7,6 +7,7 @@ interface VoteCommentModalProps {
   isOpen: boolean;
   vote: VoteKind;
   isMulti?: number[];
+  proposal: ProgramAccount<Proposal>;
 }
 
 const VOTE_STRINGS = {
@@ -21,16 +22,16 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
   isOpen,
   vote,
   isMulti,
-  proposal
+  proposal,
 }) => {
   const [comment, setComment] = useState('');
-  const { submitting, submitVote } = useSubmitVote();
+  const { submitting, submitVote } = useSubmitVote({ proposal });
 
   const voteString = VOTE_STRINGS[vote];
 
   const handleSubmit = async () => {
     await submitVote({
-      voteKind: vote,
+      vote: vote,
       comment,
       voteWeights: isMulti,
     });

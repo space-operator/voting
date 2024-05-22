@@ -1,9 +1,9 @@
 'use client';
 
-import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
 import { PluginName } from '@/constants/plugins';
 import { FC, ReactNode } from 'react';
 import { VanillaCard } from './GovernancePower/VanillaCard';
+import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 
 export type VotingCardProps = {
   role: 'community' | 'council';

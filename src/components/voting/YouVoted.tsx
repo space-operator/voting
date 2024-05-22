@@ -5,50 +5,48 @@ import {
   VoteKind,
   VoteType,
   withFinalizeVote,
-} from "@solana/spl-governance";
-import { TransactionInstruction } from "@solana/web3.js";
-import { useState } from "react";
+} from '@solana/spl-governance';
+import { TransactionInstruction } from '@solana/web3.js';
+import { useState } from 'react';
 
-import { ProposalState } from "@solana/spl-governance";
-import { RpcContext } from "@solana/spl-governance";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { ProposalState } from '@solana/spl-governance';
+import { RpcContext } from '@solana/spl-governance';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   isInCoolOffTime,
   useIsVoting,
   useUserVetoTokenRecord,
   useVoterTokenRecord,
-} from "@/app/api/voting/hooks";
+} from '@/app/api/voting/hooks';
 import {
   useHasVoteTimeExpired,
   useProposalVoteRecordQuery,
-} from "@/app/api/voteRecord/hooks";
-import { useMaxVoteRecord } from "@/app/api/voterWeightPlugins/hooks";
-import { useGovernance } from "@/app/api/governance/hooks";
-import { Button } from "../ui/button";
+} from '@/app/api/voteRecord/hooks';
+import { useMaxVoteRecord } from '@/app/api/voterWeightPlugins/hooks';
+import { useGovernance } from '@/app/api/governance/hooks';
+import { Button } from '../ui/button';
 import {
   useRealmFromParams,
   useRealmRegistryEntryFromParams,
-} from "@/app/api/realm/hooks";
-import { useVotingClientForGoverningTokenMint } from "@/app/api/votingClient/hooks";
-import assertUnreachable from "@/utils/errors";
+} from '@/app/api/realm/hooks';
+import assertUnreachable from '@/utils/errors';
 import {
   BanIcon,
   CheckCircleIcon,
   MinusCircleIcon,
   ThumbsDownIcon,
   ThumbsUpIcon,
-} from "lucide-react";
-import { relinquishVote } from "@/app/api/relinquishVote";
-import { Value } from "@space-operator/client";
-import { prepFlowInputs } from "../_flow/helpers";
-import { useFlowEvents } from "../_flow/vote-button";
-import { queryClient } from "@/providers/query";
+} from 'lucide-react';
+import { Value } from '@space-operator/client';
+import { prepFlowInputs } from '../_flow/helpers';
+import { useFlowEvents } from '../_flow/vote-button';
+import { queryClient } from '@/providers/query';
 
 export const YouVoted = ({
   quorum,
   proposal,
 }: {
-  quorum: "electoral" | "veto";
+  quorum: 'electoral' | 'veto';
   proposal: ProgramAccount<Proposal>;
 }) => {
   const { data: realm } = useRealmFromParams();
@@ -64,7 +62,7 @@ export const YouVoted = ({
 
   const maxVoterWeight = useMaxVoteRecord()?.pubkey || undefined;
   const hasVoteTimeExpired = useHasVoteTimeExpired(governance, proposal);
-  console.log("hasVoteTimeExpired", hasVoteTimeExpired);
+  console.log('hasVoteTimeExpired', hasVoteTimeExpired);
 
   const isVoting = useIsVoting({ proposal, governance });
 
@@ -75,19 +73,19 @@ export const YouVoted = ({
     quorum,
     proposal,
   });
-  console.log("proposalVoteRecord", proposalVoteRecord);
+  console.log('proposalVoteRecord', proposalVoteRecord);
   const ownVoteRecord = proposalVoteRecord;
   const electoralVoterTokenRecord = useVoterTokenRecord({
     proposal: proposal.account,
   });
-  console.log("electoralVoterTokenRecord", electoralVoterTokenRecord);
+  console.log('electoralVoterTokenRecord', electoralVoterTokenRecord);
   const vetoVotertokenRecord = useUserVetoTokenRecord({
     proposal,
   });
-  console.log("vetoVotertokenRecord", vetoVotertokenRecord);
+  console.log('vetoVotertokenRecord', vetoVotertokenRecord);
 
   const voterTokenRecord =
-    quorum === "electoral" ? electoralVoterTokenRecord : vetoVotertokenRecord;
+    quorum === 'electoral' ? electoralVoterTokenRecord : vetoVotertokenRecord;
 
   // TODO: fix this
   // const votingClient = useVotingClientForGoverningTokenMint(
@@ -106,15 +104,15 @@ export const YouVoted = ({
       proposal!.account.state === ProposalState.Executing ||
       proposal!.account.state === ProposalState.Defeated);
 
-  console.log("isWithdrawEnabled", isWithdrawEnabled);
+  console.log('isWithdrawEnabled', isWithdrawEnabled);
 
   const withdrawTooltipContent = !connected
-    ? "You need to connect your wallet"
+    ? 'You need to connect your wallet'
     : !isWithdrawEnabled
     ? !ownVoteRecord?.account.isRelinquished
-      ? "Owner vote record is not relinquished"
-      : "The proposal is not in a valid state to execute this action."
-    : "";
+      ? 'Owner vote record is not relinquished'
+      : 'The proposal is not in a valid state to execute this action.'
+    : '';
 
   // TODO add withdraw vote
   const submitRelinquishVote = async () => {
@@ -161,21 +159,21 @@ export const YouVoted = ({
       const flowId = 2151;
 
       const inputBody = new Value({
-        private_key: "WALLET",
+        private_key: 'WALLET',
         realm: realm.pubkey,
         governance: proposal.account.governance,
         proposal: proposal.pubkey,
         token_owner_record: voterTokenRecord.pubkey,
         vote_governing_token_mint: proposal.account.governingTokenMint,
-        governance_authority: "WALLET",
-        beneficiary: "WALLET",
+        governance_authority: 'WALLET',
+        beneficiary: 'WALLET',
       }).M;
-      console.log("inputBody", inputBody);
+      console.log('inputBody', inputBody);
 
       await startFlow(flowId, prepFlowInputs(inputBody, wallet));
 
       queryClient.invalidateQueries({
-        queryKey: ["proposal-vote-record"],
+        queryKey: ['proposal-vote-record'],
         exact: false,
       });
     } catch (err) {
@@ -190,31 +188,31 @@ export const YouVoted = ({
     proposal?.account.voteType !== VoteType.SINGLE_CHOICE &&
     proposal?.account.accountType === GovernanceAccountType.ProposalV2;
 
-  const nota = "$$_NOTA_$$";
-  console.log("vote", vote);
+  const nota = '$$_NOTA_$$';
+  console.log('vote', vote);
 
   return vote !== undefined ? (
-    <div className="bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4">
-      <div className="flex flex-col items-center justify-center">
-        <h3 className="text-center">
-          {quorum === "electoral" ? "Your vote" : "You voted to veto"}
+    <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
+      <div className='flex flex-col items-center justify-center'>
+        <h3 className='text-center'>
+          {quorum === 'electoral' ? 'Your vote' : 'You voted to veto'}
         </h3>
         {vote.voteType === VoteKind.Approve ? (
           isMulti ? (
             vote.approveChoices?.map((choice, index) =>
               choice.weightPercentage ? (
-                <div className="p-1 w-full" key={index}>
+                <div className='p-1 w-full' key={index}>
                   <Button
-                    className="w-full border border-primary-light text-primary-light bg-transparent"
+                    className='w-full border border-primary-light text-primary-light bg-transparent'
                     disabled={true}
                   >
-                    <div className="flex flex-row gap-2 justify-center">
+                    <div className='flex flex-row gap-2 justify-center'>
                       <div>
                         <CheckCircleIcon />
                       </div>
                       <div>
                         {proposal?.account.options[index].label === nota
-                          ? "None of the Above"
+                          ? 'None of the Above'
                           : proposal?.account.options[index].label}
                       </div>
                     </div>
@@ -224,27 +222,27 @@ export const YouVoted = ({
             )
           ) : (
             // <Tooltip content={`You voted "Yes"`}>
-            <div className="flex flex-row items-center justify-center rounded-full border border-[#8EFFDD] p-2 mt-2">
-              <ThumbsUpIcon className="h-4 w-4 fill-[#8EFFDD]" />
+            <div className='flex flex-row items-center justify-center rounded-full border border-[#8EFFDD] p-2 mt-2'>
+              <ThumbsUpIcon className='h-4 w-4 fill-[#8EFFDD]' />
             </div>
             // </Tooltip>
           )
         ) : vote.voteType === VoteKind.Deny ? (
           // <Tooltip content={`You voted "No"`}>
-          <div className="flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2">
-            <ThumbsDownIcon className="h-4 w-4 fill-[#FF7C7C]" />
+          <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
+            <ThumbsDownIcon className='h-4 w-4 fill-[#FF7C7C]' />
           </div>
         ) : // </Tooltip>
         vote.voteType === VoteKind.Veto ? (
           // <Tooltip content={`You voted "Veto"`}>
-          <div className="flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2">
-            <BanIcon className="h-4 w-4 fill-[#FF7C7C]" />
+          <div className='flex flex-row items-center justify-center rounded-full border border-[#FF7C7C] p-2 mt-2'>
+            <BanIcon className='h-4 w-4 fill-[#FF7C7C]' />
           </div>
         ) : // </Tooltip>
         vote.voteType === VoteKind.Abstain ? (
           // <Tooltip content={`You voted "Abstain"`}>
-          <div className="flex flex-row items-center justify-center rounded-full border border-gray-400 p-2 mt-2">
-            <MinusCircleIcon className="h-4 w-4 fill-gray-400" />
+          <div className='flex flex-row items-center justify-center rounded-full border border-gray-400 p-2 mt-2'>
+            <MinusCircleIcon className='h-4 w-4 fill-gray-400' />
           </div>
         ) : (
           // </Tooltip>
@@ -252,10 +250,10 @@ export const YouVoted = ({
         )}
       </div>
       {(isVoting || inCoolOffTime) && (
-        <div className="items-center justify-center flex w-full gap-5">
-          <div className="flex flex-col gap-6 items-center">
+        <div className='items-center justify-center flex w-full gap-5'>
+          <div className='flex flex-col gap-6 items-center'>
             <Button
-              className="min-w-[200px]"
+              className='min-w-[200px]'
               // isLoading={isLoading}
               // tooltipMessage={withdrawTooltipContent}
               onClick={() => submitRelinquishVote()}
@@ -265,7 +263,7 @@ export const YouVoted = ({
             </Button>
 
             {inCoolOffTime && (
-              <div className="text-xs">
+              <div className='text-xs'>
                 Warning: If you withdraw your vote now you can only deny the
                 proposal its not possible to vote yes during cool off time
               </div>

@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from "@/constants/programs";
-import { useQuery } from "@tanstack/react-query";
-import { fetchRealms } from "@/app/api/realm/queries";
-import { realmsJson, splRepo } from "@/constants/other";
-import { PublicKey } from "@solana/web3.js";
-import { RealmInfo } from "@/types/realm";
-import { ProgramAccount, Realm } from "@solana/spl-governance";
-import React, { useMemo } from "react";
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
+import { useQuery } from '@tanstack/react-query';
+import { prefetchRealm } from '@/app/api/realm/queries';
+import { realmsJson, splRepo } from '@/constants/other';
+import { PublicKey } from '@solana/web3.js';
+import { RealmInfo } from '@/types/realm';
+import { ProgramAccount, Realm } from '@solana/spl-governance';
+import React, { useMemo } from 'react';
 
 export function Realms() {
   const { data, isLoading } = useQuery({
-    queryKey: ["realms", DEFAULT_GOVERNANCE_PROGRAM_ID],
-    queryFn: async () => await fetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    queryKey: ['realm', DEFAULT_GOVERNANCE_PROGRAM_ID],
+    queryFn: async () => await prefetchRealm(DEFAULT_GOVERNANCE_PROGRAM_ID),
     staleTime: 3600000, // 1 hour
   });
 
   // fetch a json file from a public github repo
   const { data: repoData, isLoading: isRepoLoading } = useQuery({
-    queryKey: ["githubRepoData"],
+    queryKey: ['githubRepoData'],
     queryFn: async () => {
       const response = await fetch(splRepo + realmsJson);
       if (!response.ok) {
-        throw new Error("Could not fetch realms from repo");
+        throw new Error('Could not fetch realms from repo');
       }
       return response.json();
     },
@@ -62,7 +62,7 @@ export function Realms() {
     <main>
       {combinedData.length}
       {/* {JSON.stringify(combinedData)} */}
-      {/* {JSON.stringify(repoData)} */}{" "}
+      {/* {JSON.stringify(repoData)} */}{' '}
       {isLoading || isRepoLoading ? (
         <div>Loading...</div>
       ) : (

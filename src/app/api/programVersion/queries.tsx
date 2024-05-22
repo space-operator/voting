@@ -1,20 +1,21 @@
-import { queryClient } from "@/providers/query";
-import { getGovernanceProgramVersion } from "@solana/spl-governance";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { queryClient } from '@/providers/query';
+import { getGovernanceProgramVersion } from '@solana/spl-governance';
+import { Connection, PublicKey } from '@solana/web3.js';
 
 export const fetchProgramVersion = (
   connection: Connection,
   programId: PublicKey
-) => queryClient.fetchQuery(governanceProgramVersionQuery(programId, connection));
-
+) =>
+  queryClient.fetchQuery(governanceProgramVersionQuery(programId, connection));
 
 export const governanceProgramVersionQuery = (
   programId: PublicKey,
   connection: Connection
 ) => {
   return {
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
-      "governanceProgramVersion",
+      'governanceProgramVersion',
       programId.toString(),
       connection.rpcEndpoint,
     ],
@@ -22,4 +23,4 @@ export const governanceProgramVersionQuery = (
       await getGovernanceProgramVersion(connection, programId),
     staleTime: Infinity,
   };
-}
+};

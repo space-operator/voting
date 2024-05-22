@@ -1,4 +1,4 @@
-import { useRealmVoterWeightPlugins } from '@/app/api/governance/voterWeightPlugins';
+import React from 'react';
 import { VoterWeightPluginInfo } from './types';
 import { useState } from 'react';
 
@@ -136,3 +136,11 @@ export const PluginDebug = () => {
     </div>
   );
 };
+function useRealmVoterWeightPlugins(kind: string): {
+  plugins: any;
+  totalCalculatedVoterWeight: any;
+  calculatedMaxVoterWeight: any;
+  isReady: any;
+} {
+  throw new Error('Function not implemented.');
+}
