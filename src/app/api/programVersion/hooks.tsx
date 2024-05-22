@@ -12,7 +12,7 @@ export function useProgramVersionByIdQuery(realmsProgramId: PublicKey) {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'realm_program_version',
-      realmsProgramId,
+      realmsProgramId.toString(),
       connection.rpcEndpoint,
     ],
     queryFn: async () =>

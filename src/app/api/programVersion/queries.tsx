@@ -10,7 +10,7 @@ export const fetchProgramVersion = (
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'realm_program_version',
-      PublicKey.toString(),
+      programId.toString(),
       connection.rpcEndpoint,
     ],
     queryFn: async () =>

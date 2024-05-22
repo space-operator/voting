@@ -42,6 +42,7 @@ import { relinquishVote } from '@/app/api/relinquishVote';
 import { Value } from '@space-operator/client';
 import { prepFlowInputs } from '../_flow/helpers';
 import { useFlowEvents } from '../_flow/vote-button';
+import { queryClient } from '@/providers/query';
 
 export const YouVoted = ({
   quorum,
@@ -134,8 +135,8 @@ export const YouVoted = ({
     //   connection.current,
     //   connection.endpoint
     // );
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const instructions: TransactionInstruction[] = [];
       // TODO
       //we want to finalize only if someone try to withdraw after voting time ended
@@ -175,9 +176,10 @@ export const YouVoted = ({
 
       await startFlow(flowId, prepFlowInputs(inputBody, wallet));
 
-      // queryClient.invalidateQueries({
-      //   queryKey: proposalQueryKeys.all(connection.endpoint),
-      // });
+      queryClient.invalidateQueries({
+        queryKey: ['proposal-vote-record'],
+        exact: false,
+      });
     } catch (err) {
       console.error("Can't relinquish vote", err);
     }
@@ -276,6 +278,3 @@ export const YouVoted = ({
     </div>
   ) : null;
 };
-function startFlow(flowId: number, arg1: any) {
-  throw new Error('Function not implemented.');
-}

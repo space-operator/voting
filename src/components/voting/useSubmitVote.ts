@@ -238,7 +238,6 @@ export const useSubmitVote = ({
           vote: convertVoteToRust(formattedVote),
         }).M;
         console.log('inputBody', inputBody);
-        
 
         await startFlow(flowId, prepFlowInputs(inputBody, wallet));
 
@@ -254,7 +253,9 @@ export const useSubmitVote = ({
         //   voteWeights,
         //   relevantDelegators
         // );
-
+        queryClient.invalidateQueries({
+          queryKey: ['vote-record-address'],
+        });
         // TODO
         // queryClient.invalidateQueries({
         //   queryKey: proposalQueryKeys.all(connection.current.rpcEndpoint),
