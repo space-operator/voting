@@ -1,20 +1,17 @@
-'use client';
+"use client";
 
-import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
-import {
-  ProgramAccount,
-  Proposal,
-  getAllProposals,
-} from '@solana/spl-governance';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from "@/constants/programs";
+import { ProgramAccount, Proposal } from "@solana/spl-governance";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import {
   UseSuspenseQueryResult,
   useQuery,
   useSuspenseQuery,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
+import { getAllProposalsQuery } from "./query";
 
-export const useProposalsByRealm = (
+export const useAllProposalsByRealm = (
   realmPk: string
 ): UseSuspenseQueryResult<ProgramAccount<Proposal>[], Error> => {
   const { connection } = useConnection();
@@ -22,11 +19,7 @@ export const useProposalsByRealm = (
   const realmId = new PublicKey(realmPk);
   const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 
-  return useSuspenseQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['realm-proposals', realmPk, connection.rpcEndpoint],
-    queryFn: async () =>
-      (await getAllProposals(connection, programId, realmId)).flat(),
-    staleTime: 1000 * 60 * 60, // 1 hour
-  });
+  return useSuspenseQuery(
+    getAllProposalsQuery(realmPk, connection, programId, realmId)
+  );
 };

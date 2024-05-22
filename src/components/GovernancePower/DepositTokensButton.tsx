@@ -1,21 +1,18 @@
-import { BigNumber } from 'bignumber.js';
-import BN from 'bn.js';
-import { Button, ButtonProps } from '../ui/button';
-import { useWallet } from '@solana/wallet-adapter-react';
-import {
-  useMintInfo,
-  useUserGovTokenAccountQuery,
-} from '@/app/api/token/hooks';
-import { useEffect, useState } from 'react';
-import { useRealmParams } from '@/app/api/realm/hooks';
-import { useGoverningTokenMint } from '@/app/api/token/hooks';
+import { BigNumber } from "bignumber.js";
+import BN from "bn.js";
+import { Button, ButtonProps } from "../ui/button";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useMintInfo, useUserGovTokenAccount } from "@/app/api/token/hooks";
+import { useEffect, useState } from "react";
+import { useRealmFromParams } from "@/app/api/realm/hooks";
+import { useGoverningTokenMint } from "@/app/api/token/hooks";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
-import { Input } from '../ui/input';
+} from "../ui/tooltip";
+import { Input } from "../ui/input";
 import {
   Dialog,
   DialogContent,
@@ -23,26 +20,26 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
+} from "../ui/dialog";
 
 export const DepositTokensButton = ({
   role,
   ...props
-}: { role: 'community' | 'council' } & Omit<
+}: { role: "community" | "council" } & Omit<
   ButtonProps,
-  'onClick' | 'tooltipMessage'
+  "onClick" | "tooltipMessage"
 >) => {
   const { wallet } = useWallet();
   const connected = !!wallet?.adapter.connected;
 
-  const userAta = useUserGovTokenAccountQuery(role).data;
+  const userAta = useUserGovTokenAccount(role).data;
   const depositAmount = userAta?.amount
     ? new BigNumber(userAta.amount.toString())
     : new BigNumber(0);
 
   const hasTokensInWallet = depositAmount.isGreaterThan(0);
   const depositTooltipContent = !connected
-    ? 'Connect your wallet to deposit'
+    ? "Connect your wallet to deposit"
     : !hasTokensInWallet
     ? "You don't have any governance tokens in your wallet to deposit."
     : undefined;
@@ -56,11 +53,11 @@ export const DepositTokensButton = ({
       ? undefined
       : depositAmount.shiftedBy(-mintInfo.decimals).toNumber();
 
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
 
   useEffect(() => {
     if (humanReadableMax && humanReadableMax > 0)
-      setAmount(humanReadableMax ? humanReadableMax.toString() : '');
+      setAmount(humanReadableMax ? humanReadableMax.toString() : "");
   }, [humanReadableMax]);
 
   // const deposit = useDepositCallback(role);
@@ -84,17 +81,17 @@ export const DepositTokensButton = ({
           </TooltipProvider>
         </DialogTrigger>
         <DialogContent>
-          <div className='flex flex-col gap-y-4'>
+          <div className="flex flex-col gap-y-4">
             <h2>Deposit tokens</h2>
             <label>
               Amount to deposit
               <span>
                 &nbsp;-&nbsp;
                 <a
-                  href='#'
+                  href="#"
                   onClick={() => {
                     setAmount(
-                      humanReadableMax ? humanReadableMax.toString() : ''
+                      humanReadableMax ? humanReadableMax.toString() : ""
                     );
                   }}
                 >
@@ -103,8 +100,8 @@ export const DepositTokensButton = ({
               </span>
             </label>
             <Input
-              placeholder={humanReadableMax?.toString() + ' (max)'}
-              type='number'
+              placeholder={humanReadableMax?.toString() + " (max)"}
+              type="number"
               value={amount}
               onChange={(e) => {
                 setAmount(e.target.value);
@@ -116,7 +113,7 @@ export const DepositTokensButton = ({
                 if (mintInfo === undefined) throw new Error();
                 // max is the placeholder, so deposit the maximum amount if no value is input
                 const nativeAmount =
-                  amount === ''
+                  amount === ""
                     ? new BN(depositAmount.toString())
                     : new BN(
                         new BigNumber(amount)

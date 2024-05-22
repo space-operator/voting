@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useAtom } from 'jotai/react';
-import { filterStateAtom } from './filter-popover';
-import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
-import { useEffect, useMemo } from 'react';
+import { useAtom } from "jotai/react";
+import { filterStateAtom } from "./filter-popover";
+import { ProgramAccount, Proposal, Realm } from "@solana/spl-governance";
+import { useEffect, useMemo } from "react";
 
-import { useRealm } from '@/app/api/realm/hooks';
-import { filterProposals } from '@/utils/filterProposals';
-import { useProposalsByRealm } from '@/app/api/proposals/hooks';
-import { SingleProposal } from './proposal';
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import { useParams } from 'next/navigation';
+import { useRealm } from "@/app/api/realm/hooks";
+import { filterProposals } from "@/utils/filterProposals";
+import { useAllProposalsByRealm } from "@/app/api/proposals/hooks";
+import { SingleProposal } from "./proposal";
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import { useParams } from "next/navigation";
 
-export const realmAtom = atomWithStorage('realm', null);
+export const realmAtom = atomWithStorage("realm", null);
 
 export function DisplayProposals() {
   const { id: realmPk } = useParams<{ id: string }>();
@@ -21,12 +21,12 @@ export function DisplayProposals() {
 
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
 
-  const { data, status } = useProposalsByRealm(realmPk);
+  const { data, status } = useAllProposalsByRealm(realmPk);
   const [_, setRealm] = useAtom(realmAtom);
 
   useEffect(() => {
     if (realm) {
-      console.log('setting realm', realm);
+      console.log("setting realm", realm);
       setRealm(realm);
     }
   }, [realm, setRealm, isRealmSuccess]);
@@ -42,7 +42,7 @@ export function DisplayProposals() {
 
   return (
     <div>
-      <div className=''>{JSON.stringify(realm)}</div>
+      <div className="">{JSON.stringify(realm)}</div>
 
       {filteredProposals.map((proposal: ProgramAccount<Proposal>) => (
         <SingleProposal key={proposal.pubkey.toString()} proposal={proposal} />

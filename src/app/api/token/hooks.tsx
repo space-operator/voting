@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Mint,
@@ -7,18 +7,18 @@ import {
   getAssociatedTokenAddress,
   getMint,
   getTokenMetadata,
-} from '@solana/spl-token';
-import { TokenMetadata } from '@solana/spl-token-metadata';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
+} from "@solana/spl-token";
+import { TokenMetadata } from "@solana/spl-token-metadata";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
 import {
   UseQueryResult,
   UseSuspenseQueryResult,
   useQuery,
   useSuspenseQuery,
-} from '@tanstack/react-query';
-import { useRealmParams } from '../realm/hooks';
-import { useAsync } from 'react-async-hook';
+} from "@tanstack/react-query";
+import { useRealmFromParams } from "../realm/hooks";
+import { useAsync } from "react-async-hook";
 
 // get the mint info for a token
 export function useMintInfo(
@@ -28,7 +28,7 @@ export function useMintInfo(
 
   return useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['mint-info', pubkey, connection.rpcEndpoint],
+    queryKey: ["mintInfo", pubkey, connection.rpcEndpoint],
     queryFn: async () => await getMint(connection, new PublicKey(pubkey)),
   });
 }
@@ -41,23 +41,23 @@ export function useTokenMetadata(
 
   return useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['token-metadata', pubkey, connection.rpcEndpoint],
+    queryKey: ["tokenMetadata", pubkey, connection.rpcEndpoint],
     queryFn: async () =>
       await getTokenMetadata(
         connection,
         new PublicKey(pubkey),
-        'confirmed',
+        connection.commitment,
         TOKEN_PROGRAM_ID
       ),
   });
 }
 
-export const useUserGovTokenAccountQuery = (role: 'community' | 'council') => {
-  const realm = useRealmParams().data;
+export const useUserGovTokenAccount = (role: "community" | "council") => {
+  const realm = useRealmFromParams().data;
   const wallet = useWallet().wallet.adapter;
   const walletPk = wallet?.publicKey ?? undefined;
   const mint =
-    role === 'community'
+    role === "community"
       ? realm?.account.communityMint
       : realm?.account.config.councilMint;
   const { result: userAtaPk } = useAsync(
@@ -73,19 +73,18 @@ export const useGetAccount = (pubkey: PublicKey | undefined) => {
 
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['token-account', pubkey, connection.rpcEndpoint],
+    queryKey: ["tokenAccount", pubkey, connection.rpcEndpoint],
     queryFn: async () => await getAccount(connection, pubkey),
   });
 
   return query;
 };
 
-
 export function useGoverningTokenMint(
-  governingTokenRole: 'community' | 'council'
+  governingTokenRole: "community" | "council"
 ) {
-  const realm = useRealmParams().data;
-  return governingTokenRole === 'community'
+  const realm = useRealmFromParams().data;
+  return governingTokenRole === "community"
     ? realm?.account.communityMint
     : realm?.account.config.councilMint;
 }

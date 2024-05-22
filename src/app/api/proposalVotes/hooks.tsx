@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ProgramAccount,
@@ -7,16 +7,16 @@ import {
   Realm,
   VoteType,
   VoteTypeKind,
-} from '@solana/spl-governance';
-import { useMaxVoteRecord } from '@/app/api/voting/useMaxVoteRecord';
-import { useProgramVersion } from '@/app/api/programVersion/hooks';
-import { getProposalMaxVoteWeight } from './utils';
-import { fmtBnMintDecimals } from '@/utils/units';
-import { calculatePct } from '@/utils/formatting';
-import BN from 'bn.js';
-import { useMintInfo } from '../token/hooks';
-import { useGovernanceByPubkeyQuery } from '../governance/hooks';
-import { PublicKey } from '@solana/web3.js';
+} from "@solana/spl-governance";
+import { useMaxVoteRecord } from "../voterWeightPlugins/hooks";
+import { useProgramVersion } from "@/app/api/programVersion/hooks";
+import { getProposalMaxVoteWeight } from "../voterWeightPlugins/utils";
+import { fmtBnMintDecimals } from "@/utils/units";
+import { calculatePct } from "@/utils/formatting";
+import BN from "bn.js";
+import { useMintInfo } from "../token/hooks";
+import { useGovernance } from "../governance/hooks";
+import { PublicKey } from "@solana/web3.js";
 
 export interface ProposalVotesResult {
   _programVersion: number | undefined;
@@ -41,15 +41,12 @@ export default function useProposalVotes(
   proposal: Proposal,
   realm: ProgramAccount<Realm>
 ): ProposalVotesResult {
-  console.log(proposal, 'proposal');
-  // TODO update to get mint into
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
   // TODO fix delegator
   const maxVoteRecord = useMaxVoteRecord();
-  const governance = useGovernanceByPubkeyQuery(
-    new PublicKey(proposal.governance)
-  ).data.account;
+  const governance = useGovernance(new PublicKey(proposal.governance)).data
+    .account;
 
   // TODO add pyth - This is always undefined except for Pyth
   const pythScalingFactor: number | undefined = 1; //usePythScalingFactor();
@@ -89,7 +86,7 @@ export default function useProposalVotes(
 
   // TODO ??
   const isPluginCommunityVoting = maxVoteRecord && isCommunityVote;
-  console.log('isPluginCommunityVoting', isPluginCommunityVoting);
+  console.log("isPluginCommunityVoting", isPluginCommunityVoting);
 
   const voteThresholdPct = isCommunityVote
     ? governance.config.communityVoteThreshold.value
@@ -101,7 +98,7 @@ export default function useProposalVotes(
 
   if (voteThresholdPct === undefined)
     throw new Error(
-      'Proposal has no vote threshold (this shouldnt be possible)'
+      "Proposal has no vote threshold (this shouldnt be possible)"
     );
 
   // note this can be WRONG if the proposal status is vetoed
@@ -116,12 +113,12 @@ export default function useProposalVotes(
   console.log(proposal.getYesVoteCount());
 
   // Needed workarounds to get the correct values and attached methods
-  const yesVote = new BN(proposal.getYesVoteCount(), 'hex');
-  const noVote = new BN(proposal.getNoVoteCount(), 'hex');
+  const yesVote = new BN(proposal.getYesVoteCount(), "hex");
+  const noVote = new BN(proposal.getNoVoteCount(), "hex");
 
   const yesVotePct = calculatePct(
     yesVote,
-    typeof maxVoteWeight === 'bigint'
+    typeof maxVoteWeight === "bigint"
       ? new BN(maxVoteWeight.toString())
       : maxVoteWeight
   );

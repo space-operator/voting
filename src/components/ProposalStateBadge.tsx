@@ -1,13 +1,13 @@
-import { Proposal, ProposalState } from '@solana/spl-governance';
+import { Proposal, ProposalState } from "@solana/spl-governance";
 
 import {
   useUserCommunityTokenOwnerRecord,
   useUserCouncilTokenOwnerRecord,
-} from '@/app/api/tokenOwnerRecord/hooks';
-import { cn } from '@/lib/utils';
-import assertUnreachable from '@/utils/errors';
-import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
-import { isInCoolOffTime } from '@/app/api/voting/hooks';
+} from "@/app/api/tokenOwnerRecord/hooks";
+import { cn } from "@/lib/utils";
+import assertUnreachable from "@/utils/errors";
+import { useGovernance } from "@/app/api/governance/hooks";
+import { isInCoolOffTime } from "@/app/api/voting/hooks";
 
 export const hasInstructions = (proposal: Proposal) => {
   if (proposal.instructionsCount) {
@@ -40,19 +40,19 @@ function getBorderColor(proposalState: ProposalState, otherState: OtherState) {
     case ProposalState.Defeated:
     case ProposalState.ExecutingWithErrors:
     case ProposalState.Vetoed:
-      return 'border-transparent';
+      return "border-transparent";
     case ProposalState.Executing:
-      return 'border-[#5DC9EB]';
+      return "border-[#5DC9EB]";
     case ProposalState.Draft:
-      return otherState.isCreator ? 'border-white' : 'border-transparent';
+      return otherState.isCreator ? "border-white" : "border-transparent";
     case ProposalState.SigningOff:
-      return otherState.isSignatory ? 'border-[#F5A458]' : 'border-transparent';
+      return otherState.isSignatory ? "border-[#F5A458]" : "border-transparent";
     case ProposalState.Succeeded:
       return !hasInstructions(otherState.proposal)
-        ? 'border-transparent'
-        : 'border-[#5DC9EB]';
+        ? "border-transparent"
+        : "border-[#5DC9EB]";
     case ProposalState.Voting:
-      return otherState.votingEnded ? 'border-[#5DC9EB]' : 'border-[#8EFFDD]';
+      return otherState.votingEnded ? "border-[#5DC9EB]" : "border-[#8EFFDD]";
     default:
       assertUnreachable(proposalState);
   }
@@ -60,33 +60,33 @@ function getBorderColor(proposalState: ProposalState, otherState: OtherState) {
 
 function getLabel(
   proposalState: ProposalState,
-  otherState: Pick<OtherState, 'proposal' | 'votingEnded' | 'coolOff'>
+  otherState: Pick<OtherState, "proposal" | "votingEnded" | "coolOff">
 ) {
   switch (proposalState) {
     case ProposalState.Cancelled:
-      return 'Cancelled';
+      return "Cancelled";
     case ProposalState.Completed:
-      return 'Completed';
+      return "Completed";
     case ProposalState.Defeated:
-      return 'Defeated';
+      return "Defeated";
     case ProposalState.Draft:
-      return 'Draft';
+      return "Draft";
     case ProposalState.Executing:
-      return 'Executable';
+      return "Executable";
     case ProposalState.ExecutingWithErrors:
-      return 'Executing w/ errors';
+      return "Executing w/ errors";
     case ProposalState.SigningOff:
-      return 'Signing off';
+      return "Signing off";
     case ProposalState.Succeeded:
-      return !hasInstructions(otherState.proposal) ? 'Completed' : 'Executable';
+      return !hasInstructions(otherState.proposal) ? "Completed" : "Executable";
     case ProposalState.Voting:
       return otherState.votingEnded
-        ? 'Finalizing'
+        ? "Finalizing"
         : otherState.coolOff
-        ? 'Cool Off'
-        : 'Voting';
+        ? "Cool Off"
+        : "Voting";
     case ProposalState.Vetoed:
-      return 'Vetoed';
+      return "Vetoed";
     default:
       assertUnreachable(proposalState);
   }
@@ -94,7 +94,7 @@ function getLabel(
 
 function getOpacity(
   proposalState: ProposalState,
-  otherState: Pick<OtherState, 'isCreator' | 'isSignatory' | 'proposal'>
+  otherState: Pick<OtherState, "isCreator" | "isSignatory" | "proposal">
 ) {
   switch (proposalState) {
     case ProposalState.Cancelled:
@@ -102,16 +102,16 @@ function getOpacity(
     case ProposalState.Defeated:
     case ProposalState.ExecutingWithErrors:
     case ProposalState.Vetoed:
-      return 'opacity-70';
+      return "opacity-70";
     case ProposalState.Draft:
-      return otherState.isCreator ? '' : 'opacity-70';
+      return otherState.isCreator ? "" : "opacity-70";
     case ProposalState.SigningOff:
-      return otherState.isSignatory ? '' : 'opacity-70';
+      return otherState.isSignatory ? "" : "opacity-70";
     case ProposalState.Succeeded:
-      return !hasInstructions(otherState.proposal) ? 'opacity-70' : '';
+      return !hasInstructions(otherState.proposal) ? "opacity-70" : "";
     case ProposalState.Voting:
     case ProposalState.Executing:
-      return '';
+      return "";
     default:
       assertUnreachable(proposalState);
   }
@@ -119,30 +119,30 @@ function getOpacity(
 
 function getTextColor(
   proposalState: ProposalState,
-  otherState: Pick<OtherState, 'proposal' | 'votingEnded'>
+  otherState: Pick<OtherState, "proposal" | "votingEnded">
 ) {
   switch (proposalState) {
     case ProposalState.Cancelled:
     case ProposalState.Draft:
-      return 'text-white';
+      return "text-white";
     case ProposalState.Completed:
-      return 'text-[#8EFFDD]';
+      return "text-[#8EFFDD]";
     case ProposalState.Defeated:
     case ProposalState.Vetoed:
     case ProposalState.ExecutingWithErrors:
-      return 'text-[#FF7C7C]';
+      return "text-[#FF7C7C]";
     case ProposalState.Executing:
-      return 'text-[#5DC9EB]';
+      return "text-[#5DC9EB]";
     case ProposalState.SigningOff:
-      return 'text-[#F5A458]';
+      return "text-[#F5A458]";
     case ProposalState.Succeeded:
       return !hasInstructions(otherState.proposal)
-        ? 'text-[#8EFFDD]'
-        : 'text-[#5DC9EB]';
+        ? "text-[#8EFFDD]"
+        : "text-[#5DC9EB]";
     case ProposalState.Voting:
       return otherState.votingEnded
-        ? 'bg-gradient-to-r from-[#00C2FF] via-[#00E4FF] to-[#87F2FF] bg-clip-text text-transparent'
-        : 'text-[#8EFFDD]';
+        ? "bg-gradient-to-r from-[#00C2FF] via-[#00E4FF] to-[#87F2FF] bg-clip-text text-transparent"
+        : "text-[#8EFFDD]";
     default:
       assertUnreachable(proposalState);
   }
@@ -156,7 +156,7 @@ interface Props {
 export default function ProposalStateBadge(props: Props) {
   const ownTokenRecord = useUserCommunityTokenOwnerRecord().data;
   const ownCouncilTokenRecord = useUserCouncilTokenOwnerRecord().data;
-  const governance = useGovernanceByPubkeyQuery(props.proposal.governance).data;
+  const governance = useGovernance(props.proposal.governance).data;
   const isCreator =
     ownTokenRecord?.pubkey.equals(props.proposal.tokenOwnerRecord) ||
     ownCouncilTokenRecord?.pubkey.equals(props.proposal.tokenOwnerRecord) ||
@@ -185,14 +185,14 @@ export default function ProposalStateBadge(props: Props) {
       <div
         className={cn(
           props.className,
-          'border',
-          'inline-flex',
-          'min-w-max',
-          'items-center',
-          'px-2',
-          'py-1',
-          'rounded-full',
-          'text-xs',
+          "border",
+          "inline-flex",
+          "min-w-max",
+          "items-center",
+          "px-2",
+          "py-1",
+          "rounded-full",
+          "text-xs",
           getBorderColor(props.proposal.state, otherState),
           getOpacity(props.proposal.state, otherState),
           getTextColor(props.proposal.state, otherState)

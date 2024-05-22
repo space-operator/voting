@@ -1,10 +1,6 @@
 import BN from 'bn.js';
-import { Mint } from '@solana/spl-token';
-import BigNumber from 'bignumber.js';
 import {
   GovernanceConfig,
-  MintMaxVoteWeightSource,
-  MintMaxVoteWeightSourceType,
   Realm,
   TokenOwnerRecord,
 } from '@solana/spl-governance';
@@ -472,31 +468,3 @@ export class SimpleGatedVoterWeight implements VoterWeightInterface {
   }
 }
 
-/** Returns max VoteWeight for given mint and max source */
-export function getMintMaxVoteWeight(
-  mint: Mint,
-  maxVoteWeightSource: MintMaxVoteWeightSource
-) {
-  console.log(
-    'getMintMaxVoteWeight',
-    mint,
-    maxVoteWeightSource,
-    maxVoteWeightSource.isFullSupply()
-  );
-  if (maxVoteWeightSource.isFullSupply()) {
-    return mint.supply;
-  }
-
-  if (maxVoteWeightSource.type === MintMaxVoteWeightSourceType.SupplyFraction) {
-    const supplyFraction = maxVoteWeightSource.getSupplyFraction();
-
-    const maxVoteWeight = new BigNumber(supplyFraction.toString())
-      .multipliedBy(mint.supply.toString())
-      .shiftedBy(-MintMaxVoteWeightSource.SUPPLY_FRACTION_DECIMALS);
-
-    return new BN(maxVoteWeight.dp(0, BigNumber.ROUND_DOWN).toString());
-  } else {
-    // absolute value
-    return maxVoteWeightSource.value;
-  }
-}

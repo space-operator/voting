@@ -1,28 +1,28 @@
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
-import { useMemo } from 'react';
-import { ProgramAccount, TokenOwnerRecord } from '@solana/spl-governance';
+import { useMemo } from "react";
+import { ProgramAccount, TokenOwnerRecord } from "@solana/spl-governance";
 
-import { useAsync } from 'react-async-hook';
+import { useAsync } from "react-async-hook";
 
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { useRealmParams } from '@/app/api/realm/hooks';
-import { useTokenOwnerRecordsDelegatedToUser } from '@/app/api/tokenOwnerRecord/tokenOwnerRecord';
-import { getVotingPowerType } from '@/app/api/voting/query';
-import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from '@/constants/plugins';
-import { capitalize } from '@/utils/helpers';
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useRealmFromParams } from "@/app/api/realm/hooks";
+import { useTokenOwnerRecordsDelegatedToUser } from "@/app/api/tokenOwnerRecord/hooks";
+import { getVotingPowerType } from "@/app/api/voting/query";
+import { DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN } from "@/constants/plugins";
+import { capitalize } from "@/utils/helpers";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { ProfileName } from './Profile';
-import { atom, useAtom } from 'jotai';
+} from "./ui/select";
+import { ProfileName } from "./Profile";
+import { atom, useAtom } from "jotai";
 
-const YOUR_WALLET_VALUE = 'Yourself + all delegators';
-const JUST_YOUR_WALLET = 'Yourself only';
+const YOUR_WALLET_VALUE = "Yourself + all delegators";
+const JUST_YOUR_WALLET = "Yourself only";
 
 // Define atoms for communityDelegator and councilDelegator
 export const communityDelegatorAtom = atom(PublicKey.default);
@@ -32,7 +32,7 @@ const SelectPrimaryDelegators = () => {
   const wallet = useWallet().wallet.adapter;
   const walletId = wallet?.publicKey?.toBase58();
 
-  const realm = useRealmParams().data;
+  const realm = useRealmFromParams().data;
   const [communityDelegator, setCommunityDelegator] = useAtom(
     communityDelegatorAtom
   );
@@ -87,7 +87,7 @@ const SelectPrimaryDelegators = () => {
         <PrimaryDelegatorSelect
           selectedDelegator={communityDelegator}
           handleSelect={handleCommunitySelect}
-          kind={'community'}
+          kind={"community"}
           tors={communityTorsDelegatedToUser ?? []}
         />
       )}
@@ -98,7 +98,7 @@ const SelectPrimaryDelegators = () => {
         <PrimaryDelegatorSelect
           selectedDelegator={councilDelegator}
           handleSelect={handleCouncilSelect}
-          kind={'council'}
+          kind={"council"}
           tors={councilTorsDelegatedToUser ?? []}
         />
       )}
@@ -108,9 +108,9 @@ const SelectPrimaryDelegators = () => {
 
 export default SelectPrimaryDelegators;
 
-const usePluginNameAsync = (kind: 'community' | 'council') => {
+const usePluginNameAsync = (kind: "community" | "council") => {
   const { connection } = useConnection();
-  const realmPk = useRealmParams().data.pubkey;
+  const realmPk = useRealmFromParams().data.pubkey;
   return useAsync(
     async () =>
       kind && realmPk && getVotingPowerType(connection, realmPk, kind),
@@ -126,7 +126,7 @@ function PrimaryDelegatorSelectBatchSupported({
 }: {
   selectedDelegator: PublicKey | undefined;
   handleSelect: (tokenRecordPk: string) => void;
-  kind: 'community' | 'council';
+  kind: "community" | "council";
   tors: ProgramAccount<TokenOwnerRecord>[];
 }) {
   const wallet = useWallet().wallet.adapter;
@@ -137,9 +137,9 @@ function PrimaryDelegatorSelectBatchSupported({
     plugin && DELEGATOR_BATCH_VOTE_SUPPORT_BY_PLUGIN[plugin];
 
   return (
-    <div className='flex space-x-4 items-center mt-4'>
-      <div className='bg-bkg-1 px-4 py-2 justify-between rounded-md w-full'>
-        <p className='text-fgd-3 text-xs mb-1'>
+    <div className="flex space-x-4 items-center mt-4">
+      <div className="bg-bkg-1 px-4 py-2 justify-between rounded-md w-full">
+        <p className="text-fgd-3 text-xs mb-1">
           Perform {capitalize(kind)} actions as:
         </p>
         <Select
@@ -147,19 +147,19 @@ function PrimaryDelegatorSelectBatchSupported({
           onValueChange={handleSelect}
         >
           <SelectTrigger>
-            <SelectValue placeholder='Delegate to use for council votes'>
+            <SelectValue placeholder="Delegate to use for council votes">
               {selectedDelegator ? (
                 walletPk && selectedDelegator.equals(walletPk) ? (
                   JUST_YOUR_WALLET
                 ) : (
-                  <div className='relative'>
+                  <div className="relative">
                     <ProfileName
                       publicKey={selectedDelegator}
-                      height='12px'
-                      width='100px'
+                      height="12px"
+                      width="100px"
                       dark={true}
                     />
-                    <div className='absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	' />
+                    <div className="absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	" />
                   </div>
                 )
               ) : batchDelegatorUxSupported ? (
@@ -170,7 +170,7 @@ function PrimaryDelegatorSelectBatchSupported({
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem key={'reset'} value={undefined}>
+            <SelectItem key={"reset"} value={undefined}>
               {batchDelegatorUxSupported ? YOUR_WALLET_VALUE : JUST_YOUR_WALLET}
             </SelectItem>
             {walletPk ? (
@@ -185,14 +185,14 @@ function PrimaryDelegatorSelectBatchSupported({
                 key={delegatedTor.account.governingTokenOwner.toBase58()}
                 value={delegatedTor.account.governingTokenOwner.toBase58()}
               >
-                <div className='relative'>
+                <div className="relative">
                   <ProfileName
                     publicKey={delegatedTor.account.governingTokenOwner}
-                    height='12px'
-                    width='100px'
+                    height="12px"
+                    width="100px"
                     dark={true}
                   />
-                  <div className='absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	' />
+                  <div className="absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	" />
                 </div>
               </SelectItem>
             ))}
@@ -227,16 +227,16 @@ function PrimaryDelegatorSelectOld({
 }: {
   selectedDelegator: PublicKey | undefined;
   handleSelect: (tokenRecordPk: string) => void;
-  kind: 'community' | 'council';
+  kind: "community" | "council";
   tors: ProgramAccount<TokenOwnerRecord>[];
 }) {
   const wallet = useWallet().wallet.adapter;
   const walletPk = wallet?.publicKey ?? undefined;
 
   return (
-    <div className='flex space-x-4 items-center mt-4'>
-      <div className='bg-bkg-1 px-4 py-2 justify-between rounded-md w-full'>
-        <p className='text-fgd-3 text-xs mb-1'>
+    <div className="flex space-x-4 items-center mt-4">
+      <div className="bg-bkg-1 px-4 py-2 justify-between rounded-md w-full">
+        <p className="text-fgd-3 text-xs mb-1">
           Perform {capitalize(kind)} actions as:
         </p>
         <Select
@@ -244,40 +244,40 @@ function PrimaryDelegatorSelectOld({
           onValueChange={handleSelect}
         >
           <SelectTrigger>
-            <SelectValue placeholder='Delegate to use for council votes'>
+            <SelectValue placeholder="Delegate to use for council votes">
               {selectedDelegator ? (
                 walletPk && selectedDelegator.equals(walletPk) ? (
-                  'Your wallet'
+                  "Your wallet"
                 ) : (
                   <ProfileName
                     publicKey={selectedDelegator}
-                    height='12px'
-                    width='100px'
+                    height="12px"
+                    width="100px"
                     dark={true}
                   />
                 )
               ) : (
-                'Select a delegate'
+                "Select a delegate"
               )}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem key={'reset'} value={undefined}>
-              {'Your wallet'}
+            <SelectItem key={"reset"} value={undefined}>
+              {"Your wallet"}
             </SelectItem>
             {tors.map((delegatedTor) => (
               <SelectItem
                 key={delegatedTor.account.governingTokenOwner.toBase58()}
                 value={delegatedTor.account.governingTokenOwner.toBase58()}
               >
-                <div className='relative'>
+                <div className="relative">
                   <ProfileName
                     publicKey={delegatedTor.account.governingTokenOwner}
-                    height='12px'
-                    width='100px'
+                    height="12px"
+                    width="100px"
                     dark={true}
                   />
-                  <div className='absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	' />
+                  <div className="absolute bg-bkg-1 bottom-0 left-0 w-full h-full opacity-0	" />
                 </div>
               </SelectItem>
             ))}

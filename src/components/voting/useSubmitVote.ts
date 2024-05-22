@@ -21,8 +21,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useBatchedVoteDelegators } from '@/app/api/delegators/useDelegators';
 import { queryClient } from '@/providers/query';
 import {
-  useRealmParams,
-  useSelectedRealmRegistryEntry,
+  useRealmFromParams,
+  useRealmRegistryEntryFromParams,
 } from '@/app/api/realm/hooks';
 import { getProgramVersionForRealm } from '@/types/realm';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
@@ -47,9 +47,9 @@ export const useSubmitVote = ({
 }) => {
   const wallet = useWallet()?.wallet.adapter as SignerWalletAdapter;
   const { connection } = useConnection();
-  const { data: realm } = useRealmParams();
+  const { data: realm } = useRealmFromParams();
 
-  const realmInfo = useSelectedRealmRegistryEntry();
+  const realmInfo = useRealmRegistryEntryFromParams();
   // const votingClients = useVotingClients(); // TODO this should be passed the role
   // const { closeNftVotingCountingModal } = useNftProposalStore.getState();
   // const { nftClient } = useNftClient();

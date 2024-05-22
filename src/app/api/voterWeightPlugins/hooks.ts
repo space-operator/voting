@@ -6,18 +6,19 @@ import { useVoterWeightPlugins } from '../../../../_external/VoterWeightPlugins'
 import { UseVoterWeightPluginsReturnType } from '../../../../_external/VoterWeightPlugins/useVoterWeightPlugins';
 import { PublicKey } from '@solana/web3.js';
 import { CalculatedWeight } from '../../../../_external/VoterWeightPlugins/lib/types';
-import { useDelegators } from '@/app/api/delegators/useDelegators';
-import { BN_ZERO } from '@solana/spl-governance';
-import { TokenOwnerRecord } from '@solana/spl-governance/lib/governance/accounts';
+import { useDelegators } from '@/app/api/delegators/hooks';
+import { BN_ZERO, getMaxVoterWeightRecord } from '@solana/spl-governance';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { useRealmParams } from '../realm/hooks';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useRealmFromParams } from '../realm/hooks';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { GovernanceRole } from '@/types/governance';
 import { useAtomValue } from 'jotai';
 import {
   communityDelegatorAtom,
   councilDelegatorAtom,
 } from '@/components/SelectPrimaryDelegators';
+import { useAsync } from 'react-async-hook';
+import { getWalletList } from './utils';
 
 export type UseRealmVoterWeightPluginsReturnType =
   UseVoterWeightPluginsReturnType & {
@@ -30,40 +31,10 @@ export type UseRealmVoterWeightPluginsReturnType =
     ) => PublicKey | undefined;
   };
 
-/**
- * Select the wallets to determine the voter weights for as follows:
- * - If a delegator is selected, use it only
- * - If delegators are available, use them and the connected wallet (in first position)
- * - If no delegators are available, use the connected wallet only
- * @param selectedDelegator
- * @param delegators
- * @param wallet
- */
-const getWalletList = (
-  selectedDelegator: PublicKey | undefined,
-  delegators: TokenOwnerRecord[] | undefined,
-  wallet: SignerWalletAdapter | undefined
-): PublicKey[] => {
-  if (!wallet?.publicKey) return [];
-
-  // if selectedDelegator is not set, this means "yourself + all delegators"
-  if (selectedDelegator !== PublicKey.default) {
-    return [selectedDelegator];
-  }
-
-  if (delegators) {
-    const delegatorOwners = delegators.map((d) => d.governingTokenOwner);
-
-    return [wallet.publicKey, ...delegatorOwners];
-  }
-
-  return [wallet.publicKey];
-};
-
 export const useRealmVoterWeightPlugins = (
   role: GovernanceRole = 'community'
 ): UseRealmVoterWeightPluginsReturnType => {
-  const { data: realm } = useRealmParams();
+  const { data: realm } = useRealmFromParams();
   const { wallet } = useWallet();
   const walletAdapter = wallet?.adapter as SignerWalletAdapter;
 
@@ -165,6 +136,7 @@ export const useRealmVoterWeights = () => {
     calculatedMaxVoterWeight: communityMaxWeight,
     totalCalculatedVoterWeight: communityWeight,
   } = useRealmVoterWeightPlugins('community');
+
   const {
     calculatedMaxVoterWeight: councilMaxWeight,
     totalCalculatedVoterWeight: councilWeight,
@@ -177,3 +149,16 @@ export const useRealmVoterWeights = () => {
     councilWeight,
   };
 };
+
+export const useMaxVoteRecord = () => {
+  const { connection } = useConnection();
+  const { maxVoterWeightPk } = useRealmVoterWeightPlugins();
+
+  const maxVoteWeightRecord = useAsync(
+    async () => maxVoterWeightPk && getMaxVoterWeightRecord(connection, maxVoterWeightPk),
+    [maxVoterWeightPk?.toBase58()]
+  );
+  console.log('maxVoteWeightRecord', maxVoteWeightRecord.result);
+  return maxVoteWeightRecord.result;
+};
+

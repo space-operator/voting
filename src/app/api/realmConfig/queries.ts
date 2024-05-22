@@ -12,7 +12,7 @@ export const fetchRealmConfigQuery = async (
     queryKey: ['realm-config', pubkey, connection.rpcEndpoint],
     queryFn: async () => {
       const realm = await fetchRealmByPubkey(connection, pubkey);
-      if (realm === undefined) throw new Error();
+      if (realm === undefined) throw new Error("Realm not found");
 
       const realmConfigPk = await getRealmConfigAddress(
         realm.owner,

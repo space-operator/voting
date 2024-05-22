@@ -1,36 +1,27 @@
-'use client';
+"use client";
 
-import { getGovernanceProgramVersion } from '@solana/spl-governance';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { PublicKey } from '@solana/web3.js';
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { useRealmParams } from '../realm/hooks';
+import { getGovernanceProgramVersion } from "@solana/spl-governance";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useRealmFromParams } from "../realm/hooks";
+import { governanceProgramVersionQuery } from "./queries";
 
-export function useProgramVersionByIdQuery(realmsProgramId: PublicKey) {
+export function useProgramVersionById(realmsProgramId: PublicKey) {
   const { connection } = useConnection();
-  const query = useSuspenseQuery({
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: [
-      'realm_program_version',
-      realmsProgramId.toString(),
-      connection.rpcEndpoint,
-    ],
-    queryFn: async () =>
-      await getGovernanceProgramVersion(connection, realmsProgramId),
-    // enabled: realmsProgramId !== undefined,
-    // Staletime is zero by default, so queries get refetched often. Since program version is immutable it should never go stale.
-    staleTime: Infinity,
-  });
+  const query = useSuspenseQuery(
+    governanceProgramVersionQuery(realmsProgramId, connection)
+  );
 
   return query;
 }
 
-export const useProgramVersion = () => {
-  const { data: realm } = useRealmParams();
-  const queriedVersion = useProgramVersionByIdQuery(realm?.owner).data as
+export function useProgramVersion() {
+  const { data: realm } = useRealmFromParams();
+  const queriedVersion = useProgramVersionById(realm?.owner).data as
     | 1
     | 2
     | 3
     | undefined;
   return queriedVersion;
-};
+}

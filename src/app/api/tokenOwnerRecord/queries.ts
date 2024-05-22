@@ -22,6 +22,6 @@ export const fetchTokenOwnerRecordByPubkey = (
 ) =>
   queryClient.fetchQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['token-owner-record', pubkey, connection.rpcEndpoint],
+    queryKey: ['tokenOwnerRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getTokenOwnerRecord(connection, pubkey),
   });

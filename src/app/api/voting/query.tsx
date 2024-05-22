@@ -1,8 +1,8 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import { fetchRealmByPubkey } from '../realm/queries';
-import { fetchRealmConfigQuery } from '../governance/realmConfig';
-import { findPluginName } from '@/constants/plugins';
-import { GovernanceRole } from '@/types/governance';
+import { Connection, PublicKey } from "@solana/web3.js";
+import { fetchRealmByPubkey } from "../realm/queries";
+import { fetchRealmConfigQuery } from "../realmConfig/queries";
+import { findPluginName } from "@/constants/plugins";
+import { GovernanceRole } from "@/types/governance";
 
 export const getVotingPowerType = async (
   connection: Connection,
@@ -14,7 +14,7 @@ export const getVotingPowerType = async (
 
   const config = await fetchRealmConfigQuery(connection, realmPk);
   const programId =
-    role === 'community'
+    role === "community"
       ? config.account.communityTokenConfig.voterWeightAddin
       : config.account.councilTokenConfig.voterWeightAddin;
 

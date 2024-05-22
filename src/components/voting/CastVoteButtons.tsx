@@ -3,24 +3,24 @@ import {
   useCanVote,
   useIsVoting,
   useVotingPop,
-} from '@/app/api/voting/hooks';
-import { ProgramAccount, Proposal, VoteKind } from '@solana/spl-governance';
-import { useState } from 'react';
-import { useSubmitVote } from './useSubmitVote';
-import { useGovernanceByPubkeyQuery } from '@/app/api/governance/hooks';
-import { PublicKey } from '@solana/web3.js';
-import { useProposalVoteRecordQuery } from '@/app/api/voteRecord/hooks';
-import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import { Button } from '../ui/button';
+} from "@/app/api/voting/hooks";
+import { ProgramAccount, Proposal, VoteKind } from "@solana/spl-governance";
+import { useState } from "react";
+import { useSubmitVote } from "./useSubmitVote";
+import { useGovernance } from "@/app/api/governance/hooks";
+import { PublicKey } from "@solana/web3.js";
+import { useProposalVoteRecordQuery } from "@/app/api/voteRecord/hooks";
+import { ThumbsDownIcon, ThumbsUpIcon } from "lucide-react";
+import { Button } from "../ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '../ui/tooltip';
-import VoteCommentModal from './VoteCommentModal';
-import { useSelectedRealmRegistryEntry } from '@/app/api/realm/hooks';
-import { useFlowEvents } from '../_flow/vote-button';
+} from "../ui/tooltip";
+import VoteCommentModal from "./VoteCommentModal";
+import { useRealmRegistryEntryFromParams } from "@/app/api/realm/hooks";
+import { useFlowEvents } from "../_flow/vote-button";
 
 export const CastVoteButtons = ({
   proposal,
@@ -28,20 +28,20 @@ export const CastVoteButtons = ({
   proposal: ProgramAccount<Proposal>;
 }) => {
   const [showVoteModal, setShowVoteModal] = useState(false);
-  const [vote, setVote] = useState<'yes' | 'no' | null>(null);
+  const [vote, setVote] = useState<"yes" | "no" | null>(null);
 
-  const realmInfo = useSelectedRealmRegistryEntry();
-  const governance = useGovernanceByPubkeyQuery(
+  const realmInfo = useRealmRegistryEntryFromParams();
+  const governance = useGovernance(
     new PublicKey(proposal.account.governance)
   ).data;
 
   const allowDiscussion = realmInfo?.allowDiscussion ?? true;
-  console.log('proposal', proposal);
+  console.log("proposal", proposal);
   const { submitting, submitVote } = useSubmitVote({ proposal });
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
-    quorum: 'electoral',
+    quorum: "electoral",
     proposal: proposal,
   });
 
@@ -51,28 +51,28 @@ export const CastVoteButtons = ({
 
   const inCoolOffTime = isInCoolOffTime(proposal.account, governance.account);
 
-  const handleVote = async (vote: 'yes' | 'no') => {
+  const handleVote = async (vote: "yes" | "no") => {
     setVote(vote);
 
     if (allowDiscussion) {
       setShowVoteModal(true);
     } else {
       await submitVote({
-        vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
+        vote: vote === "yes" ? VoteKind.Approve : VoteKind.Deny,
       });
     }
   };
 
   return (isVoting && !isVoteCast) || (inCoolOffTime && !isVoteCast) ? (
-    <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
-      <div className='flex flex-col items-center justify-center'>
-        <h3 className='text-center'>Cast your {votingPop} vote</h3>
+    <div className="bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4">
+      <div className="flex flex-col items-center justify-center">
+        <h3 className="text-center">Cast your {votingPop} vote</h3>
       </div>
 
-      <div className='items-center justify-center flex w-full gap-5'>
+      <div className="items-center justify-center flex w-full gap-5">
         <div
           className={`w-full flex ${
-            !inCoolOffTime ? 'justify-between' : 'justify-center'
+            !inCoolOffTime ? "justify-between" : "justify-center"
           } items-center gap-5`}
         >
           {(isVoting || !inCoolOffTime) && (
@@ -80,12 +80,12 @@ export const CastVoteButtons = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    className='w-1/2'
-                    onClick={() => handleVote('yes')}
+                    className="w-1/2"
+                    onClick={() => handleVote("yes")}
                     disabled={!canVote || submitting}
                   >
-                    <div className='flex flex-row items-center justify-center'>
-                      <ThumbsUpIcon className='h-4 w-4 mr-2' />
+                    <div className="flex flex-row items-center justify-center">
+                      <ThumbsUpIcon className="h-4 w-4 mr-2" />
                       Vote Yes
                     </div>
                   </Button>
@@ -99,12 +99,12 @@ export const CastVoteButtons = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className='w-1/2'
-                  onClick={() => handleVote('no')}
+                  className="w-1/2"
+                  onClick={() => handleVote("no")}
                   disabled={!canVote || submitting}
                 >
-                  <div className='flex flex-row items-center justify-center'>
-                    <ThumbsDownIcon className='h-4 w-4 mr-2' />
+                  <div className="flex flex-row items-center justify-center">
+                    <ThumbsDownIcon className="h-4 w-4 mr-2" />
                     Vote No
                   </div>
                 </Button>
@@ -119,7 +119,7 @@ export const CastVoteButtons = ({
         <VoteCommentModal
           isOpen={showVoteModal}
           onClose={() => setShowVoteModal(false)}
-          vote={vote === 'yes' ? VoteKind.Approve : VoteKind.Deny}
+          vote={vote === "yes" ? VoteKind.Approve : VoteKind.Deny}
         />
       ) : null}
     </div>

@@ -1,13 +1,13 @@
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useRealmVoterWeightPlugins } from '../governance/voterWeightPlugins';
-import { useRealmParams } from '../realm/hooks';
-import { GovernanceRole } from '@/types/governance';
-import { PublicKey } from '@solana/web3.js';
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useRealmVoterWeightPlugins } from "../voterWeightPlugins/hooks";
+import { useRealmFromParams } from "../realm/hooks";
+import { GovernanceRole } from "@/types/governance";
+import { PublicKey } from "@solana/web3.js";
 import {
   communityDelegatorAtom,
   councilDelegatorAtom,
-} from '@/components/SelectPrimaryDelegators';
-import { useAtom } from 'jotai';
+} from "@/components/SelectPrimaryDelegators";
+import { useAtom } from "jotai";
 
 /**
  * The Voting Client encapsulates plugin-specific voting logic not currently encapsulated in the individual plugins, and exposed by the
@@ -17,10 +17,10 @@ import { useAtom } from 'jotai';
  */
 export const useVotingClients = () => {
   const voterWeightPluginDetailsForCommunity =
-    useRealmVoterWeightPlugins('community');
+    useRealmVoterWeightPlugins("community");
   const voterWeightPluginDetailsForCouncil =
-    useRealmVoterWeightPlugins('council');
-  const { data: realm } = useRealmParams();
+    useRealmVoterWeightPlugins("council");
+  const { data: realm } = useRealmFromParams();
   const wallet = useWallet().wallet.adapter;
 
   const [selectedCommunityDelegator, __] = useAtom(communityDelegatorAtom);
@@ -38,13 +38,13 @@ export const useVotingClients = () => {
     // this only works if the legacy plugins don't support chaining anyway.
     // if they did, then we would have to call relinquish on whichever plugin supported it
     const voterWeightPluginDetails =
-      kind === 'community'
+      kind === "community"
         ? voterWeightPluginDetailsForCommunity
         : voterWeightPluginDetailsForCouncil;
     const client = voterWeightPluginDetails.plugins?.voterWeight.length
       ? voterWeightPluginDetails.plugins.voterWeight[0].client
       : undefined;
-    const wallet = kind === 'community' ? communityWallet : councilWallet;
+    const wallet = kind === "community" ? communityWallet : councilWallet;
 
     return new VotingClient({
       client: client,
@@ -61,13 +61,13 @@ export const useVotingClientForGoverningTokenMint = (
   governingTokenMint: PublicKey | undefined
 ) => {
   const clients = useVotingClients();
-  const { data: realm } = useRealmParams();
+  const { data: realm } = useRealmFromParams();
   // default to community if there is no council or the realm or governingTokenMint are not yet loaded
   const kind =
     governingTokenMint &&
     realm?.account.config.councilMint?.equals(governingTokenMint)
-      ? 'council'
-      : 'community';
+      ? "council"
+      : "community";
 
   return clients(kind);
 };
