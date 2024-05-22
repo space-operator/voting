@@ -44,7 +44,7 @@ export const useSubmitVote = ({
 }: {
   proposal: ProgramAccount<Proposal>;
 }) => {
-  const wallet = useWallet()?.wallet.adapter as SignerWalletAdapter;
+  const wallet = useWallet()?.wallet?.adapter as SignerWalletAdapter;
   const { connection } = useConnection();
   const { data: realm } = useRealmFromParams();
 
@@ -238,7 +238,7 @@ export const useSubmitVote = ({
         }).M;
         console.log('inputBody', inputBody);
 
-        await startFlow(flowId, prepFlowInputs(inputBody, wallet));
+        await startFlow(flowId, prepFlowInputs(inputBody, wallet.publicKey));
 
         // await castVote(
         //   rpcContext,

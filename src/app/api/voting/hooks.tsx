@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey } from '@solana/web3.js';
 
 import {
   Governance,
@@ -6,23 +6,23 @@ import {
   Proposal,
   ProposalState,
   VoteThresholdType,
-} from "@solana/spl-governance";
-import dayjs from "dayjs";
-import { BN } from "bn.js";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useRealmVoterWeightPlugins } from "../voterWeightPlugins/hooks";
+} from '@solana/spl-governance';
+import dayjs from 'dayjs';
+import { BN } from 'bn.js';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useRealmVoterWeightPlugins } from '../voterWeightPlugins/hooks';
 import {
   useUserCommunityTokenOwnerRecord,
   useUserCouncilTokenOwnerRecord,
-} from "../tokenOwnerRecord/hooks";
-import { useRealmFromParams } from "../realm/hooks";
+} from '../tokenOwnerRecord/hooks';
+import { useRealmFromParams } from '../realm/hooks';
 import {
   useHasVoteTimeExpired,
   useProposalVoteRecordQuery,
-} from "../voteRecord/hooks";
-import { useMemo } from "react";
-import { useGovernance } from "../governance/hooks";
-import { useDelegatorAwareVoterWeight } from "../delegators/hooks";
+} from '../voteRecord/hooks';
+import { useMemo } from 'react';
+import { useGovernance } from '../governance/hooks';
+import { useDelegatorAwareVoterWeight } from '../delegators/hooks';
 
 export const useIsVoting = ({
   proposal,
@@ -43,7 +43,7 @@ export function isInCoolOffTime(
   proposal: Proposal | undefined,
   governance: Governance | undefined
 ) {
-  const mainVotingEndedAt = new BN(proposal?.signingOffAt, "hex")
+  const mainVotingEndedAt = new BN(proposal?.signingOffAt, 'hex')
     ?.addn(governance?.config.baseVotingTime || 0)
     .toNumber();
 
@@ -65,11 +65,11 @@ export function isInCoolOffTime(
   return !!isInCoolOffTime && proposal!.state !== ProposalState.Defeated;
 }
 
-const useHasAnyVotingPower = (role: "community" | "council" | undefined) => {
-  const voterWeight = useDelegatorAwareVoterWeight(role ?? "community");
+const useHasAnyVotingPower = (role: 'community' | 'council' | undefined) => {
+  const voterWeight = useDelegatorAwareVoterWeight(role ?? 'community');
   const { isReady } = useRealmVoterWeightPlugins(role);
-  console.log("voterWeight", voterWeight);
-  console.log("isReady", isReady);
+  console.log('voterWeight', voterWeight);
+  console.log('isReady', isReady);
   return (
     isReady && !!voterWeight?.value && voterWeight.value?.isZero() === false
   );
@@ -83,14 +83,14 @@ export const useCanVote = ({
   const { isReady, includesPlugin } = useRealmVoterWeightPlugins();
   const votingPop = useVotingPop(proposal?.account.governingTokenMint);
 
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet()?.wallet?.adapter;
   const connected = !!wallet?.connected;
 
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
-    quorum: "electoral",
+    quorum: 'electoral',
     proposal,
   });
-  console.log("ownVoteRecord", ownVoteRecord);
+  console.log('ownVoteRecord', ownVoteRecord);
 
   const voterTokenRecord = useVoterTokenRecord({ proposal: proposal.account });
 
@@ -102,23 +102,23 @@ export const useCanVote = ({
   const isVoteCast = !!ownVoteRecord;
 
   const hasMinAmountToVote = useHasAnyVotingPower(votingPop);
-  console.log("hasMinAmountToVote", hasMinAmountToVote);
+  console.log('hasMinAmountToVote', hasMinAmountToVote);
 
   const canVote =
     connected &&
-    !(isReady && includesPlugin("NFT") && !voterTokenRecord) &&
-    !(isReady && includesPlugin("HeliumVSR") && !voterTokenRecord) &&
+    !(isReady && includesPlugin('NFT') && !voterTokenRecord) &&
+    !(isReady && includesPlugin('HeliumVSR') && !voterTokenRecord) &&
     hasAllVoterWeightRecords &&
     !isVoteCast &&
     hasMinAmountToVote;
 
   const voteTooltipContent = !connected
-    ? "You need to connect your wallet to be able to vote"
-    : isReady && includesPlugin("NFT") && !voterTokenRecord
-    ? "You must join the Realm to be able to vote"
+    ? 'You need to connect your wallet to be able to vote'
+    : isReady && includesPlugin('NFT') && !voterTokenRecord
+    ? 'You must join the Realm to be able to vote'
     : !hasMinAmountToVote
-    ? "You don’t have governance power to vote in this dao"
-    : "";
+    ? 'You don’t have governance power to vote in this dao'
+    : '';
 
   return [canVote, voteTooltipContent] as const;
 };
@@ -130,7 +130,7 @@ export const useVoterTokenRecord = ({ proposal }: { proposal: Proposal }) => {
   const ownCouncilTokenRecord = useUserCouncilTokenOwnerRecord().data;
 
   const voterTokenRecord =
-    votingPop === "community" ? ownTokenRecord : ownCouncilTokenRecord;
+    votingPop === 'community' ? ownTokenRecord : ownCouncilTokenRecord;
   return voterTokenRecord;
 };
 
@@ -142,11 +142,11 @@ export const useVotingPop = (proposalGoverningMint: PublicKey) => {
     realm === undefined || proposalGoverningMint === undefined
       ? undefined
       : realm.account.communityMint.equals(proposalGoverningMint)
-      ? "community"
+      ? 'community'
       : realm.account.config.councilMint?.equals(proposalGoverningMint)
-      ? "council"
-      : "not found";
-  return role !== "not found" ? role : undefined;
+      ? 'council'
+      : 'not found';
+  return role !== 'not found' ? role : undefined;
 };
 
 /*
@@ -154,25 +154,25 @@ export const useVotingPop = (proposalGoverningMint: PublicKey) => {
 */
 export const useVetoingPop = (proposal: ProgramAccount<Proposal>) => {
   const tokenRole = useVotingPop(proposal.account.governingTokenMint);
-  console.log("tokenRole", tokenRole);
+  console.log('tokenRole', tokenRole);
   const governance = useGovernance(proposal.account.governance).data;
   const { data: realm } = useRealmFromParams();
   const vetoingPop = useMemo(() => {
     if (governance === undefined) return undefined;
 
-    return tokenRole === "community"
+    return tokenRole === 'community'
       ? governance?.account.config.councilVetoVoteThreshold.type !==
           VoteThresholdType.Disabled &&
         // if there is no council then there's not actually a vetoing population, in my opinion
         realm?.account.config.councilMint !== undefined
-        ? "council"
+        ? 'council'
         : undefined
       : governance?.account.config.communityVetoVoteThreshold.type !==
         VoteThresholdType.Disabled
-      ? "community"
+      ? 'community'
       : undefined;
   }, [governance, tokenRole, realm?.account.config.councilMint]);
-  console.log("vetoingPop", vetoingPop);
+  console.log('vetoingPop', vetoingPop);
   return vetoingPop;
 };
 
@@ -186,6 +186,6 @@ export const useUserVetoTokenRecord = ({
 
   const vetoingPop = useVetoingPop(proposal);
   const voterTokenRecord =
-    vetoingPop === "community" ? ownTokenRecord : ownCouncilTokenRecord;
+    vetoingPop === 'community' ? ownTokenRecord : ownCouncilTokenRecord;
   return voterTokenRecord;
 };

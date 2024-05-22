@@ -14,7 +14,7 @@ export const useProfile = (
   publicKey?: PublicKey
 ): { profile: Profile | undefined; loading: boolean } => {
   const { connection } = useConnection();
-  const connectedWallet = useWallet().wallet.adapter;
+  const connectedWallet = useWallet().wallet?.adapter;
 
   const profileWalletPublicKey = publicKey || connectedWallet?.publicKey;
   const options = connection ? { solana: { connection } } : undefined;

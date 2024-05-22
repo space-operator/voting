@@ -53,10 +53,10 @@ export const YouVoted = ({
   const realmInfo = useRealmRegistryEntryFromParams();
   const { logs, startFlow } = useFlowEvents();
 
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const { connection } = useConnection();
 
-  const connected = !!wallet.connected;
+  const connected = !!wallet?.connected;
 
   const governance = useGovernance(proposal.account.governance).data;
 
@@ -170,7 +170,10 @@ export const YouVoted = ({
       }).M;
       console.log('inputBody', inputBody);
 
-      await startFlow(flowId, prepFlowInputs(inputBody, wallet));
+      await startFlow(
+        flowId,
+        prepFlowInputs(inputBody, wallet.publicKey)
+      );
 
       queryClient.invalidateQueries({
         queryKey: ['proposal-vote-record'],

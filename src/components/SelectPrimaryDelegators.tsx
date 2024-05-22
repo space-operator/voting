@@ -29,7 +29,7 @@ export const communityDelegatorAtom = atom(PublicKey.default);
 export const councilDelegatorAtom = atom(PublicKey.default);
 
 const SelectPrimaryDelegators = () => {
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const walletId = wallet?.publicKey?.toBase58();
 
   const realm = useRealmFromParams().data;
@@ -129,7 +129,7 @@ function PrimaryDelegatorSelectBatchSupported({
   kind: "community" | "council";
   tors: ProgramAccount<TokenOwnerRecord>[];
 }) {
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const walletPk = wallet?.publicKey ?? undefined;
 
   const { result: plugin } = usePluginNameAsync(kind);
@@ -230,7 +230,7 @@ function PrimaryDelegatorSelectOld({
   kind: "community" | "council";
   tors: ProgramAccount<TokenOwnerRecord>[];
 }) {
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const walletPk = wallet?.publicKey ?? undefined;
 
   return (

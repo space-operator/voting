@@ -54,7 +54,7 @@ export function useTokenMetadata(
 
 export const useUserGovTokenAccount = (role: "community" | "council") => {
   const realm = useRealmFromParams().data;
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const walletPk = wallet?.publicKey ?? undefined;
   const mint =
     role === "community"

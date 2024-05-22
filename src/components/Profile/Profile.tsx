@@ -33,7 +33,7 @@ const ClaimLink: FC<{ address: PublicKey; expanded }> = ({
 
 type Props = { publicKey?: PublicKey; expanded?: boolean };
 export const Profile: FC<Props> = ({ publicKey, expanded }) => {
-  const connectedWallet = useWallet().wallet.adapter;
+  const connectedWallet = useWallet().wallet?.adapter;
   const { profile, loading } = useProfile(publicKey);
 
   if (!profile && loading) return <LoadingDots />;

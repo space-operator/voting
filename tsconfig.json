@@ -24,7 +24,13 @@
     },
     "isolatedModules": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/icons.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/icons.jsx"
+  ],
   "exclude": ["node_modules", "_external"],
   "ts-node": {
     "compilerOptions": {

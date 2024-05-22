@@ -92,7 +92,7 @@ export default function GovernancePowerForRole({
   const { connection } = useConnection();
   const realmPk = useRealmFromParams().data.pubkey;
   const { plugins } = useRealmVoterWeightPlugins(role);
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet().wallet?.adapter;
   const connected = !!wallet?.connected;
 
   const { result: kind } = useAsync<
@@ -113,7 +113,9 @@ export default function GovernancePowerForRole({
   return (
     <>
       {role === 'community' ? (
-        <VotingPowerCards role={role} {...props} />
+        <>
+          <VotingPowerCards role={role} {...props} />
+        </>
       ) : // council
       kind === 'vanilla' ? (
         <div>

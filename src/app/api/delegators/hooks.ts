@@ -81,7 +81,7 @@ export const useBatchedVoteDelegators = (
 export const useDelegatorAwareVoterWeight = (
   role: GovernanceRole
 ): CalculatedWeight | undefined => {
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet()?.wallet?.adapter;
   // these hooks return different results depending on whether batch delegator voting is supported
   // if batch is on, and these are undefined, it means "yourself + all delegators"
   // if batch is off, and these are undefined, it means "yourself only"

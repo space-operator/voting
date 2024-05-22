@@ -54,7 +54,6 @@ export const useRealmVoterWeightPlugins = (
     delegators?.map((programAccount) => programAccount.account),
     walletAdapter
   );
-  console.log('walletPublicKeys', walletPublicKeys);
 
   // if a delegator is selected, use it, otherwise use the currently connected wallet
   const nonAggregatedResult = useVoterWeightPlugins({
@@ -62,7 +61,6 @@ export const useRealmVoterWeightPlugins = (
     governanceMintPublicKey,
     walletPublicKeys,
   });
-  console.log('nonAggregatedResult', nonAggregatedResult);
 
   const totalCalculatedVoterWeight = nonAggregatedResult.calculatedVoterWeights
     ?.length

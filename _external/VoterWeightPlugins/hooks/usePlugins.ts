@@ -20,7 +20,7 @@ export const usePlugins = (
   args: Args
 ): UseQueryResult<VoterWeightPlugins, unknown> => {
   const { connection } = useConnection();
-  const wallet = useWallet().wallet?.adapter;
+  const wallet = useWallet()?.wallet?.adapter;
   const signer = wallet as unknown as Wallet;
   const provider =
     wallet &&
