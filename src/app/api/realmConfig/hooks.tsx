@@ -16,7 +16,7 @@ export const useRealmConfig = () => {
       await getRealmConfigAddress(realm.owner, realm.pubkey).then(
         (realmConfigPk) => getRealmConfig(connection, realmConfigPk)
       ),
-    staleTime: 3600000, // 1 hour
-  });
+      staleTime: 60 * 1000 * 60, // 1 hour
+    });
   return query;
 };

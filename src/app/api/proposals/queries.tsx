@@ -31,6 +31,6 @@ export function getAllProposalsQuery(
     queryKey: ['allProposals', realmPk, connection.rpcEndpoint],
     queryFn: async () =>
       (await getAllProposals(connection, programId, realmId)).flat(),
-    staleTime: 1000 * 60 * 60,
-  };
+      staleTime: 60 * 1000 * 60, // 1 hour
+    };
 }

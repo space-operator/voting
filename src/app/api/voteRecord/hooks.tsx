@@ -1,23 +1,23 @@
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
-import { Governance, Proposal } from "@solana/spl-governance";
-import { ProgramAccount } from "@solana/spl-governance";
-import { useConnection } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { Governance, Proposal } from '@solana/spl-governance';
+import { ProgramAccount } from '@solana/spl-governance';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
 import {
   useAddressQuery_CommunityTokenOwner,
   useAddressQuery_CouncilTokenOwner,
-} from "../tokenOwnerRecord/hooks";
-import { useQuery } from "@tanstack/react-query";
-import { getVoteRecord, getVoteRecordAddress } from "@solana/spl-governance";
-import { useRealmFromParams } from "../realm/hooks";
-import { useVotingPop } from "../voting/hooks";
+} from '../tokenOwnerRecord/hooks';
+import { useQuery } from '@tanstack/react-query';
+import { getVoteRecord, getVoteRecordAddress } from '@solana/spl-governance';
+import { useRealmFromParams } from '../realm/hooks';
+import { useVotingPop } from '../voting/hooks';
 
 export const useProposalVoteRecordQuery = ({
   quorum,
   proposal,
 }: {
-  quorum: "electoral" | "veto";
+  quorum: 'electoral' | 'veto';
   proposal: ProgramAccount<Proposal>;
 }) => {
   const tokenRole = useVotingPop(proposal.account.governingTokenMint);
@@ -27,18 +27,18 @@ export const useProposalVoteRecordQuery = ({
   const electoral =
     tokenRole === undefined
       ? undefined
-      : tokenRole === "community"
+      : tokenRole === 'community'
       ? community
       : council;
 
   const veto =
     tokenRole === undefined
       ? undefined
-      : tokenRole === "community"
+      : tokenRole === 'community'
       ? council
       : community;
 
-  const selectedTokenRecord = quorum === "electoral" ? electoral : veto;
+  const selectedTokenRecord = quorum === 'electoral' ? electoral : veto;
 
   const pda = useAddressQuery_SelectedProposalVoteRecord(
     selectedTokenRecord?.data,
@@ -54,9 +54,10 @@ export const useVoteRecordByPubkeyQuery = (pubkey: PublicKey | undefined) => {
   const enabled = pubkey !== undefined;
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["proposal-vote-record", pubkey, connection.rpcEndpoint],
+    queryKey: ['proposal-vote-record', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getVoteRecord(connection, pubkey),
     enabled,
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 
   return query;
@@ -85,7 +86,7 @@ export const useAddressQuery_VoteRecord = (
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
-      "voteRecordAddress",
+      'voteRecordAddress',
       programId,
       proposal,
       tokenOwnerRecordAddress,

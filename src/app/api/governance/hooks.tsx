@@ -52,6 +52,7 @@ export const useGovernance = (pubkey: PublicKey) => {
       const governance = await getGovernance(connection, pubkey);
       return governanceWithDefaults(governance);
     },
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 
   return query;

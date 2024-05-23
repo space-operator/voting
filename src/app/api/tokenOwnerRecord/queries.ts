@@ -24,4 +24,6 @@ export const fetchTokenOwnerRecordByPubkey = (
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['tokenOwnerRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getTokenOwnerRecord(connection, pubkey),
+    staleTime: 60 * 1000 * 60, // 1 hour
+
   });

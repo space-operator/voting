@@ -49,6 +49,7 @@ export function useTokenMetadata(
         connection.commitment,
         TOKEN_PROGRAM_ID
       ),
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 }
 
@@ -75,6 +76,7 @@ export const useGetAccount = (pubkey: PublicKey | undefined) => {
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["tokenAccount", pubkey, connection.rpcEndpoint],
     queryFn: async () => await getAccount(connection, pubkey),
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 
   return query;

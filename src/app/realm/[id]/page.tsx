@@ -33,6 +33,7 @@ export default async function RealmPage({
       await prefetchAllProposalsByRealm(realmPk, CURRENT_RPC_ENDPOINT).then(
         JSON.parse
       ),
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 
   return (

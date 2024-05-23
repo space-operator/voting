@@ -13,6 +13,7 @@ export default async function Page() {
   await queryClient.prefetchQuery({
     queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID],
     queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 
   return (

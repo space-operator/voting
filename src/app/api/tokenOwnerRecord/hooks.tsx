@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   TokenOwnerRecord,
@@ -7,17 +7,17 @@ import {
   getTokenOwnerRecord,
   getTokenOwnerRecordAddress,
   pubkeyFilter,
-} from "@solana/spl-governance";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey } from "@solana/web3.js";
-import { useQuery } from "@tanstack/react-query";
-import { useRealmFromParams } from "../realm/hooks";
-import BN from "bn.js";
-import { useAtom, useAtomValue } from "jotai";
+} from '@solana/spl-governance';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { PublicKey } from '@solana/web3.js';
+import { useQuery } from '@tanstack/react-query';
+import { useRealmFromParams } from '../realm/hooks';
+import BN from 'bn.js';
+import { useAtom, useAtomValue } from 'jotai';
 import {
   communityDelegatorAtom,
   councilDelegatorAtom,
-} from "@/components/SelectPrimaryDelegators";
+} from '@/components/SelectPrimaryDelegators';
 
 export const useUserCommunityTokenOwnerRecord = () => {
   const { data: tokenOwnerRecordPubkey } =
@@ -35,8 +35,9 @@ export const useTokenOwnerRecordByPubkey = (pubkey: PublicKey | undefined) => {
 
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["tokenOwnerRecord", pubkey, connection.rpcEndpoint],
+    queryKey: ['tokenOwnerRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getTokenOwnerRecord(connection, pubkey),
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 };
 
@@ -88,7 +89,7 @@ export const useTokenOwnerRecordAddress = (
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
-      "tokenOwnerRecordAddress",
+      'tokenOwnerRecordAddress',
       [programId, realmPk, governingTokenMint, owner],
     ],
     queryFn: async () =>
@@ -122,7 +123,7 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
-      "tokenOwnedRecord",
+      'tokenOwnedRecord',
       connection.rpcEndpoint,
       realm.data.pubkey,
       walletPk,
@@ -137,8 +138,8 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
         1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6 + 1,
         walletPk
       );
-      console.log("realmFilter", realmFilter);
-      console.log("delegatedToUserFilter", delegatedToUserFilter);
+      console.log('realmFilter', realmFilter);
+      console.log('delegatedToUserFilter', delegatedToUserFilter);
       if (!realmFilter || !delegatedToUserFilter) throw new Error(); // unclear why this would ever happen, probably it just cannot
 
       const results = await getGovernanceAccounts(
@@ -158,6 +159,8 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
         }) */
       return results;
     },
+    staleTime: 60 * 1000 * 60, // 1 hour
+
     enabled: connected,
   });
 
