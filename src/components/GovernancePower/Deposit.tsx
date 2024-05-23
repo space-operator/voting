@@ -4,7 +4,6 @@ import { BigNumber } from "bignumber.js";
 import { useRealmFromParams } from "@/app/api/realm/hooks";
 import {
   useMintInfo,
-  useTokenMetadata,
   useUserGovTokenAccount,
 } from "@/app/api/token/hooks";
 import { DepositTokensButton } from "./DepositTokensButton";

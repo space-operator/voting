@@ -1,13 +1,32 @@
 import React, { FunctionComponent, useState } from 'react';
 import { ProgramAccount, Proposal, VoteKind } from '@solana/spl-governance';
 import { useSubmitVote } from './useSubmitVote';
+import { Input } from '../ui/input';
+import { Button } from '../ui/button';
+import { BanIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
+import { Loading } from '../Loading';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 
 interface VoteCommentModalProps {
-  onClose: () => void;
-  isOpen: boolean;
   vote: VoteKind;
   isMulti?: number[];
   proposal: ProgramAccount<Proposal>;
+  disabled: boolean;
 }
 
 const VOTE_STRINGS = {
@@ -18,11 +37,10 @@ const VOTE_STRINGS = {
 };
 
 const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
-  onClose,
-  isOpen,
   vote,
   isMulti,
   proposal,
+  disabled,
 }) => {
   const [comment, setComment] = useState('');
   const { submitting, submitVote } = useSubmitVote({ proposal });
@@ -35,58 +53,57 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
       comment,
       voteWeights: isMulti,
     });
-
-    onClose();
   };
 
   return (
-    <div>Comment</div>
-    // <Modal onClose={onClose} isOpen={isOpen}>
-    //   <h2>Confirm your vote</h2>
-
-    //   <Tooltip content='This will be stored on-chain and displayed publically in the discussion on this proposal'>
-    //     <label className='border- mt-4 border-dashed border-fgd-3 inline-block leading-4 text-fgd-1 text-sm hover:cursor-help hover:border-b-0'>
-    //       Leave a comment
-    //     </label>
-    //     <span className='ml-1 text-xs text-fgd-3'>(Optional)</span>
-    //   </Tooltip>
-
-    //   <Input
-    //     className='mt-1.5'
-    //     value={comment}
-    //     type='text'
-    //     onChange={(e) => setComment(e.target.value)}
-    //     // placeholder={`Let the DAO know why you vote '${voteString}'`}
-    //   />
-
-    //   <div className='flex items-center justify-center mt-8'>
-    //     <SecondaryButton className='w-44 mr-4' onClick={onClose}>
-    //       Cancel
-    //     </SecondaryButton>
-
-    //     <Button
-    //       className='w-44 flex items-center justify-center'
-    //       onClick={handleSubmit}
-    //     >
-    //       <div className='flex items-center'>
-    //         {!submitting && isMulti ? (
-    //           ''
-    //         ) : vote === VoteKind.Approve ? (
-    //           <ThumbUpIcon className='h-4 w-4 fill-black mr-2' />
-    //         ) : vote === VoteKind.Deny ? (
-    //           <ThumbDownIcon className='h-4 w-4 fill-black mr-2' />
-    //         ) : (
-    //           <BanIcon className='h-4 w-4 fill-black mr-2' />
-    //         )}
-    //         {submitting ? (
-    //           <Loading />
-    //         ) : (
-    //           <span>Vote {isMulti ? '' : voteString}</span>
-    //         )}
-    //       </div>
-    //     </Button>
-    //   </div>
-    // </Modal>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button disabled={disabled}>Vote</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Confirm Vote</DialogTitle>
+          <DialogDescription>
+            Add an optional on-chain comment to the public discussion
+          </DialogDescription>
+        </DialogHeader>
+        <Input
+          className='mt-1.5'
+          value={comment}
+          type='text'
+          onChange={(e) => setComment(e.target.value)}
+          placeholder='Leave comment'
+          // placeholder={`Let the DAO know why you vote '${voteString}'`}
+        />
+        <DialogFooter>
+          <div className='flex items-center justify-center mt-8'>
+    
+            <Button
+              className='w-44 flex items-center justify-center'
+              type='submit'
+              onClick={handleSubmit}
+            >
+              <div className='flex items-center'>
+                {!submitting && isMulti ? (
+                  ''
+                ) : vote === VoteKind.Approve ? (
+                  <ThumbsUpIcon className='h-4 w-4 fill-black mr-2' />
+                ) : vote === VoteKind.Deny ? (
+                  <ThumbsDownIcon className='h-4 w-4 fill-black mr-2' />
+                ) : (
+                  <BanIcon className='h-4 w-4 fill-black mr-2' />
+                )}
+                {submitting ? (
+                  <Loading />
+                ) : (
+                  <span>Vote {isMulti ? '' : voteString}</span>
+                )}
+              </div>
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

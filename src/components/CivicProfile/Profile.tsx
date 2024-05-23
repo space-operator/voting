@@ -1,3 +1,5 @@
+'use client';
+
 import React, { FC } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { useProfile } from './useProfile';
@@ -32,6 +34,7 @@ const ClaimLink: FC<{ address: PublicKey; expanded }> = ({
 );
 
 type Props = { publicKey?: PublicKey; expanded?: boolean };
+
 export const Profile: FC<Props> = ({ publicKey, expanded }) => {
   const connectedWallet = useWallet().wallet?.adapter;
   const { profile, loading } = useProfile(publicKey);

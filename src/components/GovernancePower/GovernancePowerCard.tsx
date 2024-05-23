@@ -8,9 +8,9 @@ import { GoverningTokenType } from '@solana/spl-governance';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ChevronRightIcon } from 'lucide-react';
 import { useAsync } from 'react-async-hook';
-import { VotingPowerCards } from './VotingPowerCards';
-import VanillaVotingPower from './GovernancePower/VanillaVotingPower';
-import { Deposit } from './GovernancePower/Deposit';
+import { VotingPowerCards } from '../VotingPowerCards';
+import VanillaVotingPower from './VanillaVotingPower';
+import { Deposit } from './Deposit';
 import { Suspense } from 'react';
 import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 
@@ -109,7 +109,6 @@ export default function GovernancePowerForRole({
       <div className='animate-pulse bg-bkg-1 col-span-1 h-[76px] rounded-lg' />
     );
   }
-  console.log(role, kind, props);
   return (
     <>
       {role === 'community' ? (

@@ -5,14 +5,14 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
-import { prefetchRealm } from '../api/realm/queries';
+import { prefetchRealms } from '../api/realm/queries';
 
 export default async function Page() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ['realm', DEFAULT_GOVERNANCE_PROGRAM_ID],
-    queryFn: async () => await prefetchRealm(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
   });
 
   return (

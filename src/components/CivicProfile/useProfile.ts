@@ -1,3 +1,5 @@
+'use client';
+
 import { PublicKey } from '@solana/web3.js';
 import { CivicProfile, Profile as BaseProfile } from '@civic/profile';
 import { useQuery } from '@tanstack/react-query';

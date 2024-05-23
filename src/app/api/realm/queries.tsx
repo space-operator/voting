@@ -16,14 +16,17 @@ import { atom, useAtom } from 'jotai';
 // FIXME: use the correct endpoint
 const connection = new Connection(CURRENT_RPC_ENDPOINT, 'confirmed');
 
-export async function prefetchRealm(pubkey: string) {
+// prefetch all Realms
+export async function prefetchRealms(pubkey: string) {
   const realmId = new PublicKey(pubkey);
 
-  const data = await getRealm(connection, realmId);
+  const data = await getRealms(connection, realmId);
 
   // stringify for server
   return JSON.stringify(data);
 }
+
+
 
 export async function fetchRealmByPubkey(
   connection: Connection,

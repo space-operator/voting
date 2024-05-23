@@ -14,9 +14,9 @@ import {
   DEVNET_RPC_ENDPOINT,
   MAINNET_RPC_ENDPOINT,
 } from '@/constants/endpoints';
-import { GovernancePowerCard } from '@/components/GovernancePower';
 import { ProgramAccount, Proposal } from '@solana/spl-governance';
 import { prefetchAllProposalsByRealm } from '@/app/api/proposals/queries';
+import { GovernancePowerCard } from '@/components/GovernancePower/GovernancePowerCard';
 
 export default async function RealmPage({
   params,

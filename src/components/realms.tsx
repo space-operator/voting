@@ -2,7 +2,7 @@
 
 import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
 import { useQuery } from '@tanstack/react-query';
-import { prefetchRealm } from '@/app/api/realm/queries';
+import { prefetchRealms } from '@/app/api/realm/queries';
 import { realmsJson, splRepo } from '@/constants/other';
 import { PublicKey } from '@solana/web3.js';
 import { RealmInfo } from '@/types/realm';
@@ -12,7 +12,7 @@ import React, { useMemo } from 'react';
 export function Realms() {
   const { data, isLoading } = useQuery({
     queryKey: ['realm', DEFAULT_GOVERNANCE_PROGRAM_ID],
-    queryFn: async () => await prefetchRealm(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
     staleTime: 3600000, // 1 hour
   });
 
