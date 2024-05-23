@@ -5,6 +5,12 @@ import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { HelpCircleIcon, Timer } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
 /** here's a horrible function chatgpt wrote for me :-) */
 function formatDuration(seconds: number) {
@@ -45,7 +51,7 @@ const useCountdown = ({
     }
 
     const now = dayjs().unix(); // TODO remove superfluous dependency
-    const votingStartedAt = new BN(proposal.votingAt, "hex")?.toNumber() ?? 0; // TODO when and why would this be null ?
+    const votingStartedAt = new BN(proposal.votingAt, 'hex')?.toNumber() ?? 0; // TODO when and why would this be null ?
 
     const totalSecondsElapsed = Math.max(0, now - votingStartedAt);
     const maxVotingTime =
@@ -98,50 +104,58 @@ const ProposalTimer = ({
 }) => {
   const countdown = useCountdown({ proposal, governance });
 
-  return countdown && countdown.state === 'voting' ? (
-    <div className='flex items-center gap-1'>
-      <div className='min-w-[115px] bg-neutral-900 rounded-md py-1 px-2 flex flex-col'>
-        <div className='text-white flex justify-between items-center mb-1 gap-3 flex-nowrap'>
-          <Timer />
-          <div className='flex gap-2'>
-            {formatDuration(countdown.total.secondsRemaining).map((x, i) => (
-              <div key={i}>{x}</div>
-            ))}
-          </div>
-        </div>
-        <TimerBar proposal={proposal} governance={governance} size='xs' />
-      </div>
-      {/* <Tooltip
-        content={
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex gap-1 items-center">
-                <div className="rounded-sm h-2 w-2 bg-sky-500 inline-block" />
-                <div className="text-white">Unrestricted Voting Time</div>
-              </div>
-              <div>
-                The amount of time a voter has to approve or deny a proposal.
-              </div>
+  return (
+    countdown &&
+    countdown.state === 'voting' && (
+      <div className='flex items-center gap-1'>
+        <div className='min-w-[115px] bg-neutral-900 rounded-md py-1 px-2 flex flex-col'>
+          <div className='text-white flex justify-between items-center mb-1 gap-3 flex-nowrap'>
+            <Timer />
+            <div className='flex gap-2'>
+              {formatDuration(countdown.total.secondsRemaining).map((x, i) => (
+                <div key={i}>{x}</div>
+              ))}
             </div>
-            {governance.config.votingCoolOffTime !== 0 && (
-              <div className="flex flex-col gap-1">
-                <div className="flex gap-1 items-center">
-                  <div className="rounded-sm h-2 w-2 bg-amber-400 inline-block" />
-                  <div className="text-white">Cool-Off Voting Time</div>
-                </div>
-                <div>
-                  After the unrestricted voting time, this is the amount of time
-                  a voter has to deny, veto, or withdraw a vote on a proposal.
-                </div>
-              </div>
-            )}
           </div>
-        }
-      >
-      </Tooltip> */}
-      <HelpCircleIcon className='cursor-help h-3 w-3' />
-    </div>
-  ) : null;
+          <TimerBar proposal={proposal} governance={governance} size='xs' />
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <HelpCircleIcon className='cursor-help h-3 w-3' />
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className='flex flex-col gap-4'>
+                <div className='flex flex-col gap-1'>
+                  <div className='flex gap-1 items-center'>
+                    <div className='rounded-sm h-2 w-2 bg-sky-500 inline-block' />
+                    <div className='text-white'>Unrestricted Voting Time</div>
+                  </div>
+                  <div>
+                    The amount of time a voter has to approve or deny a
+                    proposal.
+                  </div>
+                </div>
+                {governance.config.votingCoolOffTime !== 0 && (
+                  <div className='flex flex-col gap-1'>
+                    <div className='flex gap-1 items-center'>
+                      <div className='rounded-sm h-2 w-2 bg-amber-400 inline-block' />
+                      <div className='text-white'>Cool-Off Voting Time</div>
+                    </div>
+                    <div>
+                      After the unrestricted voting time, this is the amount of
+                      time a voter has to deny, veto, or withdraw a vote on a
+                      proposal.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+    )
+  );
 };
 
 export const TimerBar = ({

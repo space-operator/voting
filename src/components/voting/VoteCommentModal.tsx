@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { ProgramAccount, Proposal, VoteKind } from '@solana/spl-governance';
-import { useSubmitVote } from './useSubmitVote';
+import { useSubmitVote } from '../../app/api/voting/useSubmitVote';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { BanIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
@@ -77,7 +77,6 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
         />
         <DialogFooter>
           <div className='flex items-center justify-center mt-8'>
-    
             <Button
               className='w-44 flex items-center justify-center'
               type='submit'

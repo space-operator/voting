@@ -7,7 +7,7 @@ import {
 } from '@/app/api/voting/hooks';
 import { ProgramAccount, Proposal, VoteKind } from '@solana/spl-governance';
 import { useState } from 'react';
-import { useSubmitVote } from './useSubmitVote';
+import { useSubmitVote } from '../../app/api/voting/useSubmitVote';
 import VoteCommentModal from './VoteCommentModal';
 import { useRealmRegistryEntryFromParams } from '@/app/api/realm/hooks';
 import { Button } from '../ui/button';
@@ -121,14 +121,15 @@ const VetoButtons = ({ proposal }: { proposal: ProgramAccount<Proposal> }) => {
           </Button>
         </div>
       </div>
-      {openModal ? (
+      {/* TODO */}
+      {/* {openModal ? (
         <VoteCommentModal
           onClose={() => setOpenModal(false)}
           isOpen={openModal}
           vote={VoteKind.Veto}
           proposal={proposal}
         />
-      ) : null}
+      ) : null} */}
     </>
   ) : null;
 };

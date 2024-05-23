@@ -10,7 +10,7 @@ import { useFlowRun } from '@/stores/flow-run';
 import { useSocketDataStore } from '@/stores/socket-data';
 import { ed25519 } from '@noble/curves/ed25519';
 import { SignatureRequest } from '@space-operator/client/dist/module/types/ws';
-import { restClient, wsClient } from '@/utils/client';
+import { restClient, wsClient } from '@/lib/client';
 
 export const useFlowEvents = () => {
   const { publicKey, signTransaction } = useWallet();
@@ -90,7 +90,7 @@ export const useFlowEvents = () => {
       setLogs([]);
       clearSocketData();
       if (!publicKey) return;
- 
+
       const body = await restClient.startFlowUnverified(flowId, publicKey, {
         inputs: inputBody,
       });

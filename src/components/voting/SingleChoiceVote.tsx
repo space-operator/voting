@@ -1,8 +1,8 @@
 'use client';
 
 import { ProgramAccount, Proposal } from '@solana/spl-governance';
-import { VoteResults } from './VoteResults';
-import { ApprovalProgress, VetoProgress } from './QuorumProgress';
+import { VoteResults } from '../proposal/VoteResults';
+import { ApprovalProgress, VetoProgress } from '../proposal/QuorumProgress';
 import { ProposalVotesResult } from '@/app/api/proposalVotes/hooks';
 
 export const SingleChoiceVote = ({

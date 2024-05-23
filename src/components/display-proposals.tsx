@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useAtom } from "jotai/react";
-import { filterStateAtom } from "./filter-popover";
-import { ProgramAccount, Proposal, Realm } from "@solana/spl-governance";
-import { useEffect, useMemo } from "react";
+import { useAtom } from 'jotai/react';
+import { filterStateAtom } from './filter-popover';
+import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
+import { useEffect, useMemo } from 'react';
 
-import { useRealm } from "@/app/api/realm/hooks";
-import { filterProposals } from "@/utils/filterProposals";
-import { useAllProposalsByRealm } from "@/app/api/proposals/hooks";
-import { SingleProposal } from "./proposal";
-import { atom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
-import { useParams } from "next/navigation";
+import { useRealm } from '@/app/api/realm/hooks';
+import { filterProposals } from '@/utils/filterProposals';
+import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
+import { SingleProposal } from './proposal/proposal';
+import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
+import { useParams } from 'next/navigation';
 
-export const realmAtom = atomWithStorage("realm", null);
+export const realmAtom = atomWithStorage('realm', null);
 
 export function DisplayProposals() {
   const { id: realmPk } = useParams<{ id: string }>();
@@ -26,7 +26,7 @@ export function DisplayProposals() {
 
   useEffect(() => {
     if (realm) {
-      console.log("setting realm", realm);
+      console.log('setting realm', realm);
       setRealm(realm);
     }
   }, [realm, setRealm, isRealmSuccess]);
@@ -42,11 +42,16 @@ export function DisplayProposals() {
 
   return (
     <div>
-      <div className="">{JSON.stringify(realm)}</div>
-
-      {filteredProposals.map((proposal: ProgramAccount<Proposal>) => (
-        <SingleProposal key={proposal.pubkey.toString()} proposal={proposal} />
-      ))}
+      <div className=''>{JSON.stringify(realm)}</div>
+      <div className='text-2xl font-bold'>Proposals</div>
+      <div className='flex flex-col mx-auto max-w-2xl gap-8'>
+        {filteredProposals.map((proposal: ProgramAccount<Proposal>) => (
+          <SingleProposal
+            key={proposal.pubkey.toString()}
+            proposal={proposal}
+          />
+        ))}
+      </div>
     </div>
   );
 }

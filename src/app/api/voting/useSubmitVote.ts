@@ -30,10 +30,10 @@ import { useAtom, useAtomValue } from 'jotai';
 import {
   communityDelegatorAtom,
   councilDelegatorAtom,
-} from '../SelectPrimaryDelegators';
-import { useFlowEvents } from '../_flow/vote-button';
+} from '../../../components/SelectPrimaryDelegators';
+import { useFlowEvents } from '../../../components/_flow/vote-button';
 import { getVetoTokenMint } from '@/utils/helpers';
-import { prepFlowInputs } from '../_flow/helpers';
+import { prepFlowInputs } from '../../../components/_flow/helpers';
 import { Value } from '@space-operator/client';
 import { fetchProgramVersion } from '@/app/api/programVersion/queries';
 import { PublicKey } from '@solana/web3.js';

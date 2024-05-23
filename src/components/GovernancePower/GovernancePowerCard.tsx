@@ -8,7 +8,7 @@ import { GoverningTokenType } from '@solana/spl-governance';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ChevronRightIcon } from 'lucide-react';
 import { useAsync } from 'react-async-hook';
-import { VotingPowerCards } from '../VotingPowerCards';
+import { VotingPowerCards } from './VotingPowerCards';
 import VanillaVotingPower from './VanillaVotingPower';
 import { Deposit } from './Deposit';
 import { Suspense } from 'react';

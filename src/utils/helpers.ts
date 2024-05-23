@@ -1,6 +1,4 @@
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
-import { gistApi } from '@/utils/github';
-import { arweaveDescriptionApi } from '@/utils/arweave';
 import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
 
 export function capitalize(str?: string) {
@@ -20,27 +18,6 @@ export function chunks<T>(array: T[], size: number): T[][] {
 export class SanitizedObject {
   constructor(obj) {
     return Object.assign(Object.create(null), obj);
-  }
-}
-
-export async function resolveProposalDescription(descriptionLink: string) {
-  try {
-    gistApi.cancel();
-    arweaveDescriptionApi.cancel();
-    let desc = '';
-    const url = new URL(descriptionLink);
-
-    if (url.toString().includes('gist')) {
-      desc = await gistApi.fetchGistFile(url.toString());
-    }
-
-    if (url.toString().includes('arweave')) {
-      desc = await arweaveDescriptionApi.fetchArweaveFile(url.toString());
-    }
-
-    return desc ? desc : descriptionLink;
-  } catch {
-    return descriptionLink;
   }
 }
 

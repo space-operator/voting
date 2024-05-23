@@ -2,7 +2,7 @@
 
 import { PluginName } from '@/constants/plugins';
 import { FC, ReactNode } from 'react';
-import { VanillaCard } from './GovernancePower/VanillaCard';
+import { VanillaCard } from './VanillaCard';
 import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 
 export type VotingCardProps = {

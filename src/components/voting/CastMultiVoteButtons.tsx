@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useCanVote, useIsVoting, useVotingPop } from '@/app/api/voting/hooks';
 import { useGovernance } from '@/app/api/governance/hooks';
 import { PublicKey } from '@solana/web3.js';
-import { useSubmitVote } from './useSubmitVote';
+import { useSubmitVote } from '../../app/api/voting/useSubmitVote';
 import { useProposalVoteRecordQuery } from '@/app/api/voteRecord/hooks';
 import { CheckCircleIcon } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -148,7 +148,6 @@ export const CastMultiVoteButtons = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                
                 <Button
                   className='w-full'
                   onClick={() => handleVote('yes')}
