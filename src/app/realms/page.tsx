@@ -11,7 +11,7 @@ export default async function Page() {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ['realm', DEFAULT_GOVERNANCE_PROGRAM_ID],
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID],
     queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
   });
 

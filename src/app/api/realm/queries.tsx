@@ -18,9 +18,9 @@ const connection = new Connection(CURRENT_RPC_ENDPOINT, 'confirmed');
 
 // prefetch all Realms
 export async function prefetchRealms(pubkey: string) {
-  const realmId = new PublicKey(pubkey);
+  const governanceProgramID = new PublicKey(pubkey);
 
-  const data = await getRealms(connection, realmId);
+  const data = await getRealms(connection, governanceProgramID);
 
   // stringify for server
   return JSON.stringify(data);

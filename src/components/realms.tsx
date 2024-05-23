@@ -11,7 +11,7 @@ import React, { useMemo } from 'react';
 
 export function Realms() {
   const { data, isLoading } = useQuery({
-    queryKey: ['realm', DEFAULT_GOVERNANCE_PROGRAM_ID],
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID],
     queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
     staleTime: 3600000, // 1 hour
   });
