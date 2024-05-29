@@ -15,6 +15,11 @@ import { restClient, wsClient } from '@/lib/client';
 export const useFlowEvents = () => {
   const { publicKey, signTransaction } = useWallet();
   const [logs, setLogs] = useState([]);
+  const [errors, setErrors] = useState([]);
+  const [flowComplete, setFlowComplete] = useState({
+    complete: false,
+    event: {},
+  });
   const { setFlowResponse } = useFlowRun((state) => state);
   const { appendSocketData, clearSocketData } = useSocketDataStore();
 
@@ -29,6 +34,16 @@ export const useFlowEvents = () => {
           //   appendSocketData([convertedSocketData]);
           // }
           // handle signature request
+          if (ev.event === 'FlowFinish') {
+            setFlowComplete({
+              complete: true,
+              event: ev,
+            });
+          }
+          if (ev.event === 'FlowError') {
+            setErrors((errors) => [...errors, ev]);
+          }
+
           if (ev.event === 'SignatureRequest') {
             const req = new SignatureRequest({
               id: ev.data.id,
@@ -104,5 +119,10 @@ export const useFlowEvents = () => {
     [publicKey, setLogs, subscribeEvents, clearSocketData, setFlowResponse]
   );
 
-  return { logs, startFlow };
+  // return convenient Flow completion and error handling
+  // if errors is empty and flowComplete.complete is true, then the flow was successful
+
+  const flowSuccess = errors.length === 0 && flowComplete.complete;
+
+  return { logs, startFlow, flowComplete, errors, flowSuccess };
 };

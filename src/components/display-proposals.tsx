@@ -42,9 +42,7 @@ export function DisplayProposals() {
 
   return (
     <div>
-      <div className=''>{JSON.stringify(realm)}</div>
-      <div className='text-2xl font-bold'>Proposals</div>
-      <div className='flex flex-col mx-auto max-w-2xl gap-8'>
+      <div className='flex flex-col mx-auto max-w-3xl gap-8'>
         {filteredProposals.map((proposal: ProgramAccount<Proposal>) => (
           <SingleProposal
             key={proposal.pubkey.toString()}

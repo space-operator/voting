@@ -20,7 +20,7 @@ import {
 } from '../ui/tooltip';
 import VoteCommentModal from './VoteCommentModal';
 import { useRealmRegistryEntryFromParams } from '@/app/api/realm/hooks';
-import { useFlowEvents } from '../_flow/vote-button';
+import { useFlowEvents } from '../../app/api/_flows/hooks';
 
 export const CastVoteButtons = ({
   proposal,

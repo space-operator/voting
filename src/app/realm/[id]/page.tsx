@@ -38,13 +38,19 @@ export default async function RealmPage({
 
   return (
     <div className='p-4'>
+      <div className='text-xl font-bold my-4'>Voting Power</div>
+
       <Suspense fallback={<div>Loading...</div>}>
         <GovernancePowerCard />
       </Suspense>
-      <FilterPopover />
+      <div className='text-xl font-bold my-4'>Proposals</div>
+
       <HydrationBoundary state={dehydrate(queryClient)}>
         <QueryErrorResetBoundary>
           <Suspense fallback={<div>Loading...</div>}>
+            <div className='flex justify-end mb-4'>
+              <FilterPopover />
+            </div>
             <DisplayProposals />
           </Suspense>
         </QueryErrorResetBoundary>

@@ -37,7 +37,7 @@ import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 //   }
 
 export const GovernancePowerCard = () => {
-  const connected = useWallet();
+  const { connected } = useWallet();
 
   const { isReady: communityIsReady } = useRealmVoterWeightPlugins('community');
   const { isReady: councilIsReady } = useRealmVoterWeightPlugins('council');
@@ -49,14 +49,14 @@ export const GovernancePowerCard = () => {
     <div>
       {/* <GovernancePowerTitle /> */}
       {!connected ? (
-        <div className={'text-xs text-white/50 mt-8'}>
+        <div className={'text-s text-center text-primary my-4'}>
           Connect your wallet to see governance power
         </div>
       ) : !isReady ? (
-        <>
-          <div className='h-12 mb-4 rounded-lg animate-pulse bg-bkg-3' />
-          <div className='h-10 rounded-lg animate-pulse bg-bkg-3' />
-        </>
+        <div className='flex flex-col gap-2'>
+          <div className='h-10 rounded-lg animate-pulse bg-secondary' />
+          <div className='h-10 rounded-lg animate-pulse bg-secondary' />
+        </div>
       ) : (
         <div className='flex flex-col gap-2'>
           {realmConfig?.account.communityTokenConfig.tokenType ===

@@ -71,7 +71,7 @@ export function FilterPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='outline'>
+        <Button variant='outline' className='border-primary'>
           <FilterIcon />
         </Button>
       </PopoverTrigger>

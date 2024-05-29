@@ -39,7 +39,7 @@ import {
 } from 'lucide-react';
 import { Value } from '@space-operator/client';
 import { prepFlowInputs } from '../_flow/helpers';
-import { useFlowEvents } from '../_flow/vote-button';
+import { useFlowEvents } from '../../app/api/_flows/hooks';
 import { queryClient } from '@/providers/query';
 
 export const YouVoted = ({
@@ -170,13 +170,10 @@ export const YouVoted = ({
       }).M;
       console.log('inputBody', inputBody);
 
-      await startFlow(
-        flowId,
-        prepFlowInputs(inputBody, wallet.publicKey)
-      );
+      await startFlow(flowId, prepFlowInputs(inputBody, wallet.publicKey));
 
       queryClient.invalidateQueries({
-        queryKey: ['proposal-vote-record'],
+        queryKey: ['voteRecordAddress', proposal.pubkey],
         exact: false,
       });
     } catch (err) {

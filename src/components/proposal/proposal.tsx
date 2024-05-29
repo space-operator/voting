@@ -13,6 +13,7 @@ import {
   ProposalCardHeader,
   ProposalCardContent,
   ProposalCardVote,
+  ProposalCardFooter,
 } from '../ui/proposal-card';
 import { ProgressVoteButton } from '../voting-progress-button';
 import { useRealmFromParams } from '@/app/api/realm/hooks';
@@ -30,6 +31,18 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeExternalLinks from 'rehype-external-links';
 import { shortenAddress } from '@/utils/formatting';
+import { useChatMessages } from '@/app/api/chat/hooks';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '../ui/collapsible';
+import DiscussionPanel from '../chat/DiscussionPanel';
+import {
+  ChevronsDownUpIcon,
+  MessageCircleIcon,
+  MessageSquareIcon,
+} from 'lucide-react';
 
 interface SingleProposalProps {
   proposal: ProgramAccount<Proposal>;
@@ -39,6 +52,8 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
   const { data: realm } = useRealmFromParams();
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
+  const { data: chatMessages } = useChatMessages(proposal.pubkey);
+  console.log('chatMessages', chatMessages);
 
   const isMulti = isMultipleChoice(proposal);
 
@@ -57,6 +72,8 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
       setDescription('');
     }
   }, [description]);
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <ProposalCard className='border-gray-400'>
@@ -97,6 +114,30 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
           ))}
         <VotePanel proposal={proposal} />
       </ProposalCardVote>
+      <ProposalCardFooter>
+        <Collapsible
+          className='w-full'
+          open={isChatOpen}
+          onOpenChange={setIsChatOpen}
+        >
+          <CollapsibleTrigger className='flex w-full gap-2 justify-end items-center'>
+            {isChatOpen ? (
+              <div className='flex items-center text-xs gap-2 '>
+                <ChevronsDownUpIcon />
+                Close Chat
+              </div>
+            ) : (
+              <div className='flex items-center text-xs gap-2'>
+                <MessageSquareIcon />
+                {chatMessages?.length} Comments
+              </div>
+            )}
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <DiscussionPanel proposal={proposal} />
+          </CollapsibleContent>
+        </Collapsible>
+      </ProposalCardFooter>
     </ProposalCard>
   );
 };

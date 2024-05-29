@@ -46,9 +46,10 @@ export default async function RootLayout({
                       enableSystem
                       disableTransitionOnChange
                     >
-                      <Nav />
-
-                      {children}
+                      <div className='flex min-h-screen flex-col max-w-3xl mx-auto'>
+                        <Nav />
+                        <div className='flex-1'>{children}</div>
+                      </div>
                       <Toaster />
                     </ThemeProvider>
                   </WalletContextProvider>

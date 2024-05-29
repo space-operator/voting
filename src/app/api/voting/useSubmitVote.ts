@@ -31,7 +31,7 @@ import {
   communityDelegatorAtom,
   councilDelegatorAtom,
 } from '../../../components/SelectPrimaryDelegators';
-import { useFlowEvents } from '../../../components/_flow/vote-button';
+import { useFlowEvents } from '../_flows/hooks';
 import { getVetoTokenMint } from '@/utils/helpers';
 import { prepFlowInputs } from '../../../components/_flow/helpers';
 import { Value } from '@space-operator/client';
@@ -62,7 +62,8 @@ export const useSubmitVote = ({
   const communityDelegators = useBatchedVoteDelegators('community');
   const councilDelegators = useBatchedVoteDelegators('council');
 
-  const { logs, startFlow } = useFlowEvents();
+  const { logs, startFlow, flowComplete, errors, flowSuccess } =
+    useFlowEvents();
 
   const { error, loading, execute } = useAsyncCallback(
     async ({
@@ -223,6 +224,9 @@ export const useSubmitVote = ({
       try {
         const flowId = 2140;
 
+        // if comment is not empty, add add comment instruction
+        const addComment = !!comment ? { Text: comment } : null;
+
         const inputBody = new Value({
           private_key: 'WALLET',
           realm: realm.pubkey,
@@ -235,7 +239,10 @@ export const useSubmitVote = ({
           voter_weight_record: null, //plugin?.voterWeightPk,
           max_voter_weight_record: null, //plugin?.maxVoterWeightRecord,
           vote: convertVoteToRust(formattedVote),
+          body: addComment,
+          reply_to: null,
         }).M;
+
         console.log('inputBody', inputBody);
 
         await startFlow(flowId, prepFlowInputs(inputBody, wallet.publicKey));
@@ -253,7 +260,7 @@ export const useSubmitVote = ({
         //   relevantDelegators
         // );
         queryClient.invalidateQueries({
-          queryKey: ['vote-record-address'],
+          queryKey: ['voteRecordAddress'],
         });
         // TODO
         // queryClient.invalidateQueries({
@@ -281,6 +288,10 @@ export const useSubmitVote = ({
     error,
     submitting: loading,
     submitVote: execute,
+    logs,
+    flowComplete,
+    errors,
+    flowSuccess,
   };
 };
 

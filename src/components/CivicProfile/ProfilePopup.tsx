@@ -26,9 +26,7 @@ export const ProfilePopup: FC<Props> = ({ publicKey, expanded, children }) => {
     children ? (
       <>{children}</>
     ) : (
-      <CivicIcon
-        className={`flex-shrink-0 h-3 w-3 ml-1.5 mr-1.5 text-primary-light`}
-      />
+      <CivicIcon className={`flex-shrink-0 h-3 w-3 ml-1.5 mr-1.5`} />
     );
 
   return (

@@ -54,7 +54,7 @@ export const useVoteRecordByPubkeyQuery = (pubkey: PublicKey | undefined) => {
   const enabled = pubkey !== undefined;
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['proposal-vote-record', pubkey, connection.rpcEndpoint],
+    queryKey: ['proposalVoteRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getVoteRecord(connection, pubkey),
     enabled,
     staleTime: 60 * 1000 * 60, // 1 hour

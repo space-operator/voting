@@ -21,14 +21,16 @@ export const CastMultiVoteButtons = ({
 }: {
   proposal: ProgramAccount<Proposal>;
 }) => {
-  const [showVoteModal, setShowVoteModal] = useState(false);
   const [vote, setVote] = useState<'yes' | 'no' | null>(null);
   const realmInfo = useRealmRegistryEntryFromParams();
   // TODO changed default to false for testing
   const allowDiscussion = realmInfo?.allowDiscussion ?? false;
   console.log('allowDiscussion', allowDiscussion);
 
-  const { submitting, submitVote } = useSubmitVote({ proposal });
+  const { submitting, submitVote, logs, flowComplete, errors, flowSuccess } =
+    useSubmitVote({
+      proposal,
+    });
   const { data: governance } = useGovernance(
     new PublicKey(proposal.account.governance)
   );
@@ -52,14 +54,10 @@ export const CastMultiVoteButtons = ({
   const handleVote = async (vote: 'yes' | 'no') => {
     setVote(vote);
 
-    if (allowDiscussion) {
-      setShowVoteModal(true);
-    } else {
-      await submitVote({
-        vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
-        voteWeights: selectedOptions,
-      });
-    }
+    await submitVote({
+      vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
+      voteWeights: selectedOptions,
+    });
   };
 
   const handleOption = (index: number) => {
@@ -100,6 +98,9 @@ export const CastMultiVoteButtons = ({
     setOptionStatus(status);
   };
 
+  console.log('logs', logs);
+  console.log('flowComplete', flowComplete);
+  console.log('errors', errors);
   return isVoting && !isVoteCast ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
       <div className='flex flex-col items-center justify-center'>
@@ -148,21 +149,29 @@ export const CastMultiVoteButtons = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <Button
-                  className='w-full'
-                  onClick={() => handleVote('yes')}
-                  disabled={!canVote || submitting || !selectedOptions.length}
-                >
-                  <div className='flex flex-row items-center justify-center'>
-                    Vote
-                  </div>
-                </Button>
-                <VoteCommentModal
-                  vote={vote === 'yes' ? VoteKind.Approve : VoteKind.Deny}
-                  isMulti={selectedOptions}
-                  proposal={proposal}
-                  disabled={!canVote || submitting || !selectedOptions.length}
-                />
+                {allowDiscussion ? (
+                  <Button
+                    className='w-full'
+                    onClick={() => handleVote('yes')}
+                    disabled={
+                      !canVote ||
+                      submitting ||
+                      !selectedOptions.length ||
+                      !flowComplete
+                    }
+                  >
+                    <div className='flex flex-row items-center justify-center'>
+                      Vote
+                    </div>
+                  </Button>
+                ) : (
+                  <VoteCommentModal
+                    vote={VoteKind.Approve}
+                    isMulti={selectedOptions}
+                    proposal={proposal}
+                    disabled={!canVote || submitting || !selectedOptions.length}
+                  />
+                )}
               </TooltipTrigger>
               <TooltipContent>
                 {tooltipContent === '' && !selectedOptions.length
@@ -173,9 +182,6 @@ export const CastMultiVoteButtons = ({
           </TooltipProvider>
         </div>
       </div>
-
-      {/* {showVoteModal && vote ? (
-      ) : null} */}
     </div>
   ) : null;
 };

@@ -43,7 +43,11 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
   disabled,
 }) => {
   const [comment, setComment] = useState('');
-  const { submitting, submitVote } = useSubmitVote({ proposal });
+  const { submitting, submitVote, flowSuccess, flowComplete, errors } =
+    useSubmitVote({
+      proposal,
+    });
+  const [isOpen, setIsOpen] = useState(false); // State to control dialog visibility
 
   const voteString = VOTE_STRINGS[vote];
 
@@ -53,10 +57,17 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
       comment,
       voteWeights: isMulti,
     });
+    if (flowSuccess) {
+      // Check if the submission was successful
+      setIsOpen(false); // Close the dialog
+
+      // TODO invalidate queries
+
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button disabled={disabled}>Vote</Button>
       </DialogTrigger>
@@ -75,12 +86,22 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
           placeholder='Leave comment'
           // placeholder={`Let the DAO know why you vote '${voteString}'`}
         />
+        {errors.length > 0 && (
+          <div className='text-red-500'>
+            {errors.map((error) => (
+              <div key={error.data.flow_run_id}>
+                Flow failed: {error.data.error}
+              </div>
+            ))}
+          </div>
+        )}
         <DialogFooter>
           <div className='flex items-center justify-center mt-8'>
             <Button
               className='w-44 flex items-center justify-center'
               type='submit'
               onClick={handleSubmit}
+              disabled={submitting}
             >
               <div className='flex items-center'>
                 {!submitting && isMulti ? (
@@ -94,6 +115,8 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
                 )}
                 {submitting ? (
                   <Loading />
+                ) : flowComplete.complete ? (
+                  <span>Vote {isMulti ? '' : voteString}</span>
                 ) : (
                   <span>Vote {isMulti ? '' : voteString}</span>
                 )}

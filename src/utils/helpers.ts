@@ -99,3 +99,12 @@ export const getVetoTokenMint = (
     throw new Error('There is no token that can veto this proposal');
   return vetoTokenMint;
 };
+
+export function isPublicKey(pk: string) {
+  try {
+    new PublicKey(pk);
+    return true;
+  } catch {
+    return false;
+  }
+}
