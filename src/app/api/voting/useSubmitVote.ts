@@ -225,7 +225,7 @@ export const useSubmitVote = ({
         const flowId = 2140;
 
         // if comment is not empty, add add comment instruction
-        const addComment = !!comment ? { Text: comment } : null;
+        const addComment = !!comment ? { Text: comment } : "";
 
         const inputBody = new Value({
           private_key: 'WALLET',

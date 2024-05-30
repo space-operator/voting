@@ -27,6 +27,16 @@ export async function prefetchRealms(pubkey: string) {
 }
 
 
+// prefetch SINGLE Realm
+export async function prefetchRealm(pubkey: string) {
+  const governanceProgramID = new PublicKey(pubkey);
+
+  const data = await getRealm(connection, governanceProgramID);
+
+  // stringify for server
+  return JSON.stringify(data);
+}
+
 
 export async function fetchRealmByPubkey(
   connection: Connection,

@@ -53,7 +53,6 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
   const { data: chatMessages } = useChatMessages(proposal.pubkey);
-  console.log('chatMessages', chatMessages);
 
   const isMulti = isMultipleChoice(proposal);
 

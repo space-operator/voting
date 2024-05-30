@@ -54,8 +54,9 @@ export const GovernancePowerCard = () => {
         </div>
       ) : !isReady ? (
         <div className='flex flex-col gap-2'>
-          <div className='h-10 rounded-lg animate-pulse bg-secondary' />
-          <div className='h-10 rounded-lg animate-pulse bg-secondary' />
+          <div className='h-16 rounded-lg animate-pulse bg-secondary text-center items-center'>
+            <div className=''>Loading your governance powers</div>
+          </div>
         </div>
       ) : (
         <div className='flex flex-col gap-2'>

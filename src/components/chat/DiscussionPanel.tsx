@@ -23,14 +23,16 @@ const DiscussionPanel = ({
   );
 
   return (
-    <div className='border border-secondary p-4 md:p-6 rounded-lg'>
+    <div className='border border-secondary mt-4 p-4 md:p-6 rounded-lg'>
       <h2 className='mb-4'>
         Discussion{' '}
         {chatMessages !== undefined && (
           <span className='text-base text-fgd-3'>({chatMessages.length})</span>
         )}
       </h2>
-      <div className='pb-4'>{/* <DiscussionForm proposal={proposal} /> */}</div>
+      <div className='pb-4'>
+        <DiscussionForm proposal={proposal} />
+      </div>
 
       {sortedMessages?.map((cm) => (
         <LazyLoadComment

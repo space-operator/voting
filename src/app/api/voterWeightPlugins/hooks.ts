@@ -89,7 +89,7 @@ export const useRealmVoterWeightPlugins = (
         };
       })
     : undefined;
-  console.log('totalCalculatedVoterWeight', totalCalculatedVoterWeight);
+  // console.log('totalCalculatedVoterWeight', totalCalculatedVoterWeight);
 
   // This requires that the index of the wallet in the list of wallets remains consistent with the output voter weights,
   // while not ideal, this is simpler than the alternative, which would be to return a map of wallet public keys to voter weights
@@ -114,11 +114,11 @@ export const useRealmVoterWeightPlugins = (
     return nonAggregatedResult.voterWeightPks?.[walletIndex];
   };
 
-  console.log(
-    'useRealmVoterWeightPlugins',
-    nonAggregatedResult,
-    totalCalculatedVoterWeight
-  );
+  // console.log(
+  //   'useRealmVoterWeightPlugins',
+  //   nonAggregatedResult,
+  //   totalCalculatedVoterWeight
+  // );
   return {
     ...nonAggregatedResult,
     totalCalculatedVoterWeight,

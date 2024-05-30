@@ -12,7 +12,6 @@ import { Suspense } from 'react';
 import { ClusterProvider } from '@/providers/cluster';
 import { WalletContextProvider } from '@/providers/wallet';
 import { ThemeProvider } from '@/providers/theme';
-import Nav from '@/components/nav';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -47,7 +46,6 @@ export default async function RootLayout({
                       disableTransitionOnChange
                     >
                       <div className='flex min-h-screen flex-col max-w-3xl mx-auto'>
-                        <Nav />
                         <div className='flex-1'>{children}</div>
                       </div>
                       <Toaster />

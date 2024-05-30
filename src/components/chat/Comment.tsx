@@ -74,55 +74,60 @@ const Comment = ({
     proposal?.account.accountType === GovernanceAccountType.ProposalV2;
 
   return (
-    <div className='w-full border-b mt-4 pb-4 last:pb-0 last:border-b-0'>
+    <div className='w-full border-b mt-4 pb-2'>
       <div className='flex items-center justify-between mb-4'>
-        <div className='flex items-center'>
-          <div className='bg-secondary flex flex-shrink-0 items-center justify-center h-10 rounded-full w-10'>
-            <ProfilePopup publicKey={author} expanded={true}>
-              <ProfileImage publicKey={author} className='h-8 text-fgd-3 w-8' />
-            </ProfilePopup>
-          </div>
-          <div className='mx-3'>
-            <div className='flex items-center hover:brightness-[1.15] focus:outline-none'>
-              <a
-                className='flex items-center hover:brightness-[1.15] focus:outline-none'
-                href={`https://explorer.solana.com/address/${author.toString()}`}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <span className='whitespace-nowrap'>
-                  {profile?.name?.value || abbreviateAddress(author)}
-                </span>
-                <ExternalLinkIcon
-                  className={`flex-shrink-0 h-4 w-4 ml-1.5 text-primary-light`}
+        <div className='flex'>
+          <div className='flex items-center'>
+            <div className='bg-secondary flex flex-shrink-0 items-center justify-center h-10 rounded-full w-10'>
+              <ProfilePopup publicKey={author} expanded={true}>
+                <ProfileImage
+                  publicKey={author}
+                  className='h-8 text-fgd-3 w-8'
                 />
-              </a>
-              {profile?.exists && (
-                <ProfilePopup publicKey={author} expanded={true} />
-              )}
+              </ProfilePopup>
             </div>
-            <div className='text-fgd-3 text-xs'>{fromNow}</div>
+            <div className='mx-3'>
+              <div className='flex items-center hover:brightness-[1.15] focus:outline-none'>
+                <a
+                  className='flex items-center hover:brightness-[1.15] focus:outline-none'
+                  href={`https://explorer.solana.com/address/${author.toString()}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  <span className='whitespace-nowrap'>
+                    {profile?.name?.value || abbreviateAddress(author)}
+                  </span>
+                  <ExternalLinkIcon
+                    className={`flex-shrink-0 h-4 w-4 ml-1.5 text-primary-light`}
+                  />
+                </a>
+                {profile?.exists && (
+                  <ProfilePopup publicKey={author} expanded={true} />
+                )}
+              </div>
+              <div className='text-fgd-3 text-xs'>{fromNow}</div>
+            </div>
           </div>
+          {voteRecord && (
+            <div className='bg-bkg-3 hidden lg:flex lg:items-center px-4 py-2 rounded-full'>
+              <div className='flex items-center pr-2 text-fgd-1 text-xs'>
+                {isYesVote(voteRecord) ? (
+                  <ThumbsUpIcon className='h-4 mr-2 fill-[#8EFFDD] w-4' />
+                ) : (
+                  <ThumbsDownIcon className='h-4 mr-2 fill-[#FF7C7C] w-4' />
+                )}
+                {isYesVote(voteRecord) ? (isMulti ? 'Voted' : 'Yes') : 'No'}
+              </div>
+              <span className='text-fgd-4'>|</span>
+              <span className='pl-2 text-xs'>
+                {`${fmtBnMintDecimals(
+                  getVoteWeight(voteRecord)!,
+                  proposalMint?.decimals
+                ).toLocaleString()} ${voteSymbol}`}
+              </span>
+            </div>
+          )}
         </div>
-        {voteRecord && (
-          <div className='bg-bkg-3 hidden lg:flex lg:items-center px-4 py-2 rounded-full'>
-            <div className='flex items-center pr-2 text-fgd-1 text-xs'>
-              {isYesVote(voteRecord) ? (
-                <ThumbsUpIcon className='h-4 mr-2 fill-[#8EFFDD] w-4' />
-              ) : (
-                <ThumbsDownIcon className='h-4 mr-2 fill-[#FF7C7C] w-4' />
-              )}
-              {isYesVote(voteRecord) ? (isMulti ? 'Voted' : 'Yes') : 'No'}
-            </div>
-            <span className='text-fgd-4'>|</span>
-            <span className='pl-2 text-xs'>
-              {`${fmtBnMintDecimals(
-                getVoteWeight(voteRecord)!,
-                proposalMint?.decimals
-              ).toLocaleString()} ${voteSymbol}`}
-            </span>
-          </div>
-        )}
         <p>{body.value}</p>
       </div>
     </div>
