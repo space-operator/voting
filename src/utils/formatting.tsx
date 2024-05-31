@@ -11,7 +11,9 @@ export function abbreviateAddress(address: PublicKey | string, size = 5) {
 
 export const calculatePct = (c = new BN(0), total?: BN) => {
   try {
-    const newTotal = new BN(total,"hex") ?? new BN(1);
+    console.log('total', total);
+    // const t = new BN(total);
+    const newTotal = new BN(total ?? new BN(1));
     if (newTotal.isZero()) {
       return 0;
     }
@@ -106,7 +108,6 @@ export const fmtTimeToString = ({
 
   return `${daysStr}${hoursStr}${minutesStr}${seconds}s`;
 };
-
 
 export const shortenAddress = (address: string, chars = 5): string =>
   `${address.substring(0, chars)}...${address.substring(
