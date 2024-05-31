@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getVoteRecord, getVoteRecordAddress } from '@solana/spl-governance';
 import { useRealmFromParams } from '../realm/hooks';
 import { useVotingPop } from '../voting/hooks';
+import BN from 'bn.js';
 
 export const useProposalVoteRecordQuery = ({
   quorum,
@@ -101,12 +102,13 @@ export const useHasVoteTimeExpired = (
   governance: ProgramAccount<Governance>,
   proposal: ProgramAccount<Proposal>
 ) => {
+
   return useIsBeyondTimestamp(
     proposal
       ? proposal.account.isVoteFinalized()
         ? 0 // If vote is finalized then set the timestamp to 0 to make it expired
         : proposal.account.votingAt && governance
-        ? proposal.account.votingAt.toNumber() +
+        ? (new BN(proposal.account.votingAt, 'hex')).toNumber() +
           governance.account.config.baseVotingTime
         : undefined
       : undefined
