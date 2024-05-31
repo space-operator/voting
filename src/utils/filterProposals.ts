@@ -22,7 +22,6 @@ export const filterProposals = (
   // councilMint: MintInfo | undefined,
   // communityMint: MintInfo | undefined
 ) => {
-
   if (!Array.isArray(proposals)) {
     return []; // Return an empty array or handle the error as appropriate
   }
@@ -92,39 +91,6 @@ export const filterProposals = (
             voteType: new VoteType({
               ...p.account.voteType,
             }),
-
-            // yesVotesCount: new BN(p.account.yesVotesCount),
-            // noVotesCount: new BN(p.account.noVotesCount),
-
-            // denyVoteWeight: p.account.denyVoteWeight
-            //   ? new BN(p.account.denyVoteWeight)
-            //   : undefined,
-            // abstainVoteWeight: p.account.abstainVoteWeight
-            //   ? new BN(p.account.abstainVoteWeight)
-            //   : undefined,
-            // startVotingAt: p.account.startVotingAt
-            //   ? new BN(p.account.startVotingAt)
-            //   : null,
-
-            // draftAt: new BN(p.account.draftAt),
-            // signingOffAt: p.account.signingOffAt
-            //   ? new BN(p.account.signingOffAt)
-            //   : null,
-            // votingAt: p.account.votingAt ? new BN(p.account.votingAt) : null,
-            // votingAtSlot: p.account.votingAtSlot
-            //   ? new BN(p.account.votingAtSlot)
-            //   : null,
-            // votingCompletedAt: p.account.votingCompletedAt
-            //   ? new BN(p.account.votingCompletedAt)
-            //   : null,
-            // executingAt: p.account.executingAt
-            //   ? new BN(p.account.executingAt)
-            //   : null,
-            // closedAt: p.account.closedAt ? new BN(p.account.closedAt) : null,
-            // maxVoteWeight: p.account.maxVoteWeight
-            //   ? new BN(p.account.maxVoteWeight)
-            //   : null,
-            // vetoVoteWeight: new BN(p.account.vetoVoteWeight),
           }),
           owner: new PublicKey(p.owner),
         };
