@@ -43,6 +43,7 @@ export default function useProposalVotes(
 ): ProposalVotesResult {
   const { data: mint } = useMintInfo(realm.account.communityMint);
   const { data: councilMint } = useMintInfo(realm.account.config.councilMint);
+
   // TODO fix delegator
   const maxVoteRecord = useMaxVoteRecord();
   const governance = useGovernance(new PublicKey(proposal.governance)).data
@@ -112,15 +113,15 @@ export default function useProposalVotes(
   // Needed workarounds to get the correct values and attached methods
   const yesVote = new BN(proposal.getYesVoteCount(), 'hex');
   const noVote = new BN(proposal.getNoVoteCount(), 'hex');
-  
-  // console.log('yesVote', yesVote);
-  // console.log('noVote', noVote);
-  // console.log('typeof maxVoteWeight', typeof maxVoteWeight, maxVoteWeight);
+
   const yesVotePct = calculatePct(
     yesVote,
     typeof maxVoteWeight === 'bigint'
-      ? new BN(maxVoteWeight.toString(), 'hex')
-      : maxVoteWeight
+      ? new BN(maxVoteWeight.toString())
+      : typeof maxVoteWeight === 'string'
+      ? new BN(maxVoteWeight, 'hex')
+      : maxVoteWeight,
+    proposal
   );
   const isMultiProposal = proposal?.options?.length > 1;
 
@@ -228,10 +229,10 @@ export default function useProposalVotes(
         vetoMintPk
       );
 
-
   const vetoVoteProgress = calculatePct(
     proposal.vetoVoteWeight,
-    vetoMaxVoteWeight as BN
+    vetoMaxVoteWeight as BN,
+    proposal
   );
 
   const minimumVetoVotes = new BN(vetoMaxVoteWeight as BN)

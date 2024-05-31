@@ -52,6 +52,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
   const { data: realm } = useRealmFromParams();
 
   const proposalVotes = useProposalVotes(proposal.account, realm);
+
   const { data: chatMessages } = useChatMessages(proposal.pubkey);
 
   const isMulti = isMultipleChoice(proposal);

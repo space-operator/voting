@@ -2,6 +2,7 @@ import BN from 'bn.js';
 import dayjs from 'dayjs';
 import type { BigNumber } from 'bignumber.js';
 import { PublicKey } from '@solana/web3.js';
+import { Proposal } from '@solana/spl-governance';
 const relativeTime = require('dayjs/plugin/relativeTime');
 
 export function abbreviateAddress(address: PublicKey | string, size = 5) {
@@ -9,18 +10,23 @@ export function abbreviateAddress(address: PublicKey | string, size = 5) {
   return base58.slice(0, size) + '…' + base58.slice(-size);
 }
 
-export const calculatePct = (c = new BN(0), total?: BN) => {
+export const calculatePct = (c = new BN(0), total: BN, proposal: Proposal) => {
   try {
-    console.log('total', total);
-    // const t = new BN(total);
-    const newTotal = new BN(total ?? new BN(1));
+    const newTotal = new BN(total);
     if (newTotal.isZero()) {
       return 0;
     }
-
-    return new BN(100).mul(c).div(newTotal).toNumber();
+    const newC = new BN(c);
+    const pct = new BN(100).mul(newC).div(newTotal).toNumber();
+    return pct;
   } catch (error) {
-    console.error('Error calculating percentage:', c, total, error);
+    console.error(
+      'Error calculating percentage:',
+      proposal.name,
+      c,
+      total,
+      error
+    );
     return 0; // or handle the error appropriately
   }
 };
