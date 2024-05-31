@@ -53,7 +53,7 @@ export const YouVoted = ({
   const realmInfo = useRealmRegistryEntryFromParams();
   const { logs, startFlow } = useFlowEvents();
 
-  const wallet = useWallet().wallet?.adapter;
+  const wallet = useWallet()?.wallet?.adapter;
   const { connection } = useConnection();
 
   const connected = !!wallet?.connected;

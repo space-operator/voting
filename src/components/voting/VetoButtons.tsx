@@ -34,7 +34,7 @@ const useCanVeto = ({
 }: {
   proposal: ProgramAccount<Proposal>;
 }): undefined | { canVeto: true } | { canVeto: false; message: string } => {
-  const wallet = useWallet().wallet.adapter;
+  const wallet = useWallet()?.wallet?.adapter;
   const connected = !!wallet?.connected;
 
   const vetoPop = useVetoingPop(proposal);

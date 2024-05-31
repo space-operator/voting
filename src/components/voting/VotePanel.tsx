@@ -25,7 +25,7 @@ import { useGovernance } from '@/app/api/governance/hooks';
 
 const VotePanel = ({ proposal }: { proposal: ProgramAccount<Proposal> }) => {
   const { wallet } = useWallet();
-  const connected = !!wallet?.adapter.connected;
+  const connected = !!wallet?.adapter?.connected;
 
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
     quorum: 'electoral',
