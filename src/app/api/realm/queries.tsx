@@ -11,13 +11,11 @@ import {
   getRealms,
 } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
-import { atom, useAtom } from 'jotai';
 
-// FIXME: use the correct endpoint
-const connection = new Connection(CURRENT_RPC_ENDPOINT, 'confirmed');
 
 // prefetch all Realms
-export async function prefetchRealms(pubkey: string) {
+export async function prefetchRealms(pubkey: string, rpcEndpoint: string) {
+  const connection = new Connection(rpcEndpoint, 'confirmed');
   const governanceProgramID = new PublicKey(pubkey);
 
   const data = await getRealms(connection, governanceProgramID);
@@ -28,7 +26,8 @@ export async function prefetchRealms(pubkey: string) {
 
 
 // prefetch SINGLE Realm
-export async function prefetchRealm(pubkey: string) {
+export async function prefetchRealm(pubkey: string, rpcEndpoint: string) {
+  const connection = new Connection(rpcEndpoint, 'confirmed');
   const governanceProgramID = new PublicKey(pubkey);
 
   const data = await getRealm(connection, governanceProgramID);

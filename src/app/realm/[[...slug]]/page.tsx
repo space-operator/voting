@@ -16,22 +16,24 @@ import {
 } from '@/constants/endpoints';
 import { prefetchAllProposalsByRealm } from '@/app/api/proposals/queries';
 import { GovernancePowerCard } from '@/components/GovernancePower/GovernancePowerCard';
+import { extractPubkeyAndCluster } from './slugHelper';
 
 export default async function RealmPage({
   params,
 }: {
-  params: { id: string };
+  params: { slug?: string[] };
 }) {
-  const realmPk = params.id;
+  const { pubkey: realmPk, cluster } = extractPubkeyAndCluster(params.slug);
+  const rpcEndpoint =
+    cluster === 'devnet' ? DEVNET_RPC_ENDPOINT : MAINNET_RPC_ENDPOINT;
+
   const queryClient = new QueryClient();
 
   // TODO fix endpoint
   await queryClient.prefetchQuery({
-    queryKey: ['proposals', realmPk, CURRENT_RPC_ENDPOINT],
+    queryKey: ['allProposals', realmPk, rpcEndpoint],
     queryFn: async () =>
-      await prefetchAllProposalsByRealm(realmPk, CURRENT_RPC_ENDPOINT).then(
-        JSON.parse
-      ),
+      await prefetchAllProposalsByRealm(realmPk, rpcEndpoint).then(JSON.parse),
     staleTime: 60 * 1000 * 60, // 1 hour
   });
 

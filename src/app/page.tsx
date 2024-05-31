@@ -1,5 +1,4 @@
 
-import Nav from '@/components/nav';
 // import { FlowRun } from '@/components/flow-run';
 
 export default function Home() {

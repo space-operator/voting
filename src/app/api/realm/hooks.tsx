@@ -9,11 +9,11 @@ import {
   useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { useParams, useSearchParams } from 'next/navigation';
 import DEVNET_REALMS_JSON from '../../../../public/realms/devnet.json';
 import MAINNET_REALMS_JSON from '../../../../public/realms/mainnet-beta.json';
 import { parseCertifiedRealms } from '@/types/realm';
 import { getRealmQuery } from './queries';
+import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
 
 export function useRealm(
   pubkey: string
@@ -28,13 +28,13 @@ export function useRealm(
 }
 
 export function useRealmFromParams() {
-  const { id: pubkey } = useParams<{ id: string }>();
-
+  const { pubkey } = useRealmSlug();
   return useRealm(pubkey);
 }
 
 export const useRealmRegistryEntryFromParams = () => {
-  const { id: pubkey } = useParams<{ id: string }>();
+  const pubkey = useRealmSlug();
+
   const [cluster] = useCluster();
   const { connection } = useConnection();
 

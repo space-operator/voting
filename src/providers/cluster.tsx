@@ -1,5 +1,6 @@
 'use client';
 
+import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
 import {
   DEVNET_RPC_ENDPOINT,
   MAINNET_RPC_ENDPOINT,
@@ -30,7 +31,7 @@ interface Cluster {
 export const DevnetCluster: Cluster = {
   type: ClusterType.Devnet,
   connection: new Connection(DEVNET_RPC_ENDPOINT, 'confirmed'),
-  endpoint: DEVNET_RPC_ENDPOINT,//clusterApiUrl('devnet'),
+  endpoint: DEVNET_RPC_ENDPOINT, //clusterApiUrl('devnet'),
   network: WalletAdapterNetwork.Devnet,
   rpcEndpoint: DEVNET_RPC_ENDPOINT,
 };
@@ -72,19 +73,18 @@ interface Props {
 }
 
 export function ClusterProvider(props: Props) {
-  const params = useSearchParams();
-  const urlCluster = params.get('cluster');
+  const { cluster } = useRealmSlug();
+  // const params = useSearchParams();
+  // const urlCluster = params.get('cluster');
 
   // const [clusterState, setClusterState] = useAtom(clusterStateAtom);
 
   const [type, setType] = useState(
-    typeof urlCluster === 'string' && urlCluster === 'devnet'
-      ? ClusterType.Devnet
-      : ClusterType.Mainnet
+    cluster === 'devnet' ? ClusterType.Devnet : ClusterType.Mainnet
   );
 
   useEffect(() => {
-    if (typeof urlCluster === 'string' && urlCluster === 'devnet') {
+    if (cluster === 'devnet') {
       setType(ClusterType.Devnet);
       // setClusterState(DevnetCluster);
     } else {
@@ -92,9 +92,9 @@ export function ClusterProvider(props: Props) {
       // setClusterState(MainnetCluster);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlCluster]);
+  }, [cluster]);
 
-  const cluster =
+  const rpcEndpoint =
     type === ClusterType.Devnet
       ? DevnetCluster
       : type === ClusterType.Testnet
@@ -102,7 +102,7 @@ export function ClusterProvider(props: Props) {
       : MainnetCluster;
 
   return (
-    <context.Provider value={{ cluster, type, setType }}>
+    <context.Provider value={{ cluster: rpcEndpoint, type, setType }}>
       {props.children}
     </context.Provider>
   );

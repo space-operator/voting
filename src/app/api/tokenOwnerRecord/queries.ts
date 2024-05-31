@@ -25,5 +25,4 @@ export const fetchTokenOwnerRecordByPubkey = (
     queryKey: ['tokenOwnerRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getTokenOwnerRecord(connection, pubkey),
     staleTime: 60 * 1000 * 60, // 1 hour
-
   });

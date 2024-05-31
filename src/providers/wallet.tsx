@@ -14,7 +14,6 @@ export const WalletContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [cluster] = useCluster();
-  console.log(cluster.endpoint);
   // TODO check Squads iFrame
   // https://github.com/solana-labs/governance-ui/blob/f36f7bb95bbeef457f0da4afef904c00768a2bd1/components/App.tsx#L81-L82
   const wallets = useMemo(() => [], []);

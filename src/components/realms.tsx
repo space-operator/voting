@@ -7,12 +7,21 @@ import { realmsJson, splRepo } from '@/constants/other';
 import { PublicKey } from '@solana/web3.js';
 import { RealmInfo } from '@/types/realm';
 import { ProgramAccount, Realm } from '@solana/spl-governance';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useRealmsSlug } from '@/app/realms/[[...slug]]/slug';
+import { Card, CardContent, CardTitle } from './ui/card';
+import { Input } from './ui/input';
+import { useRouter } from 'next/navigation';
 
 export function Realms() {
+  const { cluster } = useRealmsSlug();
+  const [searchTerm, setSearchTerm] = useState('');
+  const { push } = useRouter();
+
   const { data, isLoading } = useQuery({
-    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID],
-    queryFn: async () => await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID),
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster],
+    queryFn: async () =>
+      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster),
     staleTime: 3600000, // 1 hour
   });
 
@@ -47,9 +56,9 @@ export function Realms() {
           return null;
         }
 
-        console.log(onChainMatch);
         return {
           name: onChainMatch.account.name || realmInfo.displayName,
+          pubkey: onChainMatch.pubkey,
           image: realmInfo.bannerImage
             ? `${splRepo}${realmInfo.bannerImage}`
             : realmInfo.ogImage,
@@ -58,29 +67,55 @@ export function Realms() {
       .filter(Boolean); // Filter out null entries
   }, [data, repoData]);
 
+  const filteredData = useMemo(() => {
+    return combinedData.filter((realm) =>
+      realm.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [combinedData, searchTerm]);
+
   return (
     <main>
-      {combinedData.length}
-      {/* {JSON.stringify(combinedData)} */}
-      {/* {JSON.stringify(repoData)} */}{' '}
       {isLoading || isRepoLoading ? (
         <div>Loading...</div>
       ) : (
-        <ul>
-          {combinedData
-            .filter((realm) => realm.image)
-            .map((realm) => (
-              <li key={realm.pubkey}>
-                <img
-                  src={realm.image}
-                  alt={realm.name}
-                  width={100}
-                  height={100}
-                />
-                <span>{realm.name}</span>
-              </li>
-            ))}
-        </ul>
+        <div className='flex flex-col justify-center items-center m-2 gap-4'>
+          <Input
+            type='text'
+            placeholder='Search'
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+          />
+          <ul className='grid grid-cols-3 gap-4'>
+            {filteredData
+              .filter((realm) => realm.image)
+              .map((realm) => (
+                <Card
+                  key={realm.pubkey}
+                  className='h-48 p-2 cursor-pointer'
+                  onClick={() => {
+                    push(`/realm/${realm.pubkey}`);
+                  }}
+                >
+                  <CardTitle>{realm.name}</CardTitle>
+                  <CardContent>
+                    <div className='flex m-2 items-center justify-center'>
+                      {realm.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          key={realm.image}
+                          src={realm.image}
+                          alt={realm.name}
+                          style={{ width: '70%', height: '70%' }}
+                          onError={(e) => e.currentTarget.remove()}
+                        />
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </ul>
+        </div>
       )}
     </main>
   );

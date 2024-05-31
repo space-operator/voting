@@ -6,6 +6,7 @@ import { ProgramAccount, Proposal, Realm } from '@solana/spl-governance';
 import { useEffect, useMemo } from 'react';
 
 import { useRealm } from '@/app/api/realm/hooks';
+import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
 import { filterProposals } from '@/utils/filterProposals';
 import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal/proposal';
@@ -16,7 +17,8 @@ import { useParams } from 'next/navigation';
 export const realmAtom = atomWithStorage('realm', null);
 
 export function DisplayProposals() {
-  const { id: realmPk } = useParams<{ id: string }>();
+  const { pubkey: realmPk } = useRealmSlug();
+
   const [filterState] = useAtom(filterStateAtom);
 
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);

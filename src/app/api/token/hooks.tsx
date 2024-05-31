@@ -30,6 +30,7 @@ export function useMintInfo(
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ["mintInfo", pubkey, connection.rpcEndpoint],
     queryFn: async () => await getMint(connection, new PublicKey(pubkey)),
+    staleTime: Infinity,
   });
 }
 

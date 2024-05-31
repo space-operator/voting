@@ -53,10 +53,10 @@ export const useAddressQuery_CouncilTokenOwner = () => {
       : wallet?.publicKey ?? undefined;
 
   return useTokenOwnerRecordAddress(
+    owner,
     realm?.owner,
     realm?.pubkey,
-    realm?.account.config.councilMint,
-    owner
+    realm?.account.config.councilMint
   );
 };
 
@@ -73,18 +73,18 @@ export const useAddressQuery_CommunityTokenOwner = () => {
         wallet?.publicKey ?? undefined;
 
   return useTokenOwnerRecordAddress(
+    owner,
     realm?.owner,
     realm?.pubkey,
-    realm?.account.communityMint,
-    owner
+    realm?.account.communityMint
   );
 };
 
 export const useTokenOwnerRecordAddress = (
+  owner: PublicKey,
   programId?: PublicKey,
   realmPk?: PublicKey,
-  governingTokenMint?: PublicKey,
-  owner?: PublicKey
+  governingTokenMint?: PublicKey
 ) => {
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -123,10 +123,10 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
-      'tokenOwnedRecord',
-      connection.rpcEndpoint,
+      'tokenOwnerRecordsDelegatedToUser',
       realm.data.pubkey,
       walletPk,
+      connection.rpcEndpoint,
     ],
     queryFn: async () => {
       const realmFilter = pubkeyFilter(1, realm.data.pubkey);
@@ -138,8 +138,7 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
         1 + 32 + 32 + 32 + 8 + 4 + 4 + 1 + 1 + 6 + 1,
         walletPk
       );
-      console.log('realmFilter', realmFilter);
-      console.log('delegatedToUserFilter', delegatedToUserFilter);
+
       if (!realmFilter || !delegatedToUserFilter) throw new Error(); // unclear why this would ever happen, probably it just cannot
 
       const results = await getGovernanceAccounts(
