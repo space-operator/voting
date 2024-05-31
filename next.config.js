@@ -6,6 +6,9 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  redirects: async () => {
+    return [{ source: '/', destination: '/realms', permanent: false }];
+  },
 };
 
 module.exports = nextConfig;
