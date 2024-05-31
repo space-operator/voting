@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ProgramAccount,
@@ -7,16 +7,16 @@ import {
   Realm,
   VoteType,
   VoteTypeKind,
-} from "@solana/spl-governance";
-import { useMaxVoteRecord } from "../voterWeightPlugins/hooks";
-import { useProgramVersion } from "@/app/api/programVersion/hooks";
-import { getProposalMaxVoteWeight } from "../voterWeightPlugins/utils";
-import { fmtBnMintDecimals } from "@/utils/units";
-import { calculatePct } from "@/utils/formatting";
-import BN from "bn.js";
-import { useMintInfo } from "../token/hooks";
-import { useGovernance } from "../governance/hooks";
-import { PublicKey } from "@solana/web3.js";
+} from '@solana/spl-governance';
+import { useMaxVoteRecord } from '../voterWeightPlugins/hooks';
+import { useProgramVersion } from '@/app/api/programVersion/hooks';
+import { getProposalMaxVoteWeight } from '../voterWeightPlugins/utils';
+import { fmtBnMintDecimals } from '@/utils/units';
+import { calculatePct } from '@/utils/formatting';
+import BN from 'bn.js';
+import { useMintInfo } from '../token/hooks';
+import { useGovernance } from '../governance/hooks';
+import { PublicKey } from '@solana/web3.js';
 
 export interface ProposalVotesResult {
   _programVersion: number | undefined;
@@ -97,7 +97,7 @@ export default function useProposalVotes(
 
   if (voteThresholdPct === undefined)
     throw new Error(
-      "Proposal has no vote threshold (this shouldnt be possible)"
+      'Proposal has no vote threshold (this shouldnt be possible)'
     );
 
   // note this can be WRONG if the proposal status is vetoed
@@ -109,15 +109,17 @@ export default function useProposalVotes(
     parseFloat(fmtBnMintDecimals(maxVoteWeight as BN, proposalMint.decimals)) *
     (voteThresholdPct / 100);
 
-
   // Needed workarounds to get the correct values and attached methods
-  const yesVote = new BN(proposal.getYesVoteCount(), "hex");
-  const noVote = new BN(proposal.getNoVoteCount(), "hex");
-
+  const yesVote = new BN(proposal.getYesVoteCount(), 'hex');
+  const noVote = new BN(proposal.getNoVoteCount(), 'hex');
+  
+  // console.log('yesVote', yesVote);
+  // console.log('noVote', noVote);
+  // console.log('typeof maxVoteWeight', typeof maxVoteWeight, maxVoteWeight);
   const yesVotePct = calculatePct(
     yesVote,
-    typeof maxVoteWeight === "bigint"
-      ? new BN(maxVoteWeight.toString())
+    typeof maxVoteWeight === 'bigint'
+      ? new BN(maxVoteWeight.toString(), 'hex')
       : maxVoteWeight
   );
   const isMultiProposal = proposal?.options?.length > 1;
@@ -216,6 +218,7 @@ export default function useProposalVotes(
     };
 
   const isPluginCommunityVeto = maxVoteRecord && !isCommunityVote;
+
   const vetoMaxVoteWeight = isPluginCommunityVeto
     ? maxVoteRecord.account.maxVoterWeight
     : getProposalMaxVoteWeight(
@@ -224,6 +227,7 @@ export default function useProposalVotes(
         vetoMintInfo,
         vetoMintPk
       );
+
 
   const vetoVoteProgress = calculatePct(
     proposal.vetoVoteWeight,

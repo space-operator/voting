@@ -14,9 +14,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster],
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint],
     queryFn: async () =>
-      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster),
+      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint),
     staleTime: 60 * 1000 * 60, // 1 hour
   });
 

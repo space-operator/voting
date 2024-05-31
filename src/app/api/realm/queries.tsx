@@ -1,8 +1,4 @@
-import {
-  CURRENT_RPC_ENDPOINT,
-  DEVNET_RPC_ENDPOINT,
-  MAINNET_RPC_ENDPOINT,
-} from '@/constants/endpoints';
+
 import { queryClient } from '@/providers/query';
 import {
   ProgramAccount,

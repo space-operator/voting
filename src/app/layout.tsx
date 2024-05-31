@@ -9,7 +9,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { GlobalError } from '@/components/global-error';
 import JotaiProvider from '@/providers/jotai-store';
 import { Suspense } from 'react';
-import { ClusterProvider } from '@/providers/cluster';
 import { WalletContextProvider } from '@/providers/wallet';
 import { ThemeProvider } from '@/providers/theme';
 
@@ -35,25 +34,23 @@ export default async function RootLayout({
       >
         <ErrorBoundary fallbackRender={GlobalError}>
           <Suspense fallback={<div>Loading...</div>}>
-            <ClusterProvider>
-              <JotaiProvider>
-                <QueryProvider>
-                  <WalletContextProvider>
-                    <ThemeProvider
-                      attribute='class'
-                      defaultTheme='system'
-                      enableSystem
-                      disableTransitionOnChange
-                    >
-                      <div className='flex min-h-screen flex-col max-w-3xl mx-auto'>
-                        <div className='flex-1'>{children}</div>
-                      </div>
-                      <Toaster />
-                    </ThemeProvider>
-                  </WalletContextProvider>
-                </QueryProvider>
-              </JotaiProvider>
-            </ClusterProvider>
+            <JotaiProvider>
+              <QueryProvider>
+                <WalletContextProvider>
+                  <ThemeProvider
+                    attribute='class'
+                    defaultTheme='system'
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    <div className='flex min-h-screen flex-col max-w-3xl mx-auto'>
+                      <div className='flex-1'>{children}</div>
+                    </div>
+                    <Toaster />
+                  </ThemeProvider>
+                </WalletContextProvider>
+              </QueryProvider>
+            </JotaiProvider>
           </Suspense>
         </ErrorBoundary>
       </body>

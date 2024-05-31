@@ -9,11 +9,7 @@ import React, { Suspense } from 'react';
 
 import { FilterPopover } from '@/components/filter-popover';
 import { DisplayProposals } from '@/components/display-proposals';
-import {
-  CURRENT_RPC_ENDPOINT,
-  DEVNET_RPC_ENDPOINT,
-  MAINNET_RPC_ENDPOINT,
-} from '@/constants/endpoints';
+
 import { prefetchAllProposalsByRealm } from '@/app/api/proposals/queries';
 import { GovernancePowerCard } from '@/components/GovernancePower/GovernancePowerCard';
 import { extractPubkeyAndCluster } from './slugHelper';
@@ -24,16 +20,16 @@ export default async function RealmPage({
   params: { slug?: string[] };
 }) {
   const { pubkey: realmPk, cluster } = extractPubkeyAndCluster(params.slug);
-  const rpcEndpoint =
-    cluster === 'devnet' ? DEVNET_RPC_ENDPOINT : MAINNET_RPC_ENDPOINT;
 
   const queryClient = new QueryClient();
 
   // TODO fix endpoint
   await queryClient.prefetchQuery({
-    queryKey: ['allProposals', realmPk, rpcEndpoint],
+    queryKey: ['allProposals', realmPk, cluster.rpcEndpoint],
     queryFn: async () =>
-      await prefetchAllProposalsByRealm(realmPk, rpcEndpoint).then(JSON.parse),
+      await prefetchAllProposalsByRealm(realmPk, cluster.rpcEndpoint).then(
+        JSON.parse
+      ),
     staleTime: 60 * 1000 * 60, // 1 hour
   });
 

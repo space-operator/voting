@@ -1,7 +1,6 @@
 'use client';
 
-import { useCluster } from '@/providers/cluster';
-import { ProgramAccount, Realm, getRealm } from '@solana/spl-governance';
+import { ProgramAccount, Realm } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import {
@@ -33,9 +32,8 @@ export function useRealmFromParams() {
 }
 
 export const useRealmRegistryEntryFromParams = () => {
-  const pubkey = useRealmSlug();
+  const { pubkey, cluster } = useRealmSlug();
 
-  const [cluster] = useCluster();
   const { connection } = useConnection();
 
   // if we cant just parse the realm pk from the url, look it up.

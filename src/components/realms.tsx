@@ -19,9 +19,9 @@ export function Realms() {
   const { push } = useRouter();
 
   const { data, isLoading } = useQuery({
-    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster],
+    queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint],
     queryFn: async () =>
-      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster),
+      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint),
     staleTime: 3600000, // 1 hour
   });
 
