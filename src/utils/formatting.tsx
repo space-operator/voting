@@ -11,7 +11,7 @@ export function abbreviateAddress(address: PublicKey | string, size = 5) {
 
 export const calculatePct = (c = new BN(0), total?: BN) => {
   try {
-    const newTotal = new BN(total ?? new BN(1));
+    const newTotal = new BN(total,"hex") ?? new BN(1);
     if (newTotal.isZero()) {
       return 0;
     }
