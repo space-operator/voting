@@ -27,7 +27,6 @@ export const useDelegators = (role: 'community' | 'council' | undefined) => {
     torsDelegatedToUser?.filter((x) =>
       x.account.governingTokenMint.equals(relevantMint)
     );
-  console.log('useDelegators', relevantDelegators);
   return relevantDelegators;
 };
 /* 
@@ -89,12 +88,10 @@ export const useDelegatorAwareVoterWeight = (
   const selectedDelegatorForRole = useAtomValue(
     role === 'community' ? communityDelegatorAtom : councilDelegatorAtom
   );
-  console.log('selectedDelegatorForRole', selectedDelegatorForRole);
   const votingWallet = selectedDelegatorForRole === PublicKey.default
     ? wallet?.publicKey
     : selectedDelegatorForRole;
 
-  console.log('votingWallet', votingWallet);
   const { plugins, totalCalculatedVoterWeight, voterWeightForWallet } = useRealmVoterWeightPlugins(role);
 
   // if the plugin supports delegator batch voting (or no plugins exist on the dao),

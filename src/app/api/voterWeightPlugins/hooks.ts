@@ -156,7 +156,6 @@ export const useMaxVoteRecord = () => {
     async () => maxVoterWeightPk && getMaxVoterWeightRecord(connection, maxVoterWeightPk),
     [maxVoterWeightPk?.toBase58()]
   );
-  console.log('maxVoteWeightRecord', maxVoteWeightRecord.result);
   return maxVoteWeightRecord.result;
 };
 

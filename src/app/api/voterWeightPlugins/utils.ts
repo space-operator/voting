@@ -14,8 +14,6 @@ export function getProposalMaxVoteWeight(
   // For vetos we want to override the proposal.governingTokenMint
   governingTokenMintPk?: PublicKey
 ) {
-  // const prop = new Proposal(proposal);
-  console.log('isVoteFinalized', proposal.isVoteFinalized);
   // For finalized proposals the max is stored on the proposal in case it can change in the future
   if (proposal.isVoteFinalized() && proposal.maxVoteWeight) {
     return proposal.maxVoteWeight;
@@ -33,7 +31,6 @@ export function getProposalMaxVoteWeight(
     governingTokenMint,
     realm.config.communityMintMaxVoteWeightSource
   );
-  console.log('maxVoteWeight', maxVoteWeight);
   return maxVoteWeight;
 }
 

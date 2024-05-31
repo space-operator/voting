@@ -68,8 +68,8 @@ export function isInCoolOffTime(
 const useHasAnyVotingPower = (role: 'community' | 'council' | undefined) => {
   const voterWeight = useDelegatorAwareVoterWeight(role ?? 'community');
   const { isReady } = useRealmVoterWeightPlugins(role);
-  console.log('voterWeight', voterWeight);
-  console.log('isReady', isReady);
+
+  
   return (
     isReady && !!voterWeight?.value && voterWeight.value?.isZero() === false
   );
@@ -90,7 +90,6 @@ export const useCanVote = ({
     quorum: 'electoral',
     proposal,
   });
-  console.log('ownVoteRecord', ownVoteRecord);
 
   const voterTokenRecord = useVoterTokenRecord({ proposal: proposal.account });
 
@@ -102,7 +101,6 @@ export const useCanVote = ({
   const isVoteCast = !!ownVoteRecord;
 
   const hasMinAmountToVote = useHasAnyVotingPower(votingPop);
-  console.log('hasMinAmountToVote', hasMinAmountToVote);
 
   const canVote =
     connected &&
@@ -154,7 +152,7 @@ export const useVotingPop = (proposalGoverningMint: PublicKey) => {
 */
 export const useVetoingPop = (proposal: ProgramAccount<Proposal>) => {
   const tokenRole = useVotingPop(proposal.account.governingTokenMint);
-  console.log('tokenRole', tokenRole);
+
   const governance = useGovernance(proposal.account.governance).data;
   const { data: realm } = useRealmFromParams();
   const vetoingPop = useMemo(() => {
@@ -172,7 +170,7 @@ export const useVetoingPop = (proposal: ProgramAccount<Proposal>) => {
       ? 'community'
       : undefined;
   }, [governance, tokenRole, realm?.account.config.councilMint]);
-  console.log('vetoingPop', vetoingPop);
+
   return vetoingPop;
 };
 

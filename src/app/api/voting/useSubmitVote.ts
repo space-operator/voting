@@ -210,7 +210,6 @@ export const useSubmitVote = ({
         connection,
         proposal.owner
       );
-      console.log('programVersion', programVersion);
       // TODO plugin
       // const pluginCastVoteIxs: TransactionInstruction[] = [];
       // //will run only if any plugin is connected with realm

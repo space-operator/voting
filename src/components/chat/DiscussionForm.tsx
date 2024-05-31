@@ -62,14 +62,7 @@ const DiscussionForm = ({
 
   const submitComment = async () => {
     setSubmitting(true);
-    console.log(
-      'realm, proposal, commenterVoterTokenRecord, wallet, realmInfo',
-      realm,
-      proposal,
-      commenterVoterTokenRecord,
-      wallet,
-      realmInfo
-    );
+  
     if (!realm || !proposal || !commenterVoterTokenRecord || !wallet)
       throw new Error();
 

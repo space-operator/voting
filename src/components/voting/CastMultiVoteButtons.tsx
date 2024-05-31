@@ -25,7 +25,6 @@ export const CastMultiVoteButtons = ({
   const realmInfo = useRealmRegistryEntryFromParams();
   // TODO changed default to false for testing
   const allowDiscussion = realmInfo?.allowDiscussion ?? false;
-  console.log('allowDiscussion', allowDiscussion);
 
   const { submitting, submitVote, logs, flowComplete, errors, flowSuccess } =
     useSubmitVote({
@@ -36,7 +35,7 @@ export const CastMultiVoteButtons = ({
   );
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });
-  console.log('canVote', canVote);
+
   const { data: ownVoteRecord } = useProposalVoteRecordQuery({
     quorum: 'electoral',
     proposal,
@@ -98,9 +97,9 @@ export const CastMultiVoteButtons = ({
     setOptionStatus(status);
   };
 
-  console.log('logs', logs);
-  console.log('flowComplete', flowComplete);
-  console.log('errors', errors);
+  // console.log('logs', logs);
+  // console.log('flowComplete', flowComplete);
+  // console.log('errors', errors);
   return isVoting && !isVoteCast ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
       <div className='flex flex-col items-center justify-center'>

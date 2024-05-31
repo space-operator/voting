@@ -86,7 +86,6 @@ export default function useProposalVotes(
 
   // TODO ??
   const isPluginCommunityVoting = maxVoteRecord && isCommunityVote;
-  console.log("isPluginCommunityVoting", isPluginCommunityVoting);
 
   const voteThresholdPct = isCommunityVote
     ? governance.config.communityVoteThreshold.value
@@ -109,8 +108,7 @@ export default function useProposalVotes(
   const minimumYesVotes =
     parseFloat(fmtBnMintDecimals(maxVoteWeight as BN, proposalMint.decimals)) *
     (voteThresholdPct / 100);
-  console.log(typeof maxVoteWeight, maxVoteWeight);
-  console.log(proposal.getYesVoteCount());
+
 
   // Needed workarounds to get the correct values and attached methods
   const yesVote = new BN(proposal.getYesVoteCount(), "hex");

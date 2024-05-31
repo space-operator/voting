@@ -22,9 +22,6 @@ export const filterProposals = (
   // councilMint: MintInfo | undefined,
   // communityMint: MintInfo | undefined
 ) => {
-  console.log('Type of proposals:', typeof proposals);
-  console.log('Is proposals an array?', Array.isArray(proposals));
-  console.log('filters', filters);
 
   if (!Array.isArray(proposals)) {
     return []; // Return an empty array or handle the error as appropriate
@@ -84,7 +81,6 @@ export const filterProposals = (
       .map((p) => {
         // rebuild
         const pubkey = new PublicKey(p.pubkey);
-        console.log('votetype', p.account.voteType);
         const rebuilt: ProgramAccount<Proposal> = {
           ...p,
           pubkey,

@@ -36,7 +36,7 @@ export const CastVoteButtons = ({
   ).data;
 
   const allowDiscussion = realmInfo?.allowDiscussion ?? true;
-  console.log('proposal', proposal);
+
   const { submitting, submitVote } = useSubmitVote({ proposal });
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
   const [canVote, tooltipContent] = useCanVote({ proposal });

@@ -62,7 +62,6 @@ export const YouVoted = ({
 
   const maxVoterWeight = useMaxVoteRecord()?.pubkey || undefined;
   const hasVoteTimeExpired = useHasVoteTimeExpired(governance, proposal);
-  console.log('hasVoteTimeExpired', hasVoteTimeExpired);
 
   const isVoting = useIsVoting({ proposal, governance });
 
@@ -73,16 +72,13 @@ export const YouVoted = ({
     quorum,
     proposal,
   });
-  console.log('proposalVoteRecord', proposalVoteRecord);
   const ownVoteRecord = proposalVoteRecord;
   const electoralVoterTokenRecord = useVoterTokenRecord({
     proposal: proposal.account,
   });
-  console.log('electoralVoterTokenRecord', electoralVoterTokenRecord);
   const vetoVotertokenRecord = useUserVetoTokenRecord({
     proposal,
   });
-  console.log('vetoVotertokenRecord', vetoVotertokenRecord);
 
   const voterTokenRecord =
     quorum === 'electoral' ? electoralVoterTokenRecord : vetoVotertokenRecord;
@@ -104,7 +100,6 @@ export const YouVoted = ({
       proposal!.account.state === ProposalState.Executing ||
       proposal!.account.state === ProposalState.Defeated);
 
-  console.log('isWithdrawEnabled', isWithdrawEnabled);
 
   const withdrawTooltipContent = !connected
     ? 'You need to connect your wallet'
@@ -189,7 +184,6 @@ export const YouVoted = ({
     proposal?.account.accountType === GovernanceAccountType.ProposalV2;
 
   const nota = '$$_NOTA_$$';
-  console.log('vote', vote);
 
   return vote !== undefined ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
