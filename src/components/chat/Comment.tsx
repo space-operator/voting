@@ -26,6 +26,9 @@ import { ExternalLinkIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { isPublicKey } from '@/utils/helpers';
 import { getVoteWeight, isYesVote } from '@/app/api/voteRecord/helpers';
 import { useAtomValue } from 'jotai';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeExternalLinks from 'rehype-external-links';
 
 const relativeTime = require('dayjs/plugin/relativeTime');
 
@@ -75,8 +78,8 @@ const Comment = ({
 
   return (
     <div className='w-full border-b mt-4 pb-2'>
-      <div className='flex items-center justify-between mb-4'>
-        <div className='flex'>
+      <div className='flex flex-col items-start justify-between mb-4 gap-2'>
+        <div className='flex justify-between w-full'>
           <div className='flex items-center'>
             <div className='bg-secondary flex flex-shrink-0 items-center justify-center h-10 rounded-full w-10'>
               <ProfilePopup publicKey={author} expanded={true}>
@@ -128,7 +131,13 @@ const Comment = ({
             </div>
           )}
         </div>
-        <p>{body.value}</p>
+        <ReactMarkdown
+          className='markdown'
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
+        >
+          {body.value}
+        </ReactMarkdown>
       </div>
     </div>
   );
