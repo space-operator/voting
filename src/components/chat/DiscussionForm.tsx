@@ -90,7 +90,7 @@ const DiscussionForm = ({
       //   votingClient
       // );
 
-      const flowId = 2153;
+      const flowId = 2159;
 
       // if comment is not empty, add add comment instruction
       const commentBody = { Text: comment };
