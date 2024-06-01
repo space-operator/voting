@@ -6,6 +6,7 @@ import {
 import {
   ProgramAccount,
   Proposal,
+  ProposalOption,
   Realm,
   VoteType,
   VoteTypeKind,
@@ -85,12 +86,74 @@ export const filterProposals = (
           pubkey,
           account: new Proposal({
             ...p.account,
+            accountType: p.account.accountType,
             governance: new PublicKey(p.account.governance),
             governingTokenMint: new PublicKey(p.account.governingTokenMint),
+            state: p.account.state,
             tokenOwnerRecord: new PublicKey(p.account.tokenOwnerRecord),
+            signatoriesCount: p.account.signatoriesCount,
+            signatoriesSignedOffCount: p.account.signatoriesSignedOffCount,
+            descriptionLink: p.account.descriptionLink,
+            name: p.account.name,
+            yesVotesCount: new BN(p.account.yesVotesCount, 'hex'),
+            noVotesCount: new BN(p.account.noVotesCount, 'hex'),
+            instructionsExecutedCount: p.account.instructionsExecutedCount,
+            instructionsCount: p.account.instructionsCount,
+            instructionsNextIndex: p.account.instructionsNextIndex,
             voteType: new VoteType({
-              ...p.account.voteType,
+              type: p.account.voteType.type,
+              choiceType: p.account.voteType.choiceType,
+              minVoterOptions: p.account.voteType.minVoterOptions,
+              maxVoterOptions: p.account.voteType.maxVoterOptions,
+              maxWinningOptions: p.account.voteType.maxWinningOptions,
             }),
+            options: p.account.options.map(
+              (option) =>
+                new ProposalOption({
+                  label: option.label,
+                  voteWeight: new BN(option.voteWeight, 'hex'),
+                  voteResult: option.voteResult,
+                  instructionsExecutedCount: option.instructionsExecutedCount,
+                  instructionsCount: option.instructionsCount,
+                  instructionsNextIndex: option.instructionsNextIndex,
+                })
+            ),
+            denyVoteWeight: p.account.denyVoteWeight
+              ? new BN(p.account.denyVoteWeight, 'hex')
+              : undefined,
+            reserved1: p.account.reserved1,
+            abstainVoteWeight: p.account.abstainVoteWeight
+              ? new BN(p.account.abstainVoteWeight, 'hex')
+              : undefined,
+            startVotingAt: p.account.startVotingAt
+              ? new BN(p.account.startVotingAt, 'hex')
+              : null,
+            maxVotingTime: p.account.maxVotingTime,
+            draftAt: new BN(p.account.draftAt, 'hex'),
+            signingOffAt: p.account.signingOffAt
+              ? new BN(p.account.signingOffAt, 'hex')
+              : null,
+            votingAt: p.account.votingAt
+              ? new BN(p.account.votingAt, 'hex')
+              : null,
+            votingAtSlot: p.account.votingAtSlot
+              ? new BN(p.account.votingAtSlot, 'hex')
+              : null,
+            votingCompletedAt: p.account.votingCompletedAt
+              ? new BN(p.account.votingCompletedAt, 'hex')
+              : null,
+            executingAt: p.account.executingAt
+              ? new BN(p.account.executingAt, 'hex')
+              : null,
+            closedAt: p.account.closedAt
+              ? new BN(p.account.closedAt, 'hex')
+              : null,
+            executionFlags: p.account.executionFlags,
+            maxVoteWeight: p.account.maxVoteWeight
+              ? new BN(p.account.maxVoteWeight, 'hex')
+              : null,
+            voteThreshold: p.account.voteThreshold,
+            vetoVoteWeight: new BN(p.account.vetoVoteWeight, 'hex'),
           }),
           owner: new PublicKey(p.owner),
         };
