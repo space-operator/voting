@@ -11,7 +11,7 @@ import {
 import { useMaxVoteRecord } from '../voterWeightPlugins/hooks';
 import { useProgramVersion } from '@/app/api/programVersion/hooks';
 import { getProposalMaxVoteWeight } from '../voterWeightPlugins/utils';
-import { fmtBnMintDecimals } from '@/utils/units';
+import { fmtBnMintDecimals, fmtBnMintDecimalsUndelimited } from '@/utils/units';
 import { calculatePct } from '@/utils/formatting';
 import BN from 'bn.js';
 import { useMintInfo } from '../token/hooks';
@@ -106,9 +106,13 @@ export default function useProposalVotes(
     ? maxVoteRecord.account.maxVoterWeight
     : getProposalMaxVoteWeight(realm.account, proposal, proposalMint);
 
+
   const minimumYesVotes =
-    parseFloat(fmtBnMintDecimals(maxVoteWeight as BN, proposalMint.decimals)) *
+    parseFloat(
+      fmtBnMintDecimalsUndelimited(maxVoteWeight as BN, proposalMint.decimals)
+    ) *
     (voteThresholdPct / 100);
+
 
   // Needed workarounds to get the correct values and attached methods
   const yesVote = new BN(proposal.getYesVoteCount(), 'hex');
@@ -126,12 +130,12 @@ export default function useProposalVotes(
   const isMultiProposal = proposal?.options?.length > 1;
 
   const yesVoteCount = !isMultiProposal
-    ? parseFloat(fmtBnMintDecimals(yesVote, proposalMint.decimals))
+    ? parseFloat(fmtBnMintDecimalsUndelimited(yesVote, proposalMint.decimals))
     : 0;
 
   //
   const noVoteCount = !isMultiProposal
-    ? parseFloat(fmtBnMintDecimals(noVote, proposalMint.decimals))
+    ? parseFloat(fmtBnMintDecimalsUndelimited(noVote, proposalMint.decimals))
     : 0;
 
   const totalVoteCount = yesVoteCount + noVoteCount;

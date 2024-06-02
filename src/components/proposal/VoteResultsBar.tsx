@@ -18,10 +18,10 @@ const VoteResultsBar = ({
                 : 2
             }%`,
           }}
-          className={`bg-green flex rounded-l ${
+          className={`bg-green-700 flex rounded-l ${
             denyVotePercentage < 0.01 && 'rounded'
           }`}
-        ></div>
+        />
         <div
           style={{
             width: `${
@@ -30,10 +30,10 @@ const VoteResultsBar = ({
                 : 2
             }%`,
           }}
-          className={`bg-red flex rounded-r ${
+          className={`bg-red-500 flex rounded-r ${
             approveVotePercentage < 0.01 && 'rounded'
           }`}
-        ></div>
+        />
       </div>
     </>
   );

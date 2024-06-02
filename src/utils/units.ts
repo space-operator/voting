@@ -23,6 +23,7 @@ export function getTimestampFromHours(hours: number) {
   return hours * 60 * 60;
 }
 
+// Don't use with parseFloat, use fmtBnMintDecimalsUndelimited instead
 export function fmtBnMintDecimals(amount: BN, decimals: number) {
   return new BigNumber(amount.toString()).shiftedBy(-decimals).toFormat();
 }

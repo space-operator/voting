@@ -31,7 +31,7 @@ export const SingleChoiceVote = ({
       proposalVotes.veto !== undefined &&
       (proposalVotes.veto.voteProgress ?? 0) > 0 ? (
         <>
-          <div className='border-r border-fgd-4 hidden lg:block' />
+          <div className='border-r border hidden lg:block' />
 
           <div className='w-full lg:w-auto flex-1'>
             <VetoProgress
