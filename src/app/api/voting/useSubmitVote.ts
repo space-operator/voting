@@ -221,7 +221,7 @@ export const useSubmitVote = ({
       // );
 
       try {
-        const flowId = 2140;
+        const flowId = parseInt(process.env.NEXT_PUBLIC_FLOW_ID_VOTE);
 
         // if comment is not empty, add add comment instruction
         const addComment = !!comment ? { Text: comment } : "";

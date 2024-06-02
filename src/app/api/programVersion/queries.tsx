@@ -1,5 +1,5 @@
 import { queryClient } from '@/providers/query';
-import { getGovernanceProgramVersion } from '@solana/spl-governance';
+import { VoteRecord, booleanFilter, getGovernanceAccounts, getGovernanceProgramVersion, pubkeyFilter } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 export const fetchProgramVersion = (
@@ -24,3 +24,15 @@ export const governanceProgramVersionQuery = (
     staleTime: Infinity,
   };
 };
+
+
+export async function getUnrelinquishedVoteRecords(
+  connection: Connection,
+  programId: PublicKey,
+  tokenOwnerRecordPk: PublicKey
+) {
+  return getGovernanceAccounts(connection, programId, VoteRecord, [
+    pubkeyFilter(1 + 32, tokenOwnerRecordPk)!,
+    booleanFilter(1 + 32 + 32, false),
+  ])
+}

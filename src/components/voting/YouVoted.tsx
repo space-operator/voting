@@ -151,7 +151,7 @@ export const YouVoted = ({
       //   );
       // }
 
-      const flowId = 2151;
+      const flowId = parseInt(process.env.NEXT_PUBLIC_FLOW_ID_RELINQUISH);
 
       const inputBody = new Value({
         private_key: 'WALLET',

@@ -71,12 +71,7 @@ export function getMintMaxVoteWeight(
   mint: Mint,
   maxVoteWeightSource: MintMaxVoteWeightSource
 ) {
-  console.log(
-    'getMintMaxVoteWeight',
-    mint,
-    maxVoteWeightSource,
-    maxVoteWeightSource.isFullSupply()
-  );
+
   if (maxVoteWeightSource.isFullSupply()) {
     return mint.supply;
   }

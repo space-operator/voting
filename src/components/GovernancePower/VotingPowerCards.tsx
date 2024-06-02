@@ -4,6 +4,7 @@ import { PluginName } from '@/constants/plugins';
 import { FC, ReactNode } from 'react';
 import { VanillaCard } from './VanillaCard';
 import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
+import { VSRCard } from './VSRCard';
 
 export type VotingCardProps = {
   role: 'community' | 'council';
@@ -22,9 +23,9 @@ export const VotingPowerCards: FC<VotingCardProps> = (props) => {
   const cards = (plugins?.voterWeight ?? [])
     .map((plugin, pluginIdx): ReactNode | undefined => {
       return hasDedicatedVotingPowerUI(plugin.name) ? (
-        // <CardForPlugin plugin={plugin.name} {...props} key={pluginIdx} />
+        <CardForPlugin plugin={plugin.name} {...props} key={pluginIdx} />
         // FIXME
-        <div>{plugin.name}</div>
+        // <div>{plugin.name}</div>
       ) : undefined;
     })
     .filter(Boolean); // filter out undefined
@@ -79,23 +80,23 @@ const hasDedicatedVotingPowerUI = (
     plugin as (typeof pluginsWithDedicatedVotingPowerUI)[number]
   );
 
-// const CardForPlugin: FC<
-//   {
-//     plugin: (typeof pluginsWithDedicatedVotingPowerUI)[number];
-//   } & VotingCardProps
-// > = ({ plugin, role, ...props }) => {
-//   switch (plugin) {
-//     case 'NFT':
-//       return <NftVotingPower />;
-//     case 'pyth':
-//       return <PythVotingPower role={role} />;
-//     case 'HeliumVSR':
-//       return <LockedCommunityNFTRecordVotingPower />;
-//     case 'VSR':
-//       return <VSRCard role={role} {...props} />;
-//     case 'gateway':
-//       return <GatewayCard role={role} />;
-//     case 'QV':
-//       return <QuadraticVotingPower role={role} />;
-//   }
-// };
+const CardForPlugin: FC<
+  {
+    plugin: (typeof pluginsWithDedicatedVotingPowerUI)[number];
+  } & VotingCardProps
+> = ({ plugin, role, ...props }) => {
+  switch (plugin) {
+    // case 'NFT':
+    //   return <NftVotingPower />;
+    // case 'pyth':
+    //   return <PythVotingPower role={role} />;
+    // case 'HeliumVSR':
+    //   return <LockedCommunityNFTRecordVotingPower />;
+    case 'VSR':
+      return <VSRCard role={role} {...props} />;
+    // case 'gateway':
+    //   return <GatewayCard role={role} />;
+    // case 'QV':
+    //   return <QuadraticVotingPower role={role} />;
+  }
+};

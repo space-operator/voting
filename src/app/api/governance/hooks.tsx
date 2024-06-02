@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { PublicKey } from "@solana/web3.js";
-import { useConnection } from "@solana/wallet-adapter-react";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { PublicKey } from '@solana/web3.js';
+import { useConnection } from '@solana/wallet-adapter-react';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   Governance,
   ProgramAccount,
   VoteThreshold,
   VoteThresholdType,
   getGovernance,
-} from "@solana/spl-governance";
+} from '@solana/spl-governance';
 
 export const governanceWithDefaults = (
   governance: ProgramAccount<Governance>
@@ -47,7 +47,7 @@ export const useGovernance = (pubkey: PublicKey) => {
 
   const query = useSuspenseQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ["governance", pubkey, connection.rpcEndpoint],
+    queryKey: ['governance', pubkey, connection.rpcEndpoint],
     queryFn: async () => {
       const governance = await getGovernance(connection, pubkey);
       return governanceWithDefaults(governance);

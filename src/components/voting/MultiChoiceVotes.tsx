@@ -42,11 +42,10 @@ export const MultiChoiceVotes = ({
 
   const nota = '$$_NOTA_$$';
   const last = proposal.options.length - 1;
-
   return (
     <div className='pb-4 px-6 border rounded-md'>
       {proposal.options.slice(0, limit).map((option, index) => {
-        const optionVotes = option.voteWeight;
+        const optionVotes = new BN(option.voteWeight, 'hex');
         const optionWeightPct = totalVoteWeight.isZero() // dont divide by zero
           ? new BN(0)
           : new BN(optionVotes, 'hex').muln(1000).div(totalVoteWeight);
@@ -54,7 +53,7 @@ export const MultiChoiceVotes = ({
         return (
           <div className='border-b border p-5' key={index}>
             <div className='flex flex-row justify-between gap-2'>
-              <div className='flex flex-row justify-start'>
+              <div className='flex flex-row justify-start gap-2'>
                 <div>
                   {option.label === nota && index === last
                     ? 'None of the Above'

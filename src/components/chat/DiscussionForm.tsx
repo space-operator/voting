@@ -62,7 +62,7 @@ const DiscussionForm = ({
 
   const submitComment = async () => {
     setSubmitting(true);
-  
+
     if (!realm || !proposal || !commenterVoterTokenRecord || !wallet)
       throw new Error();
 
@@ -90,7 +90,7 @@ const DiscussionForm = ({
       //   votingClient
       // );
 
-      const flowId = 2159;
+      const flowId = parseInt(process.env.NEXT_PUBLIC_FLOW_ID_MESSAGE);
 
       // if comment is not empty, add add comment instruction
       const commentBody = { Text: comment };
