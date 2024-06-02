@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import assertUnreachable from '@/utils/errors';
 import { useGovernance } from '@/app/api/governance/hooks';
 import { isInCoolOffTime } from '@/app/api/voting/hooks';
+import { fmtUnixTime } from '@/utils/formatting';
 
 export const hasInstructions = (proposal: Proposal) => {
   if (proposal.instructionsCount) {
@@ -197,7 +198,14 @@ export default function ProposalStateBadge(props: Props) {
           getTextColor(props.proposal.state, otherState)
         )}
       >
-        {getLabel(props.proposal.state, otherState)}
+        <div className='flex flex-col'>
+          <div className=''>{getLabel(props.proposal.state, otherState)}</div>
+          {props.proposal.votingCompletedAt && (
+            <div className=''>
+              {fmtUnixTime(props.proposal.votingCompletedAt)}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

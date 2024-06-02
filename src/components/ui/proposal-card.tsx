@@ -23,7 +23,7 @@ const ProposalCardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn('flex flex-row space-y-1.5 p-6', className)}
+    className={cn('flex flex-row items-start p-6', className)}
     {...props}
   />
 ));

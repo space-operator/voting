@@ -165,3 +165,31 @@ export const useTokenOwnerRecordsDelegatedToUser = () => {
 
   return query;
 };
+
+export const useTokenOwnerRecordsForRealm = () => {
+  const { connection } = useConnection();
+  const { data: realm } = useRealmFromParams();
+
+  const query = useQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: [
+      'tokenOwnerRecordsForRealm',
+      realm.pubkey,
+      connection.rpcEndpoint,
+    ],
+    queryFn: async () => {
+      const filter = pubkeyFilter(1, realm.pubkey);
+      const results = await getGovernanceAccounts(
+        connection,
+        realm.owner,
+        TokenOwnerRecord,
+        [filter]
+      );
+
+      return results;
+    },
+    staleTime: 60 * 1000 * 60, // 1 hour
+  });
+
+  return query;
+};

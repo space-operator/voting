@@ -9,7 +9,7 @@ const VoteResultsBar = ({
 }: VoteResultsBarProps) => {
   return (
     <>
-      <div className='bg-[#363D44] h-2 flex flex-grow mt-2.5 rounded w-full'>
+      <div className='bg-[#363D44] h-2 flex flex-grow mt-2.5 rounded'>
         <div
           style={{
             width: `${
@@ -22,6 +22,7 @@ const VoteResultsBar = ({
             denyVotePercentage < 0.01 && 'rounded'
           }`}
         />
+
         <div
           style={{
             width: `${
@@ -30,7 +31,7 @@ const VoteResultsBar = ({
                 : 2
             }%`,
           }}
-          className={`bg-red-500 flex rounded-r ${
+          className={`bg-red-500 flex rounded-r border-l ${
             approveVotePercentage < 0.01 && 'rounded'
           }`}
         />

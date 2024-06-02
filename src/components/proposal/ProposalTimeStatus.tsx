@@ -11,12 +11,8 @@ const ProposalTimeStatus = ({ proposal }: ProposalTimeStatusProps) => {
   const governance = useGovernance(proposal.governance).data;
 
   return proposal && governance ? (
-    <div className='flex items-center text-fgd-3 text-sm'>
-      {proposal.votingCompletedAt ? (
-        `${ProposalState[proposal.state]} ${fmtUnixTime(
-          proposal.votingCompletedAt
-        )}`
-      ) : proposal.votingAt ? (
+    <div className='flex items-center text-sm'>
+      {proposal.votingAt ? (
         <ProposalTimer proposal={proposal} governance={governance.account} />
       ) : (
         `Drafted ${fmtUnixTime(proposal.draftAt)}`

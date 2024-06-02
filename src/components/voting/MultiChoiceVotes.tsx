@@ -78,7 +78,7 @@ export const MultiChoiceVotes = ({ proposal }: { proposal: Proposal }) => {
             <div className='bg-secondary h-2 flex flex-grow mt-1.5 rounded w-full'>
               <div
                 style={{
-                  width: `${optionWeightPct.divn(10)}%`,
+                  width: `${optionWeightPct.toNumber() / 10}%`,
                 }}
                 className={`bg-sky-500/50 flex rounded-l ${
                   0 < 0.01 && 'rounded'

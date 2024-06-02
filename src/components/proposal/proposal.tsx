@@ -5,7 +5,6 @@ import {
   ProgramAccount,
   Proposal,
   ProposalState,
-  Realm,
   VoteTypeKind,
 } from '@solana/spl-governance';
 import {
@@ -15,9 +14,8 @@ import {
   ProposalCardVote,
   ProposalCardFooter,
 } from '../ui/proposal-card';
-import { ProgressVoteButton } from '../voting-progress-button';
 import { useRealmFromParams } from '@/app/api/realm/hooks';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 
 import { FC } from 'react';
 import ProposalTimeStatus from './ProposalTimeStatus';
@@ -38,10 +36,9 @@ import {
   CollapsibleTrigger,
 } from '../ui/collapsible';
 import DiscussionPanel from '../chat/DiscussionPanel';
-import {
-  ChevronsDownUpIcon,
-  MessageSquareIcon,
-} from 'lucide-react';
+import { ChevronsDownUpIcon, MessageSquareIcon } from 'lucide-react';
+import { ProfileImage, ProfilePopup } from '../CivicProfile';
+import { useTokenOwnerRecordsForRealm } from '@/app/api/tokenOwnerRecord/hooks';
 
 interface SingleProposalProps {
   proposal: ProgramAccount<Proposal>;
@@ -104,18 +101,36 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
 
   const [isChatOpen, setIsChatOpen] = useState(false);
 
+  const proposedBy = useTokenOwnerRecordsForRealm().data?.find((x) =>
+    x.pubkey.equals(proposal.account.tokenOwnerRecord)
+  )?.account.governingTokenOwner;
+
   return (
     <ProposalCard className='border-gray-400'>
-      <ProposalCardHeader className='flex items-center justify-between'>
+      <ProposalCardHeader className='flex justify-between'>
         <div className='flex-1'>
           <div className='flex flex-col'>
-            <div className='text-lg font-bold'>{proposal.account.name}</div>
-            <div className='text-xs text-gray-400'>
-              {shortenAddress(proposal.pubkey.toString())}
+            <div className='flex gap-2'>
+              <div className='bg-secondary flex flex-shrink-0 items-center justify-center h-10 rounded-full w-10'>
+                {proposedBy && (
+                  <ProfilePopup publicKey={proposedBy} expanded={true}>
+                    <ProfileImage
+                      publicKey={proposedBy}
+                      className='h-8 text-fgd-3 w-8'
+                    />
+                  </ProfilePopup>
+                )}
+              </div>
+              <div className='flex flex-col items-start gap-2'>
+                <div className='text-lg font-bold'>{proposal.account.name}</div>
+                <div className='text-xs text-gray-400'>
+                  {shortenAddress(proposal.pubkey.toString())}
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className='flex items-center gap-4'>
+        <div className='flex gap-4 items-center'>
           <ProposalTimeStatus proposal={proposal.account} />
           <ProposalStateBadge proposal={proposal.account} />
         </div>
@@ -149,7 +164,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
       <ProposalCardVote>
         {proposal.account.state === ProposalState.Voting &&
           (isMulti ? (
-            <MultiChoiceVotes proposal={proposal.account}  />
+            <MultiChoiceVotes proposal={proposal.account} />
           ) : (
             <SingleChoiceVote
               proposal={proposal}
