@@ -136,7 +136,7 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
       <ProposalCardVote>
         {proposal.account.state === ProposalState.Voting &&
           (isMulti ? (
-            <MultiChoiceVotes proposal={proposal.account} limit={3} />
+            <MultiChoiceVotes proposal={proposal.account}  />
           ) : (
             <SingleChoiceVote
               proposal={proposal}

@@ -7,14 +7,9 @@ import { useRealmFromParams } from '@/app/api/realm/hooks';
 import { fmtBnMintDecimals } from '@/utils/units';
 import { CheckCircleIcon, ChevronRight } from 'lucide-react';
 import { useMintInfo } from '@/app/api/token/hooks';
+import { useState } from 'react';
 
-export const MultiChoiceVotes = ({
-  proposal,
-  limit,
-}: {
-  proposal: Proposal;
-  limit: number;
-}) => {
+export const MultiChoiceVotes = ({ proposal }: { proposal: Proposal }) => {
   const { data: realm } = useRealmFromParams();
   const { data: mint } = useMintInfo(realm?.account.communityMint);
   const { data: councilMint } = useMintInfo(realm?.account.config.councilMint);
@@ -42,8 +37,11 @@ export const MultiChoiceVotes = ({
 
   const nota = '$$_NOTA_$$';
   const last = proposal.options.length - 1;
+
+  const [limit, setLimit] = useState<number>(3);
+
   return (
-    <div className='pb-4 px-6 border rounded-md'>
+    <div className='pb-4 px-6'>
       {proposal.options.slice(0, limit).map((option, index) => {
         const optionVotes = new BN(option.voteWeight, 'hex');
         const optionWeightPct = totalVoteWeight.isZero() // dont divide by zero
@@ -91,7 +89,10 @@ export const MultiChoiceVotes = ({
         );
       })}
       {limit < proposal.options.length && (
-        <div className='border border-fgd-4 rounded-lg p-4'>
+        <div
+          className='mt-2 border border-secondary rounded-lg p-4 cursor-pointer'
+          onClick={() => setLimit(proposal.options.length)}
+        >
           <div className='flex flex-row gap-2'>
             <div className=''>
               {proposal.options.length - limit} more choice
