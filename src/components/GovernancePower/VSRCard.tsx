@@ -21,7 +21,8 @@ export const VSRCard: FC<VotingCardProps> = ({ role, ...props }) => {
     //TODO make a better generic little prompt for when a plugin is used but there are still tokens in vanilla
     <>
       <VanillaVotingPower role='community' {...props} />
-      <div className='flex flex-col gap-2'>
+      {/* TODO */}
+      {/* <div className='flex flex-col gap-2'>
         <div>
           <small className='flex items-center mt-3 text-xs'>
             <ExclamationTriangleIcon className='w-5 h-5 mr-2'></ExclamationTriangleIcon>
@@ -32,7 +33,7 @@ export const VSRCard: FC<VotingCardProps> = ({ role, ...props }) => {
         <div>
           <VanillaWithdrawTokensButton role={role} />
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

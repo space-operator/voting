@@ -14,7 +14,7 @@ import {
   useTokenMetadata,
   useUserGovTokenAccount,
 } from '@/app/api/token/hooks';
-import VSRCommunityVotingPower from './VSRVotingPower';
+// import VSRCommunityVotingPower from './VSRVotingPower';
 
 interface Props {
   className?: string;
@@ -80,11 +80,12 @@ export default function LockedCommunityVotingPower(props: Props) {
           You do not have any voting power in this dao.
         </div>
       ) : (
-        <VSRCommunityVotingPower
-          votingPower={votingPower}
-          votingPowerLoading={!votingPowerReady}
-          isLastPlugin={isLastVoterWeightPlugin}
-        />
+        <div className='text-xs text-white/50'>VSR not implemented</div>
+        // <VSRCommunityVotingPower
+        //   votingPower={votingPower}
+        //   votingPowerLoading={!votingPowerReady}
+        //   isLastPlugin={isLastVoterWeightPlugin}
+        // />
       )}
 
       {depositAmount.isGreaterThan(0) && (

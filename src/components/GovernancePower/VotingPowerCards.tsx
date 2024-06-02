@@ -24,8 +24,7 @@ export const VotingPowerCards: FC<VotingCardProps> = (props) => {
     .map((plugin, pluginIdx): ReactNode | undefined => {
       return hasDedicatedVotingPowerUI(plugin.name) ? (
         <CardForPlugin plugin={plugin.name} {...props} key={pluginIdx} />
-        // FIXME
-        // <div>{plugin.name}</div>
+
       ) : undefined;
     })
     .filter(Boolean); // filter out undefined

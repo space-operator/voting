@@ -176,59 +176,60 @@ const VanillaWithdrawTokensButton = ({
         }
       }
 
-      if (depositTokenRecord!.account.outstandingProposalCount > 0) {
-        const activeProposals = await getProposalsAtVotingStateByTOR(
-          connection,
-          realmInfo!.programId,
-          depositTokenRecord!.pubkey
-        );
+      // TODO 
+      // if (depositTokenRecord!.account.outstandingProposalCount > 0) {
+      //   const activeProposals = await getProposalsAtVotingStateByTOR(
+      //     connection,
+      //     realmInfo!.programId,
+      //     depositTokenRecord!.pubkey
+      //   );
 
-        for (const proposal of Object.values(activeProposals)) {
-          const fetchedGovernances: ProgramAccount<Governance>[] = [];
-          const isGovernanceFetched = fetchedGovernances.find((governance) =>
-            governance.pubkey.equals(proposal.pubkey)
-          );
+      //   for (const proposal of Object.values(activeProposals)) {
+      //     const fetchedGovernances: ProgramAccount<Governance>[] = [];
+      //     const isGovernanceFetched = fetchedGovernances.find((governance) =>
+      //       governance.pubkey.equals(proposal.pubkey)
+      //     );
 
-          const currentGovernance = isGovernanceFetched
-            ? isGovernanceFetched
-            : await fetchGovernanceByPubkey(
-                connection,
-                proposal.account.governance
-              );
+      //     const currentGovernance = isGovernanceFetched
+      //       ? isGovernanceFetched
+      //       : await fetchGovernanceByPubkey(
+      //           connection,
+      //           proposal.account.governance
+      //         );
 
-          if (!currentGovernance) throw new Error('failed to fetch governance');
+      //     if (!currentGovernance) throw new Error('failed to fetch governance');
 
-          if (fetchedGovernances.indexOf(currentGovernance) === -1) {
-            fetchedGovernances.push(currentGovernance);
-          }
+      //     if (fetchedGovernances.indexOf(currentGovernance) === -1) {
+      //       fetchedGovernances.push(currentGovernance);
+      //     }
 
-          if (
-            proposal.account.getTimeToVoteEnd(currentGovernance.account) > 0
-          ) {
-            // TODO
-            // notify({
-            //   type: 'error',
-            //   message: `Can't withdraw tokens while Proposal ${proposal.account.name} is being voted on.`,
-            // });
-            throw new Error(
-              `Can't withdraw tokens while Proposal ${proposal.account.name} is being voted on.`
-            );
-          } else {
-            // TODO
-            // await withFinalizeVote(
-            //   instructions,
-            //   realmInfo!.programId,
-            //   getProgramVersionForRealm(realmInfo!),
-            //   realm!.pubkey,
-            //   proposal.account.governance,
-            //   proposal.pubkey,
-            //   proposal.account.tokenOwnerRecord,
-            //   proposal.account.governingTokenMint,
-            //   maxVoterWeight
-            // );
-          }
-        }
-      }
+      //     if (
+      //       proposal.account.getTimeToVoteEnd(currentGovernance.account) > 0
+      //     ) {
+      //       // TODO
+      //       // notify({
+      //       //   type: 'error',
+      //       //   message: `Can't withdraw tokens while Proposal ${proposal.account.name} is being voted on.`,
+      //       // });
+      //       throw new Error(
+      //         `Can't withdraw tokens while Proposal ${proposal.account.name} is being voted on.`
+      //       );
+      //     } else {
+      //       // TODO
+      //       // await withFinalizeVote(
+      //       //   instructions,
+      //       //   realmInfo!.programId,
+      //       //   getProgramVersionForRealm(realmInfo!),
+      //       //   realm!.pubkey,
+      //       //   proposal.account.governance,
+      //       //   proposal.pubkey,
+      //       //   proposal.account.tokenOwnerRecord,
+      //       //   proposal.account.governingTokenMint,
+      //       //   maxVoterWeight
+      //       // );
+      //     }
+      //   }
+      // }
 
 
       // TODO add flow
