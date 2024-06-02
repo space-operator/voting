@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { ImageIcon } from 'lucide-react';
-import Image from 'next/image';
 import { FunctionComponent, useState } from 'react';
 
 export const LoadingDots = ({ className = '' }) => {
@@ -64,7 +64,7 @@ export const ImgWithLoader = (props) => {
       {isLoading && (
         <ImageIcon className='absolute animate-pulse h-1/4 w-1/4 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-fgd-3 z-10' />
       )}
-      <Image
+      <img
         {...props}
         alt={props.alt || 'Description of the image'}
         onLoad={() => setIsLoading(false)}

@@ -15,14 +15,7 @@ type Props = {
 };
 
 export const ProfilePopup: FC<Props> = ({ publicKey, expanded, children }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggle = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    setIsOpen(!isOpen);
-  };
-
-  const Icon: FC = () =>
+    const Icon: FC = () =>
     children ? (
       <>{children}</>
     ) : (
@@ -31,17 +24,15 @@ export const ProfilePopup: FC<Props> = ({ publicKey, expanded, children }) => {
 
   return (
     <span className='flex'>
-      {isOpen && (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Icon />
-          </DialogTrigger>
-          <DialogContent className='sm:max-w-sm'>
-            <h2>Civic Profile for {abbreviateAddress(publicKey)}</h2>
-            <Profile publicKey={publicKey} expanded={expanded} />
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Icon />
+        </DialogTrigger>
+        <DialogContent className='sm:max-w-sm'>
+          <h2>Civic Profile for {abbreviateAddress(publicKey)}</h2>
+          <Profile publicKey={publicKey} expanded={expanded} />
+        </DialogContent>
+      </Dialog>
     </span>
   );
 };

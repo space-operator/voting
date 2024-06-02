@@ -25,7 +25,6 @@ import { useVoteRecordByPubkeyQuery } from '@/app/api/voteRecord/hooks';
 import { ExternalLinkIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { isPublicKey } from '@/utils/helpers';
 import { getVoteWeight, isYesVote } from '@/app/api/voteRecord/helpers';
-import { useAtomValue } from 'jotai';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeExternalLinks from 'rehype-external-links';
