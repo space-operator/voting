@@ -41,12 +41,12 @@ export const useProposalVoteRecordQuery = ({
 
   const selectedTokenRecord = quorum === 'electoral' ? electoral : veto;
 
-  const pda = useAddressQuery_SelectedProposalVoteRecord(
+  const { data: pda } = useAddressQuery_SelectedProposalVoteRecord(
     selectedTokenRecord?.data,
     proposal.pubkey
   );
 
-  return useVoteRecordByPubkeyQuery(pda.data);
+  return useVoteRecordByPubkeyQuery(pda);
 };
 
 export const useVoteRecordByPubkeyQuery = (pubkey: PublicKey | undefined) => {
@@ -84,17 +84,19 @@ export const useAddressQuery_VoteRecord = (
   proposal: PublicKey,
   tokenOwnerRecordAddress: PublicKey
 ) => {
+  const { connection } = useConnection();
+
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'voteRecordAddress',
-      programId,
       proposal,
       tokenOwnerRecordAddress,
+      connection.rpcEndpoint,
     ],
     queryFn: async () =>
       await getVoteRecordAddress(programId, proposal, tokenOwnerRecordAddress),
-    staleTime: Infinity,
+    staleTime: 60 * 1000 * 60, // 1 hour
   });
 };
 
@@ -102,13 +104,12 @@ export const useHasVoteTimeExpired = (
   governance: ProgramAccount<Governance>,
   proposal: ProgramAccount<Proposal>
 ) => {
-
   return useIsBeyondTimestamp(
     proposal
       ? proposal.account.isVoteFinalized()
         ? 0 // If vote is finalized then set the timestamp to 0 to make it expired
         : proposal.account.votingAt && governance
-        ? (new BN(proposal.account.votingAt, 'hex')).toNumber() +
+        ? new BN(proposal.account.votingAt, 'hex').toNumber() +
           governance.account.config.baseVotingTime
         : undefined
       : undefined

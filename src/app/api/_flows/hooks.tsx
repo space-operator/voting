@@ -12,12 +12,21 @@ import { ed25519 } from '@noble/curves/ed25519';
 import { SignatureRequest } from '@space-operator/client/dist/module/types/ws';
 import { restClient, wsClient } from '@/lib/client';
 
+export enum FlowRunningState {
+  NotStarted,
+  Running,
+  Complete,
+  Success,
+  Error,
+}
+
 export const useFlowEvents = () => {
   const { publicKey, signTransaction } = useWallet();
   const [logs, setLogs] = useState([]);
   const [errors, setErrors] = useState([]);
-  const [flowComplete, setFlowComplete] = useState({
-    complete: false,
+
+  const [flowRunningState, setFlowRunningState] = useState({
+    state: FlowRunningState.NotStarted,
     event: {},
   });
   const { setFlowResponse } = useFlowRun((state) => state);
@@ -34,14 +43,30 @@ export const useFlowEvents = () => {
           //   appendSocketData([convertedSocketData]);
           // }
           // handle signature request
+          if (ev.event === 'FlowStart') {
+            setFlowRunningState({
+              state: FlowRunningState.Running,
+              event: ev,
+            });
+          }
           if (ev.event === 'FlowFinish') {
-            setFlowComplete({
-              complete: true,
+            setFlowRunningState({
+              state: FlowRunningState.Complete,
               event: ev,
             });
           }
           if (ev.event === 'FlowError') {
             setErrors((errors) => [...errors, ev]);
+            setFlowRunningState({
+              state: FlowRunningState.Error,
+              event: ev,
+            });
+          }
+          if (ev.event === 'FlowFinish' && errors.length === 0) {
+            setFlowRunningState({
+              state: FlowRunningState.Success,
+              event: ev,
+            });
           }
 
           if (ev.event === 'SignatureRequest') {
@@ -119,10 +144,5 @@ export const useFlowEvents = () => {
     [publicKey, setLogs, subscribeEvents, clearSocketData, setFlowResponse]
   );
 
-  // return convenient Flow completion and error handling
-  // if errors is empty and flowComplete.complete is true, then the flow was successful
-
-  const flowSuccess = errors.length === 0 && flowComplete.complete;
-
-  return { logs, startFlow, flowComplete, errors, flowSuccess };
+  return { logs, startFlow, errors, flowRunningState };
 };

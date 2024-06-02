@@ -27,15 +27,12 @@ export const CastVoteButtons = ({
 }: {
   proposal: ProgramAccount<Proposal>;
 }) => {
-  const [showVoteModal, setShowVoteModal] = useState(false);
-  const [vote, setVote] = useState<'yes' | 'no' | null>(null);
-
   const realmInfo = useRealmRegistryEntryFromParams();
   const governance = useGovernance(
     new PublicKey(proposal.account.governance)
   ).data;
 
-  const allowDiscussion = realmInfo?.allowDiscussion ?? true;
+  const allowDiscussion = realmInfo?.allowDiscussion ?? false;
 
   const { submitting, submitVote } = useSubmitVote({ proposal });
   const votingPop = useVotingPop(proposal.account.governingTokenMint);
@@ -52,15 +49,9 @@ export const CastVoteButtons = ({
   const inCoolOffTime = isInCoolOffTime(proposal.account, governance.account);
 
   const handleVote = async (vote: 'yes' | 'no') => {
-    setVote(vote);
-
-    if (allowDiscussion) {
-      setShowVoteModal(true);
-    } else {
-      await submitVote({
-        vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
-      });
-    }
+    await submitVote({
+      vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
+    });
   };
 
   return (isVoting && !isVoteCast) || (inCoolOffTime && !isVoteCast) ? (
@@ -79,50 +70,56 @@ export const CastVoteButtons = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    className='w-1/2'
-                    onClick={() => handleVote('yes')}
-                    disabled={!canVote || submitting}
-                  >
-                    <div className='flex flex-row items-center justify-center'>
-                      <ThumbsUpIcon className='h-4 w-4 mr-2' />
-                      Vote Yes
-                    </div>
-                  </Button>
+                  {allowDiscussion ? (
+                    <VoteCommentModal
+                      vote={VoteKind.Approve}
+                      proposal={proposal}
+                      disabled={!canVote || submitting}
+                    />
+                  ) : (
+                    <Button
+                      className='w-1/2'
+                      onClick={() => handleVote('yes')}
+                      disabled={!canVote || submitting}
+                    >
+                      <div className='flex flex-row items-center justify-center'>
+                        <ThumbsUpIcon className='h-4 w-4 mr-2' />
+                        Vote Yes
+                      </div>
+                    </Button>
+                  )}
                 </TooltipTrigger>
                 <TooltipContent>{tooltipContent}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  className='w-1/2'
-                  onClick={() => handleVote('no')}
-                  disabled={!canVote || submitting}
-                >
-                  <div className='flex flex-row items-center justify-center'>
-                    <ThumbsDownIcon className='h-4 w-4 mr-2' />
-                    Vote No
-                  </div>
-                </Button>
+                {allowDiscussion ? (
+                  <VoteCommentModal
+                    vote={VoteKind.Deny}
+                    proposal={proposal}
+                    disabled={!canVote || submitting}
+                  />
+                ) : (
+                  <Button
+                    className='w-1/2'
+                    onClick={() => handleVote('no')}
+                    disabled={!canVote || submitting}
+                  >
+                    <div className='flex flex-row items-center justify-center'>
+                      <ThumbsDownIcon className='h-4 w-4 mr-2' />
+                      Vote No
+                    </div>
+                  </Button>
+                )}
               </TooltipTrigger>
               <TooltipContent>{tooltipContent}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </div>
-
-      {/* {showVoteModal && vote ? (
-        <VoteCommentModal
-          isOpen={showVoteModal}
-          onClose={() => setShowVoteModal(false)}
-          vote={vote === 'yes' ? VoteKind.Approve : VoteKind.Deny}
-          proposal={proposal}
-        />
-      ) : null} */}
     </div>
   ) : null;
 };

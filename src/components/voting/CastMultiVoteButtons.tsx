@@ -15,21 +15,21 @@ import {
 } from '../ui/tooltip';
 import VoteCommentModal from './VoteCommentModal';
 import { useRealmRegistryEntryFromParams } from '@/app/api/realm/hooks';
+import { FlowRunningState } from '@/app/api/_flows/hooks';
 
 export const CastMultiVoteButtons = ({
   proposal,
 }: {
   proposal: ProgramAccount<Proposal>;
 }) => {
-  const [vote, setVote] = useState<'yes' | 'no' | null>(null);
   const realmInfo = useRealmRegistryEntryFromParams();
-  // TODO changed default to false for testing
+
   const allowDiscussion = realmInfo?.allowDiscussion ?? false;
 
-  const { submitting, submitVote, logs, flowComplete, errors, flowSuccess } =
-    useSubmitVote({
-      proposal,
-    });
+  const { submitting, submitVote, errors, flowRunningState } = useSubmitVote({
+    proposal,
+  });
+
   const { data: governance } = useGovernance(
     new PublicKey(proposal.account.governance)
   );
@@ -40,6 +40,7 @@ export const CastMultiVoteButtons = ({
     quorum: 'electoral',
     proposal,
   });
+  
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [optionStatus, setOptionStatus] = useState<boolean[]>(
     new Array(proposal.account.options.length).fill(false)
@@ -51,8 +52,6 @@ export const CastMultiVoteButtons = ({
   const last = proposal.account.options.length - 1;
 
   const handleVote = async (vote: 'yes' | 'no') => {
-    setVote(vote);
-
     await submitVote({
       vote: vote === 'yes' ? VoteKind.Approve : VoteKind.Deny,
       voteWeights: selectedOptions,
@@ -97,9 +96,6 @@ export const CastMultiVoteButtons = ({
     setOptionStatus(status);
   };
 
-  // console.log('logs', logs);
-  // console.log('flowComplete', flowComplete);
-  // console.log('errors', errors);
   return isVoting && !isVoteCast ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
       <div className='flex flex-col items-center justify-center'>
@@ -119,9 +115,8 @@ export const CastMultiVoteButtons = ({
                       <Button
                         className={`
                     ${
-                      optionStatus[index]
-                        ? 'bg-primary text-bkg-2 hover:text-bkg-2 hover:border-primary'
-                        : ''
+                      optionStatus[index] &&
+                      'bg-green-500/80 '
                     }
                     rounded-lg w-full
                   `}
@@ -149,6 +144,18 @@ export const CastMultiVoteButtons = ({
             <Tooltip>
               <TooltipTrigger>
                 {allowDiscussion ? (
+                  <VoteCommentModal
+                    vote={VoteKind.Approve}
+                    isMulti={selectedOptions}
+                    proposal={proposal}
+                    disabled={
+                      !canVote ||
+                      submitting ||
+                      !selectedOptions.length ||
+                      flowRunningState.state === FlowRunningState.Running
+                    }
+                  />
+                ) : (
                   <Button
                     className='w-full'
                     onClick={() => handleVote('yes')}
@@ -156,20 +163,13 @@ export const CastMultiVoteButtons = ({
                       !canVote ||
                       submitting ||
                       !selectedOptions.length ||
-                      !flowComplete
+                      flowRunningState.state === FlowRunningState.Running
                     }
                   >
                     <div className='flex flex-row items-center justify-center'>
                       Vote
                     </div>
                   </Button>
-                ) : (
-                  <VoteCommentModal
-                    vote={VoteKind.Approve}
-                    isMulti={selectedOptions}
-                    proposal={proposal}
-                    disabled={!canVote || submitting || !selectedOptions.length}
-                  />
                 )}
               </TooltipTrigger>
               <TooltipContent>

@@ -16,7 +16,7 @@ import {
 
 import { TransactionInstruction } from '@solana/web3.js';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { queryClient } from '@/providers/query';
 import {
@@ -31,7 +31,7 @@ import {
   communityDelegatorAtom,
   councilDelegatorAtom,
 } from '../../../components/SelectPrimaryDelegators';
-import { useFlowEvents } from '../_flows/hooks';
+import { FlowRunningState, useFlowEvents } from '../_flows/hooks';
 import { getVetoTokenMint } from '@/utils/helpers';
 import { prepFlowInputs } from '../../../components/_flow/helpers';
 import { Value } from '@space-operator/client';
@@ -62,8 +62,7 @@ export const useSubmitVote = ({
   const communityDelegators = useBatchedVoteDelegators('community');
   const councilDelegators = useBatchedVoteDelegators('council');
 
-  const { logs, startFlow, flowComplete, errors, flowSuccess } =
-    useFlowEvents();
+  const { logs, startFlow, errors, flowRunningState } = useFlowEvents();
 
   const { error, loading, execute } = useAsyncCallback(
     async ({
@@ -224,7 +223,7 @@ export const useSubmitVote = ({
         const flowId = parseInt(process.env.NEXT_PUBLIC_FLOW_ID_VOTE);
 
         // if comment is not empty, add add comment instruction
-        const addComment = !!comment ? { Text: comment } : "";
+        const addComment = !!comment ? { Text: comment } : '';
 
         const inputBody = new Value({
           private_key: 'WALLET',
@@ -246,29 +245,6 @@ export const useSubmitVote = ({
 
         await startFlow(flowId, prepFlowInputs(inputBody, wallet.publicKey));
 
-        // await castVote(
-        //   rpcContext,
-        //   realm,
-        //   proposal,
-        //   tokenOwnerRecordPk,
-        //   vote,
-        //   msg,
-        //   votingClient,
-        //   confirmationCallback,
-        //   voteWeights,
-        //   relevantDelegators
-        // );
-        queryClient.invalidateQueries({
-          queryKey: ['voteRecordAddress'],
-        });
-        // TODO
-        // queryClient.invalidateQueries({
-        //   queryKey: proposalQueryKeys.all(connection.current.rpcEndpoint),
-        // });
-        msg &&
-          queryClient.invalidateQueries({
-            queryKey: [connection.rpcEndpoint, 'ChatMessages'],
-          });
       } catch (e) {
         console.error(e);
       } finally {
@@ -283,14 +259,40 @@ export const useSubmitVote = ({
     }
   );
 
+  useEffect(() => {
+    if (flowRunningState.state === FlowRunningState.Success) {
+
+      queryClient.invalidateQueries({
+        queryKey: [
+          'voteRecordAddress',
+          proposal.pubkey,
+          proposal.account.tokenOwnerRecord,
+        ],
+      });
+  
+      queryClient.invalidateQueries({
+        queryKey: ['proposalVoteRecord'],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['chatMessages', proposal.pubkey],
+      });
+    }
+  }, [
+    flowRunningState.state,
+    proposal.pubkey,
+    proposal.account.tokenOwnerRecord,
+    connection.rpcEndpoint,
+    flowRunningState,
+  ]);
+
   return {
     error,
     submitting: loading,
     submitVote: execute,
     logs,
-    flowComplete,
+    flowRunningState,
     errors,
-    flowSuccess,
   };
 };
 

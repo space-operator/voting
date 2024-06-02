@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
+import { FlowRunningState } from '@/app/api/_flows/hooks';
 
 interface VoteCommentModalProps {
   vote: VoteKind;
@@ -43,11 +44,10 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
   disabled,
 }) => {
   const [comment, setComment] = useState('');
-  const { submitting, submitVote, flowSuccess, flowComplete, errors } =
-    useSubmitVote({
-      proposal,
-    });
-  const [isOpen, setIsOpen] = useState(false); // State to control dialog visibility
+  const { submitting, submitVote, flowRunningState, errors } = useSubmitVote({
+    proposal,
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const voteString = VOTE_STRINGS[vote];
 
@@ -57,17 +57,13 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
       comment,
       voteWeights: isMulti,
     });
-    if (flowSuccess) {
-      // Check if the submission was successful
-      setIsOpen(false); // Close the dialog
-
-      // TODO invalidate queries
-
+    if (flowRunningState.state === FlowRunningState.Success) {
+      setIsDialogOpen(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button disabled={disabled}>Vote</Button>
       </DialogTrigger>
@@ -115,8 +111,6 @@ const VoteCommentModal: FunctionComponent<VoteCommentModalProps> = ({
                 )}
                 {submitting ? (
                   <Loading />
-                ) : flowComplete.complete ? (
-                  <span>Vote {isMulti ? '' : voteString}</span>
                 ) : (
                   <span>Vote {isMulti ? '' : voteString}</span>
                 )}

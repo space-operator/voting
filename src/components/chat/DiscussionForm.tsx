@@ -26,7 +26,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { useRealmVoterWeightPlugins } from '@/app/api/voterWeightPlugins/hooks';
 import { useVotingClients } from '@/app/api/votingClient/hooks';
 import { SignerWalletAdapter } from '@solana/wallet-adapter-base';
-import { useFlowEvents } from '@/app/api/_flows/hooks';
+import { FlowRunningState, useFlowEvents } from '@/app/api/_flows/hooks';
 import { Value } from '@space-operator/client';
 import { prepFlowInputs } from '../_flow/helpers';
 import { queryClient } from '@/providers/query';
@@ -45,7 +45,7 @@ const DiscussionForm = ({
   const votingClients = useVotingClients();
   const [submitting, setSubmitting] = useState(false);
 
-  const { logs, startFlow, flowComplete, errors, flowSuccess } =
+  const { logs, startFlow, errors, flowRunningState } =
     useFlowEvents();
 
   const wallet = useWallet()?.wallet?.adapter;
@@ -121,12 +121,12 @@ const DiscussionForm = ({
   };
 
   useEffect(() => {
-    if (flowSuccess) {
+    if (flowRunningState.state === FlowRunningState.Success) {
       queryClient.invalidateQueries({
         queryKey: ['chatMessages', proposal.pubkey],
       });
     }
-  }, [flowSuccess, proposal.pubkey]);
+  }, [flowRunningState.state, proposal.pubkey]);
 
   const postEnabled = proposal && connected && ownVoterWeight && comment;
 
@@ -139,8 +139,6 @@ const DiscussionForm = ({
     : !commenterVoterTokenRecord
     ? 'You need to have voting power for this community to submit your comment.'
     : '';
-
-  console.log('logs', logs);
 
   return (
     <>
