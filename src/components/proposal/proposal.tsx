@@ -17,7 +17,7 @@ import {
 } from '../ui/proposal-card';
 import { ProgressVoteButton } from '../voting-progress-button';
 import { useRealmFromParams } from '@/app/api/realm/hooks';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 import { FC } from 'react';
 import ProposalTimeStatus from './ProposalTimeStatus';
@@ -59,6 +59,11 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
 
   const [description, setDescription] = useState('');
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showToggle, setShowToggle] = useState(false);
+  const [hasOverflowed, setHasOverflowed] = useState(false);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const fetchDescription = async () => {
       if (proposal.account.descriptionLink) {
@@ -67,12 +72,23 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
         );
         setDescription(resolvedDescription);
       } else {
-        setDescription(''); 
+        setDescription('');
       }
     };
 
     fetchDescription();
   }, [proposal.account.descriptionLink]);
+
+  useEffect(() => {
+    if (descriptionRef.current) {
+      const isContentOverflowing =
+        descriptionRef.current.scrollHeight >
+        descriptionRef.current.clientHeight;
+      if (isContentOverflowing) setHasOverflowed(true);
+
+      setShowToggle(isContentOverflowing);
+    }
+  }, [description, isExpanded]);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -94,13 +110,28 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
       </ProposalCardHeader>
       {description && (
         <ProposalCardContent className='break-words'>
-          <ReactMarkdown
-            className='markdown'
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
+          <div
+            ref={descriptionRef}
+            className={isExpanded ? '' : 'line-clamp-3'}
           >
-            {description}
-          </ReactMarkdown>
+            <ReactMarkdown
+              className='markdown'
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
+            >
+              {description}
+            </ReactMarkdown>
+          </div>
+          {(showToggle || hasOverflowed) && (
+            <div className='flex justify-end'>
+              <button
+                className='mt-2 text-primary/50 hover:text-primary/75'
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? 'Show Less' : 'Show More'}
+              </button>
+            </div>
+          )}
         </ProposalCardContent>
       )}
       <ProposalCardVote>
