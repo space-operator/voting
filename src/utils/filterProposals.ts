@@ -3,10 +3,12 @@ import {
   VotingTypes,
   mapFromProposal,
 } from '@/components/filter-popover';
+import { hasInstructions } from '@/components/proposal/ProposalStateBadge';
 import {
   ProgramAccount,
   Proposal,
   ProposalOption,
+  ProposalState,
   Realm,
   VoteType,
   VoteTypeKind,
@@ -46,44 +48,79 @@ export const filterProposals = (
     proposalA: ProgramAccount<Proposal>,
     proposalB: ProgramAccount<Proposal>
   ) => {
-    const getTime = (proposal: ProgramAccount<Proposal>) =>
-      new BN(proposal.account.votingCompletedAt, 'hex') ||
-      new BN(proposal.account.signingOffAt, 'hex') ||
-      new BN(proposal.account.draftAt, 'hex') ||
-      new BN(0);
+  // TODO finish. only sorts with votingCompletedAt and signingOffAt
+  const getTime = (proposal: ProgramAccount<Proposal>, field: 'votingCompletedAt' | 'signingOffAt') => {
+    const value = proposal.account[field];
+    return value ? new BN(value, 'hex') : null;
+  };
 
-    if (sorting.completed_at !== SORTING_OPTIONS.NONE) {
-      const modifier = sorting.completed_at === SORTING_OPTIONS.ASC ? 1 : -1;
-      return modifier * getTime(proposalA).sub(getTime(proposalB)).toNumber();
-    }
+  let timeA, timeB;
+  let modifier = 0;
 
-    if (sorting.signedOffAt !== SORTING_OPTIONS.NONE) {
-      const modifier = sorting.signedOffAt === SORTING_OPTIONS.ASC ? 1 : -1;
-      return (
-        modifier *
-        (new BN(proposalA.account.signingOffAt, 'hex') || new BN(0))
-          .sub(new BN(proposalB.account.signingOffAt, 'hex') || new BN(0))
-          .toNumber()
-      );
-    }
+  if (sorting.completed_at !== SORTING_OPTIONS.NONE) {
+    timeA = getTime(proposalA, 'votingCompletedAt');
+    timeB = getTime(proposalB, 'votingCompletedAt');
+    modifier = sorting.completed_at === SORTING_OPTIONS.ASC ? 1 : -1;
+  } else if (sorting.signedOffAt !== SORTING_OPTIONS.NONE) {
+    timeA = getTime(proposalA, 'signingOffAt');
+    timeB = getTime(proposalB, 'signingOffAt');
+    modifier = sorting.signedOffAt === SORTING_OPTIONS.ASC ? 1 : -1;
+  }
 
-    return 0;
+  // If either time is null, handle it by defaulting to a large number to ensure it sorts last
+  if (!timeA || !timeB) {
+    if (!timeA && !timeB) return 0; // Both are null, consider equal
+    if (!timeA) return 1 * modifier; // A is null, sort it last
+    if (!timeB) return -1 * modifier; // B is null, sort it last
+  }
+
+  // Compare the times if both are available
+  return modifier * timeA.sub(timeB).toNumber();
+
+    // const getTime = (proposal: ProgramAccount<Proposal>) =>
+    //   new BN(proposal.account.votingCompletedAt, 'hex') ||
+    //   new BN(proposal.account.signingOffAt, 'hex') ||
+    //   new BN(proposal.account.draftAt, 'hex') ||
+    //   new BN(0);
+
+    // if (sorting.completed_at !== SORTING_OPTIONS.NONE) {
+    //   const modifier = sorting.completed_at === SORTING_OPTIONS.ASC ? 1 : -1;
+    //   return modifier * getTime(proposalA).sub(getTime(proposalB)).toNumber();
+    // }
+
+    // if (sorting.signedOffAt !== SORTING_OPTIONS.NONE) {
+    //   const modifier = sorting.signedOffAt === SORTING_OPTIONS.ASC ? 1 : -1;
+    //   return (
+    //     modifier *
+    //     (new BN(proposalA.account.signingOffAt, 'hex') || new BN(0))
+    //       .sub(new BN(proposalB.account.signingOffAt, 'hex') || new BN(0))
+    //       .toNumber()
+    //   );
+    // }
+
+    // return 0;
   };
 
   const filterProposal = (proposal: ProgramAccount<Proposal>) => {
-    const state = mapFromProposal(proposal.account.state);
+    const state = mapFromProposal(
+      proposal.account.state
+    ) as unknown as ProposalState;
 
     if (!filters[state]) {
       return false;
     }
 
-    //   if (state === ProposalState.Succeeded && !filters.Completed && !hasInstructions(proposal.account)) {
-    //     return false;
-    //   }
+    if (
+      state === ProposalState.Succeeded &&
+      !filters.Completed &&
+      !hasInstructions(proposal.account)
+    ) {
+      return false;
+    }
 
-    //   if (state === ProposalState.Executing && !filters.Executable) {
-    //     return false;
-    //   }
+    if (state === ProposalState.Executing && !filters.Executable) {
+      return false;
+    }
 
     //   if (state === ProposalState.Voting && filters.withoutQuorum) {
     //     const proposalMint = proposal.account.governingTokenMint.toBase58() === realm?.account.communityMint.toBase58() ? communityMint : councilMint;
@@ -99,8 +136,8 @@ export const filterProposals = (
   };
 
   return proposals
-    .sort((proposalA, proposalB) => sortProposals(proposalA, proposalB))
     .filter(filterProposal)
+    .sort((proposalA, proposalB) => sortProposals(proposalA, proposalB))
     .map((p) => {
       // rebuild
       const pubkey = new PublicKey(p.pubkey);

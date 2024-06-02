@@ -12,36 +12,40 @@ import { Switch } from './ui/switch';
 import { atomWithStorage } from 'jotai/utils';
 import { useAtom } from 'jotai/react';
 import { ProposalState } from '@solana/spl-governance';
+import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
+import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
 
 export const VotingTypes = {
-  Cancelled: 'Cancelled',
-  Completed: 'Completed',
-  Defeated: 'Defeated',
   Draft: 'Draft',
-  Executable: 'Executable',
-  ExecutingWithErrors: 'Executing w/ Errors',
   SigningOff: 'Signing Off',
   Voting: 'Voting',
-  Vetoed: 'Vetoed',
   withoutQuorum: 'Voting w/out Quorum',
+  Executable: 'Executable',
+  ExecutingWithErrors: 'Executing w/ Errors',
+  Completed: 'Completed',
+  Vetoed: 'Vetoed',
+  Defeated: 'Defeated',
+  Cancelled: 'Cancelled',
 };
 
 export function mapFromProposal(proposalState: ProposalState) {
   return (
     MapProposalStateToVotingTypes[proposalState] ||
-    new Error('unsupported voting type')
+    new Error('unsupported voting type ' + proposalState)
   );
 }
 
+// TODO check succeeded is completed?
 const MapProposalStateToVotingTypes = {
-  [ProposalState.Cancelled]: VotingTypes.Cancelled,
-  [ProposalState.Completed]: VotingTypes.Completed,
-  [ProposalState.Defeated]: VotingTypes.Defeated,
   [ProposalState.Draft]: VotingTypes.Draft,
-  [ProposalState.Executing]: VotingTypes.Executable,
-  [ProposalState.ExecutingWithErrors]: VotingTypes.ExecutingWithErrors,
   [ProposalState.SigningOff]: VotingTypes.SigningOff,
   [ProposalState.Voting]: VotingTypes.Voting,
+  [ProposalState.Succeeded]: VotingTypes.Completed,
+  [ProposalState.Executing]: VotingTypes.Executable,
+  [ProposalState.Completed]: VotingTypes.Completed,
+  [ProposalState.Cancelled]: VotingTypes.Cancelled,
+  [ProposalState.Defeated]: VotingTypes.Defeated,
+  [ProposalState.ExecutingWithErrors]: VotingTypes.ExecutingWithErrors,
   [ProposalState.Vetoed]: VotingTypes.Vetoed,
 };
 
@@ -59,6 +63,22 @@ export const filterStateAtom = atomWithStorage<FilterState>(
 );
 
 export function FilterPopover() {
+  const { pubkey } = useRealmSlug();
+  const { data } = useAllProposalsByRealm(pubkey);
+  const state = data?.map((proposal) =>
+    mapFromProposal(proposal.account.state)
+  );
+
+  // Count each voting type
+  const validStates = state?.filter((type) => !(type instanceof Error)) || [];
+  const votingTypeCounts = validStates.reduce((acc, type) => {
+    if (typeof type === 'string') {
+      // Ensure type is a string before using it as a key
+      acc[type] = (acc[type] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
   const [filterState, setFilterState] = useAtom(filterStateAtom);
 
   const handleToggle = (key) => {
@@ -85,6 +105,7 @@ export function FilterPopover() {
           </div>
           <div className='grid gap-4'>
             {Object.keys(VotingTypes).map((key) => {
+              if (!votingTypeCounts[key]) return null;
               return (
                 <div key={key} className='flex items-center space-x-2'>
                   <Switch
@@ -92,7 +113,9 @@ export function FilterPopover() {
                     checked={filterState[key]}
                     onCheckedChange={() => handleToggle(key)}
                   />
-                  <Label htmlFor={key}>{VotingTypes[key]}</Label>
+                  <Label htmlFor={key}>{`${VotingTypes[key]} (${
+                    votingTypeCounts[key] || 0
+                  })`}</Label>
                 </div>
               );
             })}

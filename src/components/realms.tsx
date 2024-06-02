@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 export function Realms() {
   const { cluster } = useRealmsSlug();
   const [searchTerm, setSearchTerm] = useState('');
-  const { push } = useRouter();
+  const { push, prefetch } = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint],
@@ -80,6 +80,7 @@ export function Realms() {
       ) : (
         <div className='flex flex-col justify-center items-center m-2 gap-4'>
           <Input
+            autoFocus
             type='text'
             placeholder='Search'
             onChange={(e) => {
@@ -95,6 +96,9 @@ export function Realms() {
                   className='h-48 p-2 cursor-pointer'
                   onClick={() => {
                     push(`/realm/${realm.pubkey}`);
+                  }}
+                  onMouseEnter={() => {
+                    prefetch(`/realm/${realm.pubkey}`);
                   }}
                 >
                   <CardTitle>{realm.name}</CardTitle>
