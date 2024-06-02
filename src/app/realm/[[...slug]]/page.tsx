@@ -23,7 +23,6 @@ export default async function RealmPage({
 
   const queryClient = new QueryClient();
 
-  // TODO fix endpoint
   await queryClient.prefetchQuery({
     queryKey: ['allProposals', realmPk, cluster.rpcEndpoint],
     queryFn: async () =>

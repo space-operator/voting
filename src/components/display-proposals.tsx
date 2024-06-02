@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useRealm } from '@/app/api/realm/hooks';
 import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
-import { filterProposals } from '@/utils/filterProposals';
+import { InitialSorting, SORTING_OPTIONS, filterProposals } from '@/utils/filterProposals';
 import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal/proposal';
 import { atomWithStorage } from 'jotai/utils';
@@ -46,7 +46,8 @@ export function DisplayProposals() {
 
     return filterProposals(
       proposals,
-      filterState
+      filterState,
+      InitialSorting
     ) as ProgramAccount<Proposal>[];
   }, [filterState, data]);
 
@@ -77,6 +78,11 @@ export function DisplayProposals() {
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
+  // return to page 0 when filter changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [filterState]);
 
   return (
     <div>

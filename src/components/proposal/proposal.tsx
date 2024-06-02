@@ -40,7 +40,6 @@ import {
 import DiscussionPanel from '../chat/DiscussionPanel';
 import {
   ChevronsDownUpIcon,
-  MessageCircleIcon,
   MessageSquareIcon,
 } from 'lucide-react';
 
