@@ -41,7 +41,7 @@ export const MultiChoiceVotes = ({ proposal }: { proposal: Proposal }) => {
   const [limit, setLimit] = useState<number>(3);
 
   return (
-    <div className='pb-4 px-6'>
+    <div className='pb-4'>
       {proposal.options.slice(0, limit).map((option, index) => {
         const optionVotes = new BN(option.voteWeight, 'hex');
         const optionWeightPct = totalVoteWeight.isZero() // dont divide by zero
