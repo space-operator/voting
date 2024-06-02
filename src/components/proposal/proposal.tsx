@@ -57,21 +57,22 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
 
   const isMulti = isMultipleChoice(proposal);
 
-  const [description, setDescription] = useState(
-    proposal?.account.descriptionLink
-  );
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
-    const handleResolveDescription = async () => {
-      const resolvedDescription = await resolveProposalDescription(description);
-      setDescription(resolvedDescription);
+    const fetchDescription = async () => {
+      if (proposal.account.descriptionLink) {
+        const resolvedDescription = await resolveProposalDescription(
+          proposal.account.descriptionLink
+        );
+        setDescription(resolvedDescription);
+      } else {
+        setDescription(''); 
+      }
     };
-    if (description) {
-      handleResolveDescription();
-    } else {
-      setDescription('');
-    }
-  }, [description]);
+
+    fetchDescription();
+  }, [proposal.account.descriptionLink]);
 
   const [isChatOpen, setIsChatOpen] = useState(false);
 

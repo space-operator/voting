@@ -80,3 +80,46 @@
   @apply bg-secondary text-black hover:text-white  hover:bg-primary dark:bg-primary dark:hover:bg-secondary !important;
   border: 1px solid black !important;
 }
+
+
+.markdown > h1 {
+  @apply mb-2 text-lg;
+}
+
+.markdown > h2 {
+  @apply mb-2 text-lg;
+}
+
+.markdown > p {
+  @apply mb-2;
+}
+
+.markdown ul {
+  @apply mb-4;
+}
+
+.markdown a {
+  @apply underline break-all transition-all duration-300 hover:no-underline;
+}
+
+.markdown li {
+  @apply mb-2 ml-6 font-normal list-disc;
+}
+
+.markdown pre {
+  @apply whitespace-pre-wrap;
+}
+
+.markdown code {
+  @apply block mb-2 text-sm;
+}
+
+.markdown table {
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  @apply border;
+  border-collapse: collapse;
+  padding: 0;
+  width: 100%;
+  table-layout: fixed;
+}
