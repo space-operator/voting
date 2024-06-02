@@ -14,11 +14,7 @@ export const arweaveDescriptionApi = {
   },
   abortController: null,
 }
-async function fetchArweaveFile(url: string) {
-  const controller = new AbortController()
-  if (typeof this !== 'undefined') {
-    this.abortController = controller
-  }
+async function fetchArweaveFile(url: string, signal: AbortSignal) {
   const pieces = url.match(urlRegex)
   console.log(pieces)
   if (pieces) {
@@ -27,7 +23,7 @@ async function fetchArweaveFile(url: string) {
     if (idPiece) {
       const apiUrl = 'https://arweave.net/' + idPiece
       const apiResponse = await axios.get(apiUrl, {
-        signal: controller.signal,
+        signal,
       })
       if (apiResponse?.data?.description) {
         return apiResponse.data.description

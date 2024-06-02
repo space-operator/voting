@@ -64,18 +64,31 @@ export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
   const descriptionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchDescription = async () => {
       if (proposal.account.descriptionLink) {
-        const resolvedDescription = await resolveProposalDescription(
-          proposal.account.descriptionLink
-        );
-        setDescription(resolvedDescription);
+        try {
+          const resolvedDescription = await resolveProposalDescription(
+            proposal.account.descriptionLink,
+            controller.signal
+          );
+          setDescription(resolvedDescription);
+        } catch (error) {
+          if (error.name !== 'AbortError') {
+            console.error('Failed to fetch description:', error);
+          }
+        }
       } else {
         setDescription('');
       }
     };
 
     fetchDescription();
+
+    return () => {
+      controller.abort();
+    };
   }, [proposal.account.descriptionLink]);
 
   useEffect(() => {
