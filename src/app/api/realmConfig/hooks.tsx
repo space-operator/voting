@@ -11,7 +11,7 @@ export const useRealmConfig = () => {
 
   const query = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['realm-config', realm.pubkey, connection.rpcEndpoint],
+    queryKey: ['realmConfig', realm.pubkey, connection.rpcEndpoint],
     queryFn: async () => {
       try {
         const realmConfigPk = await getRealmConfigAddress(

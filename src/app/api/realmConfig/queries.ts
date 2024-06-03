@@ -9,7 +9,7 @@ export const fetchRealmConfigQuery = async (
 ) =>
   queryClient.fetchQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['realm-config', pubkey, connection.rpcEndpoint],
+    queryKey: ['realmConfig', pubkey, connection.rpcEndpoint],
     queryFn: async () => {
       const realm = await fetchRealmByPubkey(connection, pubkey);
       if (realm === undefined) throw new Error('Realm not found');

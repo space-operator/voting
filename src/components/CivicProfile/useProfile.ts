@@ -23,7 +23,7 @@ export const useProfile = (
 
   const { data: profile, isLoading } = useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['Civic Profile', profileWalletPublicKey?.toString() + 'Civic'],
+    queryKey: ['civicProfile', profileWalletPublicKey?.toString() + 'Civic'],
     queryFn: () =>
       CivicProfile.get(profileWalletPublicKey?.toBase58(), options),
     enabled: !!profileWalletPublicKey, // Only run query if profileWalletPublicKey is available

@@ -244,7 +244,6 @@ export const useSubmitVote = ({
         console.log('inputBody', inputBody);
 
         await startFlow(flowId, prepFlowInputs(inputBody, wallet.publicKey));
-
       } catch (e) {
         console.error(e);
       } finally {
@@ -261,21 +260,16 @@ export const useSubmitVote = ({
 
   useEffect(() => {
     if (flowRunningState.state === FlowRunningState.Success) {
-
       queryClient.invalidateQueries({
-        queryKey: [
-          'voteRecordAddress',
-          proposal.pubkey,
-          proposal.account.tokenOwnerRecord,
-        ],
-      });
-  
-      queryClient.invalidateQueries({
-        queryKey: ['proposalVoteRecord'],
+        queryKey: ['voteRecord'],
       });
 
       queryClient.invalidateQueries({
         queryKey: ['chatMessages', proposal.pubkey],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['proposal'],
       });
     }
   }, [

@@ -22,15 +22,15 @@ import {
 export const useUserCommunityTokenOwnerRecord = () => {
   const { data: tokenOwnerRecordPubkey } =
     useAddressQuery_CommunityTokenOwner();
-  return useTokenOwnerRecordByPubkey(tokenOwnerRecordPubkey);
+  return useTokenOwnerRecord(tokenOwnerRecordPubkey);
 };
 
 export const useUserCouncilTokenOwnerRecord = () => {
   const { data: tokenOwnerRecordPubkey } = useAddressQuery_CouncilTokenOwner();
-  return useTokenOwnerRecordByPubkey(tokenOwnerRecordPubkey);
+  return useTokenOwnerRecord(tokenOwnerRecordPubkey);
 };
 
-export const useTokenOwnerRecordByPubkey = (pubkey: PublicKey | undefined) => {
+export const useTokenOwnerRecord = (pubkey: PublicKey | undefined) => {
   const { connection } = useConnection();
 
   return useQuery({
@@ -106,7 +106,7 @@ export const useTokenOwnerRecordAddress = (
 export const useVanillaGovpower = (
   tokenOwnerRecordPk: PublicKey | undefined
 ) => {
-  const { data: torAccount } = useTokenOwnerRecordByPubkey(tokenOwnerRecordPk);
+  const { data: torAccount } = useTokenOwnerRecord(tokenOwnerRecordPk);
   return torAccount
     ? torAccount.account.governingTokenDepositAmount
     : new BN(0);

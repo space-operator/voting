@@ -22,8 +22,8 @@ export const useProposalVoteRecordQuery = ({
   proposal: ProgramAccount<Proposal>;
 }) => {
   const tokenRole = useVotingPop(proposal.account.governingTokenMint);
-  const community = useAddressQuery_CommunityTokenOwner();
-  const council = useAddressQuery_CouncilTokenOwner();
+  const community = useAddressQuery_CommunityTokenOwner().data;
+  const council = useAddressQuery_CouncilTokenOwner().data;
 
   const electoral =
     tokenRole === undefined
@@ -41,50 +41,39 @@ export const useProposalVoteRecordQuery = ({
 
   const selectedTokenRecord = quorum === 'electoral' ? electoral : veto;
 
-  const { data: pda } = useAddressQuery_SelectedProposalVoteRecord(
-    selectedTokenRecord?.data,
-    proposal.pubkey
+  const { data: voteRecordAddress } = useVoteRecordAddress(
+    proposal.pubkey,
+    selectedTokenRecord
   );
 
-  return useVoteRecordByPubkeyQuery(pda);
+  const voteRecord = useVoteRecord(voteRecordAddress);
+  console.log('voteRecord', voteRecord.data);
+
+  return voteRecord;
 };
 
-export const useVoteRecordByPubkeyQuery = (pubkey: PublicKey | undefined) => {
+export const useVoteRecord = (pubkey: PublicKey | undefined) => {
   const { connection } = useConnection();
 
   const enabled = pubkey !== undefined;
-  const query = useQuery({
+  // const pk = pubkey ? new PublicKey(pubkey) : undefined;
+  return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['proposalVoteRecord', pubkey, connection.rpcEndpoint],
+    queryKey: ['voteRecord', pubkey, connection.rpcEndpoint],
     queryFn: async () => await getVoteRecord(connection, pubkey),
     enabled,
     staleTime: 60 * 1000 * 60, // 1 hour
   });
-
-  return query;
 };
 
-export const useAddressQuery_SelectedProposalVoteRecord = (
-  tokenOwnerRecordAddress: PublicKey,
-  proposal: PublicKey
-) => {
-  const { data: realm } = useRealmFromParams();
-
-  const programId = realm?.owner; // TODO make me cached plz
-
-  return useAddressQuery_VoteRecord(
-    programId,
-    proposal,
-    tokenOwnerRecordAddress
-  );
-};
-
-export const useAddressQuery_VoteRecord = (
-  programId: PublicKey,
+export const useVoteRecordAddress = (
   proposal: PublicKey,
   tokenOwnerRecordAddress: PublicKey
 ) => {
   const { connection } = useConnection();
+
+  const { data: realm } = useRealmFromParams();
+  const programId = realm.owner;
 
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
@@ -96,7 +85,7 @@ export const useAddressQuery_VoteRecord = (
     ],
     queryFn: async () =>
       await getVoteRecordAddress(programId, proposal, tokenOwnerRecordAddress),
-    staleTime: 60 * 1000 * 60, // 1 hour
+    staleTime: Infinity, // 1 hour
   });
 };
 

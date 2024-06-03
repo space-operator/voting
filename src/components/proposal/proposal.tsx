@@ -15,7 +15,7 @@ import {
   ProposalCardFooter,
 } from '../ui/proposal-card';
 import { useRealmFromParams } from '@/app/api/realm/hooks';
-import {  useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { FC } from 'react';
 import ProposalTimeStatus from './ProposalTimeStatus';
@@ -39,12 +39,26 @@ import DiscussionPanel from '../chat/DiscussionPanel';
 import { ChevronsDownUpIcon, MessageSquareIcon } from 'lucide-react';
 import { ProfileImage, ProfilePopup } from '../CivicProfile';
 import { useTokenOwnerRecordsForRealm } from '@/app/api/tokenOwnerRecord/hooks';
+import { useProposal } from '@/app/api/proposals/hooks';
 
 interface SingleProposalProps {
   proposal: ProgramAccount<Proposal>;
 }
 
-export const SingleProposal: FC<SingleProposalProps> = ({ proposal }) => {
+export const SingleProposal: FC<SingleProposalProps> = ({
+  proposal: proposalProp,
+}) => {
+  const [proposal, setProposal] =
+    useState<ProgramAccount<Proposal>>(proposalProp);
+
+  const { data: refreshedProposal } = useProposal(proposal.pubkey);
+
+  useEffect(() => {
+    if (refreshedProposal && refreshedProposal !== proposal) {
+      setProposal(refreshedProposal);
+    }
+  }, [proposal, refreshedProposal]);
+
   const { data: realm } = useRealmFromParams();
 
   const proposalVotes = useProposalVotes(proposal.account, realm);

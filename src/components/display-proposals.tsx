@@ -16,15 +16,6 @@ import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
 import { SingleProposal } from './proposal/proposal';
 import { atomWithStorage } from 'jotai/utils';
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from './ui/pagination';
 import { PaginationBar } from './PaginationBar';
 
 export const realmAtom = atomWithStorage('realm', null);

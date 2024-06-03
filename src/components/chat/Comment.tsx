@@ -21,7 +21,7 @@ import {
 } from '@/app/api/realm/hooks';
 import { ProfileImage, ProfilePopup, useProfile } from '../CivicProfile';
 import { useMintInfo } from '@/app/api/token/hooks';
-import { useVoteRecordByPubkeyQuery } from '@/app/api/voteRecord/hooks';
+import { useVoteRecord } from '@/app/api/voteRecord/hooks';
 import { ExternalLinkIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { isPublicKey } from '@/utils/helpers';
 import { getVoteWeight, isYesVote } from '@/app/api/voteRecord/helpers';
@@ -69,7 +69,7 @@ const Comment = ({
     return getVoteRecordAddress(proposal.owner, proposal.pubkey, torPk);
   }, [proposal, realm.pubkey, author]);
 
-  const voteRecord = useVoteRecordByPubkeyQuery(voteRecordPk).data?.account;
+  const voteRecord = useVoteRecord(voteRecordPk).data?.account;
 
   const isMulti =
     proposal?.account.voteType !== VoteType.SINGLE_CHOICE &&
