@@ -12,6 +12,12 @@ npm install
 npm run dev
 ```
 
+Bundle Analyzer
+
+```bash
+ANALYZE=true npm run build
+```
+
 ## Space Operator Instance
 
 Use the below documentation to setup your Space Operator instance
@@ -38,4 +44,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY
 NEXT_PUBLIC_FLOW_ID_MESSAGE
 NEXT_PUBLIC_FLOW_ID_VOTE
 NEXT_PUBLIC_FLOW_ID_RELINQUISH
+
+
+
 
