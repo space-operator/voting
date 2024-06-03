@@ -30,9 +30,10 @@ export function DisplayProposals() {
   const { data, status } = useAllProposalsByRealm(realmPk);
   const [_, setRealm] = useAtom(realmAtom);
 
+  // TODO
   useEffect(() => {
     if (realm) {
-      console.log('setting realm', realm);
+      // console.log('setting realm', realm);
       setRealm(realm);
     }
   }, [realm, setRealm, isRealmSuccess]);

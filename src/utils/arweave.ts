@@ -16,9 +16,8 @@ export const arweaveDescriptionApi = {
 }
 async function fetchArweaveFile(url: string, signal: AbortSignal) {
   const pieces = url.match(urlRegex)
-  console.log(pieces)
   if (pieces) {
-    console.log(pieces)
+    console.log("fetchArweaveFile",pieces)
     const idPiece = pieces[3]
     if (idPiece) {
       const apiUrl = 'https://arweave.net/' + idPiece

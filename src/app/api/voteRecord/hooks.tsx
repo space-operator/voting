@@ -47,7 +47,6 @@ export const useProposalVoteRecordQuery = ({
   );
 
   const voteRecord = useVoteRecord(voteRecordAddress);
-  console.log('voteRecord', voteRecord.data);
 
   return voteRecord;
 };

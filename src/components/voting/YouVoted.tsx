@@ -142,8 +142,6 @@ export const YouVoted = ({
     flowRunningState,
     proposal.pubkey,
     proposal.account.tokenOwnerRecord,
-    isVoting,
-    inCoolOffTime,
   ]);
 
   const [isLoading, setIsLoading] = useState(false);
