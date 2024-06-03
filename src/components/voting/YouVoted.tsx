@@ -4,13 +4,10 @@ import {
   Proposal,
   VoteKind,
   VoteType,
-  withFinalizeVote,
 } from '@solana/spl-governance';
-import { TransactionInstruction } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
 
 import { ProposalState } from '@solana/spl-governance';
-import { RpcContext } from '@solana/spl-governance';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
   isInCoolOffTime,
@@ -41,6 +38,7 @@ import { Value } from '@space-operator/client';
 import { prepFlowInputs } from '../_flow/helpers';
 import { FlowRunningState, useFlowEvents } from '../../app/api/_flows/hooks';
 import { queryClient } from '@/providers/query';
+import { useVotingClientForGoverningTokenMint } from '@/app/api/votingClient/hooks';
 
 export const YouVoted = ({
   quorum,
@@ -160,10 +158,9 @@ export const YouVoted = ({
   const voterTokenRecord =
     quorum === 'electoral' ? electoralVoterTokenRecord : vetoVotertokenRecord;
 
-  // TODO: fix this
-  // const votingClient = useVotingClientForGoverningTokenMint(
-  //   proposal?.account.governingTokenMint
-  // );
+  const votingClient = useVotingClientForGoverningTokenMint(
+    proposal?.account.governingTokenMint
+  );
 
   const isWithdrawEnabled =
     connected &&

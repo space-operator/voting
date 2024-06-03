@@ -131,3 +131,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
+@keyframes pulse {
+  0% {
+    background-color: rgba(150, 150, 150, 0.5);
+  }
+  50% {
+    background-color: rgba(27, 27, 27, 0.8);
+  }
+  100% {
+    background-color: rgba(187, 187, 187, 0.5);
+  }
+}
+
+.animate-pulse-bg {
+  animation: pulse 0.3s infinite ease-in-out;
+}

@@ -7,11 +7,18 @@ import { realmsJson, splRepo } from '@/constants/other';
 import { PublicKey } from '@solana/web3.js';
 import { RealmInfo } from '@/types/realm';
 import { ProgramAccount, Realm } from '@solana/spl-governance';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRealmsSlug } from '@/app/realms/[[...slug]]/slug';
 import { Card, CardContent, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { useRouter } from 'next/navigation';
+import { PaginationBar } from './PaginationBar';
+
+interface RealmDisplayInfo {
+  name: string;
+  pubkey: string;
+  image: string;
+}
 
 export function Realms() {
   const { cluster } = useRealmsSlug();
@@ -58,11 +65,11 @@ export function Realms() {
 
         return {
           name: onChainMatch.account.name || realmInfo.displayName,
-          pubkey: onChainMatch.pubkey,
+          pubkey: onChainMatch.pubkey.toString(),
           image: realmInfo.bannerImage
             ? `${splRepo}${realmInfo.bannerImage}`
-            : realmInfo.ogImage,
-        };
+            : realmInfo.ogImage ?? '',
+        } as RealmDisplayInfo;
       })
       .filter(Boolean); // Filter out null entries
   }, [data, repoData]);
@@ -72,28 +79,83 @@ export function Realms() {
       realm.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [combinedData, searchTerm]);
+  // Pagination
+  const [paginatedRealms, setPaginatedRealms] = useState<RealmDisplayInfo[]>(
+    []
+  );
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const realmsPerPage = 12;
+  const totalPages = Math.ceil(filteredData.length / realmsPerPage);
+
+  const paginateRealms = useCallback(
+    (page) => {
+      return filteredData.slice(
+        page * realmsPerPage,
+        (page + 1) * realmsPerPage
+      );
+    },
+    [filteredData]
+  );
+
+  useEffect(() => {
+    setPaginatedRealms(paginateRealms(currentPage));
+  }, [paginateRealms, currentPage, filteredData]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  // return to page 0 when search term changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm]);
 
   return (
-    <main>
+    <main lang='en'>
+      <div
+        className='flex h-36 text-6xl items-center justify-center relative'
+        style={{
+          background:
+            'linear-gradient(to right, rgba(255,255,255,0) 1%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 101%)',
+        }}
+      >
+        <div
+          className='font-bold italic absolute'
+          style={{ filter: 'blur(6px)' }}
+        >
+          VOTE
+        </div>
+        <div className='font-bold italic absolute'>VOTE</div>
+      </div>
       {isLoading || isRepoLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className='flex flex-col justify-center items-center m-2 gap-4'>
+        <div className='flex justify-center items-center'>
           <Input
+            className='border-primary animate-pulse-bg'
+            type='text'
+            placeholder='     ...loading Realms...'
+            disabled
+            lang='en'
+          />
+        </div>
+      ) : (
+        <div className='flex flex-col justify-center items-center gap-6'>
+          <Input
+            className='border-primary/30'
             autoFocus
             type='text'
-            placeholder='Search'
+            placeholder='Search Realms'
             onChange={(e) => {
               setSearchTerm(e.target.value);
             }}
           />
-          <ul className='grid grid-cols-3 gap-4'>
-            {filteredData
+          <ul className='grid grid-cols-3 gap-4 pt-8 pb-6'>
+            {paginatedRealms
               .filter((realm) => realm.image)
               .map((realm) => (
                 <Card
                   key={realm.pubkey}
-                  className='h-48 p-2 cursor-pointer'
+                  className='h-48 p-2 cursor-pointer hover:bg-gradient-to-br hover:from-primary/10 hover:to-transparent hover:border-primary/30'
                   onClick={() => {
                     push(`/realm/${realm.pubkey}`);
                   }}
@@ -101,7 +163,7 @@ export function Realms() {
                     prefetch(`/realm/${realm.pubkey}`);
                   }}
                 >
-                  <CardTitle>{realm.name}</CardTitle>
+                  <CardTitle className='text-lg'>{realm.name}</CardTitle>
                   <CardContent>
                     <div className='flex m-2 items-center justify-center'>
                       {realm.image && (
@@ -119,6 +181,8 @@ export function Realms() {
                 </Card>
               ))}
           </ul>
+          {totalPages > 1 &&
+            PaginationBar(handlePageChange, currentPage, totalPages)}
         </div>
       )}
     </main>
