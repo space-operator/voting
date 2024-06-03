@@ -9,15 +9,6 @@ const nextConfig = {
   redirects: async () => {
     return [{ source: '/', destination: '/realms', permanent: false }];
   },
-};
-
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
-
-module.exports = withBundleAnalyzer(nextConfig);
-
-module.exports = {
   experimental: {
     turbo: {
       rules: {
@@ -29,3 +20,10 @@ module.exports = {
     },
   },
 };
+
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+module.exports = withBundleAnalyzer(nextConfig);
+
