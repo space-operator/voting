@@ -7,12 +7,12 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 
 export enum ClusterType {
-  Devnet,
-  Mainnet,
-  Testnet,
+  Devnet = "devnet",
+  Mainnet = "mainnet",
+  Testnet = "testnet",
 }
 
-interface Cluster {
+export interface Cluster {
   type: ClusterType;
   connection: Connection;
   endpoint: string;
@@ -35,7 +35,7 @@ export const MainnetCluster: Cluster = {
   network: WalletAdapterNetwork.Mainnet,
   rpcEndpoint: MAINNET_RPC_ENDPOINT,
 };
-``;
+
 export const TestnetCluster: Cluster = {
   type: ClusterType.Testnet,
   connection: new Connection(TESTNET_RPC_ENDPOINT, 'recent'),

@@ -21,13 +21,13 @@ import { PaginationBar } from './PaginationBar';
 export const realmAtom = atomWithStorage('realm', null);
 
 export function DisplayProposals() {
-  const { pubkey: realmPk } = useRealmSlug();
+  const { pubkey: realmPk, cluster } = useRealmSlug();
 
   const [filterState] = useAtom(filterStateAtom);
 
   const { data: realm, isSuccess: isRealmSuccess } = useRealm(realmPk);
 
-  const { data, status } = useAllProposalsByRealm(realmPk);
+  const { data, status } = useAllProposalsByRealm(realmPk, cluster);
   const [_, setRealm] = useAtom(realmAtom);
 
   // TODO

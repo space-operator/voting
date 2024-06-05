@@ -10,9 +10,11 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import { getAllProposalsQuery } from './queries';
+import { Cluster } from '@/types/cluster';
 
 export const useAllProposalsByRealm = (
-  realmPk: string
+  realmPk: string,
+  cluster: Cluster
 ): UseSuspenseQueryResult<ProgramAccount<Proposal>[], Error> => {
   const { connection } = useConnection();
 
@@ -20,7 +22,7 @@ export const useAllProposalsByRealm = (
   const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 
   return useSuspenseQuery(
-    getAllProposalsQuery(realmPk, connection, programId, realmId)
+    getAllProposalsQuery(realmPk, connection, programId, cluster)
   );
 };
 
@@ -35,7 +37,7 @@ export const useProposal = (pubkey: PublicKey | undefined) => {
       : undefined,
     queryFn: async () => await getProposal(connection, pubkey),
     enabled,
-    staleTime: 1000 * 60 * 60 , 
+    staleTime: 1000 * 60 * 60,
   });
   return query;
 };

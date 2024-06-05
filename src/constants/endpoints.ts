@@ -5,3 +5,5 @@ export const MAINNET_RPC_ENDPOINT = process.env.NEXT_PUBLIC_HELIUS_MAINNET;
 export const PRIVATE_MAINNET_RPC_ENDPOINT = process.env.HELIUS_MAINNET;
 
 export const TESTNET_RPC_ENDPOINT = 'http://127.0.0.1:8899';
+
+export const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
