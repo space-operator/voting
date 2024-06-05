@@ -46,7 +46,7 @@ export const YouVoted = ({
 }: {
   quorum: 'electoral' | 'veto';
   proposal: ProgramAccount<Proposal>;
-}) => {  
+}) => {
   const wallet = useWallet()?.wallet?.adapter;
   const { connection } = useConnection();
 
@@ -102,14 +102,14 @@ export const YouVoted = ({
       const flowId = parseInt(process.env.NEXT_PUBLIC_FLOW_ID_RELINQUISH);
 
       const inputBody = new Value({
-        private_key: 'WALLET',
+        private_key: 'WALLET_ADAPTER',
         realm: realm.pubkey,
         governance: proposal.account.governance,
         proposal: proposal.pubkey,
         token_owner_record: voterTokenRecord.pubkey,
         vote_governing_token_mint: proposal.account.governingTokenMint,
-        governance_authority: 'WALLET',
-        beneficiary: 'WALLET',
+        governance_authority: 'WALLET_ADAPTER',
+        beneficiary: 'WALLET_ADAPTER',
       }).M;
       console.log('inputBody', inputBody);
 
@@ -138,11 +138,7 @@ export const YouVoted = ({
         queryKey: ['voteRecord'],
       });
     }
-  }, [
-    flowRunningState,
-    proposal.pubkey,
-    proposal.account.tokenOwnerRecord,
-  ]);
+  }, [flowRunningState, proposal.pubkey, proposal.account.tokenOwnerRecord]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -263,7 +259,7 @@ export const YouVoted = ({
                 disabled={
                   !isWithdrawEnabled ||
                   isLoading ||
-                  flowRunningState.state !== FlowRunningState.NotStarted
+                  flowRunningState.state === FlowRunningState.Running
                 }
               >
                 Withdraw Vote

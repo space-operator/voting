@@ -11,6 +11,7 @@ import { useSocketDataStore } from '@/stores/socket-data';
 import { ed25519 } from '@noble/curves/ed25519';
 import { SignatureRequest } from '@space-operator/client/dist/module/types/ws';
 import { restClient, wsClient } from '@/lib/client';
+import { toast } from 'sonner';
 
 export enum FlowRunningState {
   NotStarted,
@@ -18,6 +19,7 @@ export enum FlowRunningState {
   Complete,
   Success,
   Error,
+  Cancelled,
 }
 
 export const useFlowEvents = () => {
@@ -91,7 +93,28 @@ export const useFlowEvents = () => {
             console.log('signing', tx);
 
             // sign and check if the wallet has changed the transaction
-            const signedTx = await signTransaction(tx);
+            let signedTx;
+            try {
+              signedTx = await signTransaction(tx);
+              console.log('signed', signedTx);
+            } catch (error) {
+              setFlowRunningState({
+                state: FlowRunningState.Cancelled,
+                event: ev,
+              });
+              // const res = await restClient.stopFlow(flow_run_id, {
+              //   timeout_millies: 1000,
+              // });
+              // console.log('res', res);
+              if (error.message.includes('User rejected the request')) {
+                console.error('User rejected the transaction:', error);
+                toast('Transaction signing was rejected by the user');
+              } else {
+                console.error('Transaction signing failed:', error);
+                toast('An error occurred during transaction signing');
+              }
+              return;
+            }
             console.log('signed', signedTx);
 
             const signature = signedTx.signatures.find((ele) =>

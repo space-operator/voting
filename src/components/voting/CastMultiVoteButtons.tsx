@@ -40,7 +40,7 @@ export const CastMultiVoteButtons = ({
     quorum: 'electoral',
     proposal,
   });
-  
+
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [optionStatus, setOptionStatus] = useState<boolean[]>(
     new Array(proposal.account.options.length).fill(false)
@@ -96,6 +96,11 @@ export const CastMultiVoteButtons = ({
     setOptionStatus(status);
   };
 
+  const multiChoiceTooltip =
+    tooltipContent === '' && !selectedOptions.length
+      ? `Select at least one option to vote`
+      : tooltipContent;
+      
   return isVoting && !isVoteCast ? (
     <div className='bg-bkg-2 p-4 md:p-6 rounded-lg space-y-4'>
       <div className='flex flex-col items-center justify-center'>
@@ -114,10 +119,7 @@ export const CastMultiVoteButtons = ({
                     <TooltipTrigger asChild>
                       <Button
                         className={`
-                    ${
-                      optionStatus[index] &&
-                      'bg-green-500/80 '
-                    }
+                    ${optionStatus[index] && 'bg-green-500/80 '}
                     rounded-lg w-full
                   `}
                         onClick={() => handleOption(index)}
@@ -172,11 +174,9 @@ export const CastMultiVoteButtons = ({
                   </Button>
                 )}
               </TooltipTrigger>
-              <TooltipContent>
-                {tooltipContent === '' && !selectedOptions.length
-                  ? `Select at least one option to vote`
-                  : tooltipContent}
-              </TooltipContent>
+              {multiChoiceTooltip !== '' && (
+                <TooltipContent>{multiChoiceTooltip}</TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
         </div>

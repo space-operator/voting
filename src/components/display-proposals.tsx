@@ -83,12 +83,16 @@ export function DisplayProposals() {
   return (
     <div>
       <div className='flex flex-col mx-auto max-w-3xl gap-8'>
-        {paginatedProposals.map((proposal: ProgramAccount<Proposal>) => (
-          <SingleProposal
-            key={proposal.pubkey.toString()}
-            proposal={proposal}
-          />
-        ))}
+        {paginatedProposals.length > 0 ? (
+          paginatedProposals.map((proposal: ProgramAccount<Proposal>) => (
+            <SingleProposal
+              key={proposal.pubkey.toString()}
+              proposal={proposal}
+            />
+          ))
+        ) : (
+          <div>No proposals found, please adjust filters.</div>
+        )}
         {totalPages > 1 &&
           PaginationBar(handlePageChange, currentPage, totalPages)}
       </div>

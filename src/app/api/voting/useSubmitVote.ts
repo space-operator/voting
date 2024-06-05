@@ -226,13 +226,13 @@ export const useSubmitVote = ({
         const addComment = !!comment ? { Text: comment } : '';
 
         const inputBody = new Value({
-          private_key: 'WALLET',
+          private_key: 'WALLET_ADAPTER',
           realm: realm.pubkey,
           governance: proposal.account.governance,
           proposal: proposal.pubkey,
           proposal_owner_record: proposal.account.tokenOwnerRecord,
           voter_token_owner_record: tokenOwnerRecordPk,
-          governance_authority: 'WALLET',
+          governance_authority: 'WALLET_ADAPTER',
           vote_governing_token_mint: tokenMint,
           voter_weight_record: null, //plugin?.voterWeightPk,
           max_voter_weight_record: null, //plugin?.maxVoterWeightRecord,

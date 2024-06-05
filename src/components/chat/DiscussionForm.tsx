@@ -96,12 +96,12 @@ const DiscussionForm = ({
       const commentBody = { Text: comment };
 
       const inputBody = new Value({
-        private_key: 'WALLET',
+        private_key: 'WALLET_ADAPTER',
         realm: realm.pubkey,
         governance: proposal.account.governance,
         proposal: proposal.pubkey,
         commenter_token_owner_record: commenterVoterTokenRecord.pubkey,
-        governance_authority: 'WALLET',
+        governance_authority: 'WALLET_ADAPTER',
         voter_weight_record: null, //plugin?.voterWeightPk,
         body: commentBody,
         reply_to: null,

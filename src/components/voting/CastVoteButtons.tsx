@@ -115,7 +115,9 @@ export const CastVoteButtons = ({
                   </Button>
                 )}
               </TooltipTrigger>
-              <TooltipContent>{tooltipContent}</TooltipContent>
+              {tooltipContent !== '' && (
+                <TooltipContent>{tooltipContent}</TooltipContent>
+              )}
             </Tooltip>
           </TooltipProvider>
         </div>
