@@ -63,8 +63,8 @@ export const filterStateAtom = atomWithStorage<FilterState>(
 );
 
 export function FilterPopover() {
-  const { pubkey } = useRealmSlug();
-  const { data } = useAllProposalsByRealm(pubkey);
+  const { pubkey, cluster } = useRealmSlug();
+  const { data } = useAllProposalsByRealm(pubkey, cluster);
   const state = data?.map((proposal) =>
     mapFromProposal(proposal.account.state)
   );
