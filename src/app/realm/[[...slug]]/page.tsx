@@ -26,9 +26,7 @@ export default async function RealmPage({
   await queryClient.prefetchQuery({
     queryKey: ['allProposals', realmPk, cluster.rpcEndpoint],
     queryFn: async () =>
-      await prefetchAllProposalsByRealm(realmPk, cluster.rpcEndpoint).then(
-        JSON.parse
-      ),
+      await prefetchAllProposalsByRealm(realmPk, cluster.rpcEndpoint),
     staleTime: 60 * 1000 * 60, // 1 hour
   });
 
