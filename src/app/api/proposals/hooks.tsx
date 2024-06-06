@@ -10,21 +10,25 @@ import {
   useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { getAllProposalsQuery } from './queries';
+import { getAllProposalsClientQuery, getAllProposalsQuery } from './queries';
 import { Cluster } from '@/types/cluster';
+import { API_URL, NEXT_PUBLIC_API_URL } from '@/constants/endpoints';
 
 export const useAllProposalsByRealm = (
   realmPk: string,
   cluster: Cluster
-): UseQueryResult<ProgramAccount<Proposal>[], Error> => {
+): UseSuspenseQueryResult<ProgramAccount<Proposal>[]> => {
   const { connection } = useConnection();
 
   const realmId = new PublicKey(realmPk);
   const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 
-  return useQuery(
-    getAllProposalsQuery(realmPk, connection, programId, cluster)
-  );
+  return useSuspenseQuery({
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
+    queryKey: ['allProposals', realmPk, cluster?.type ?? 'mainnet'],
+    queryFn: async () => getAllProposalsQuery(realmPk, cluster),
+    staleTime: 60 * 1000 * 60, // 1 hour
+  });
 };
 
 export const useProposal = (pubkey: PublicKey | undefined) => {

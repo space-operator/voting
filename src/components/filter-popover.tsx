@@ -14,6 +14,7 @@ import { useAtom } from 'jotai/react';
 import { ProposalState } from '@solana/spl-governance';
 import { useAllProposalsByRealm } from '@/app/api/proposals/hooks';
 import { useRealmSlug } from '@/app/realm/[[...slug]]/slug';
+import { API_URL } from '@/constants/endpoints';
 
 export const VotingTypes = {
   Draft: 'Draft',
@@ -65,6 +66,7 @@ export const filterStateAtom = atomWithStorage<FilterState>(
 export function FilterPopover() {
   const { pubkey, cluster } = useRealmSlug();
   const { data } = useAllProposalsByRealm(pubkey, cluster);
+
   const state = data?.map((proposal) =>
     mapFromProposal(proposal.account.state)
   );
