@@ -13,6 +13,7 @@ import { DisplayProposals } from '@/components/display-proposals';
 import { prefetchAllProposalsByRealm } from '@/app/api/proposals/queries';
 import { GovernancePowerCard } from '@/components/GovernancePower/GovernancePowerCard';
 import { extractPubkeyAndCluster } from './slugHelper';
+import { Refresh } from '@/components/refresh';
 
 export default async function RealmPage({
   params,
@@ -41,7 +42,8 @@ export default async function RealmPage({
       <HydrationBoundary state={dehydrate(queryClient)}>
         <QueryErrorResetBoundary>
           <Suspense fallback={<div>Loading...</div>}>
-            <div className='flex justify-end mb-4'>
+            <div className='flex justify-end mb-4 gap-4'>
+              <Refresh />
               <FilterPopover />
             </div>
             <DisplayProposals />
