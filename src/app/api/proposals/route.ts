@@ -4,6 +4,8 @@ import { getAllProposals } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
@@ -31,6 +33,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ status: 400, error: 'Invalid request' });
+    return NextResponse.json({
+      status: 400,
+      error: `Invalid request ${error}`,
+    });
   }
 }

@@ -5,6 +5,7 @@ import { ProgramAccount, Proposal, getProposal } from '@solana/spl-governance';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import {
+  UseQueryResult,
   UseSuspenseQueryResult,
   useQuery,
   useSuspenseQuery,
@@ -15,13 +16,13 @@ import { Cluster } from '@/types/cluster';
 export const useAllProposalsByRealm = (
   realmPk: string,
   cluster: Cluster
-): UseSuspenseQueryResult<ProgramAccount<Proposal>[], Error> => {
+): UseQueryResult<ProgramAccount<Proposal>[], Error> => {
   const { connection } = useConnection();
 
   const realmId = new PublicKey(realmPk);
   const programId = new PublicKey(DEFAULT_GOVERNANCE_PROGRAM_ID);
 
-  return useSuspenseQuery(
+  return useQuery(
     getAllProposalsQuery(realmPk, connection, programId, cluster)
   );
 };
