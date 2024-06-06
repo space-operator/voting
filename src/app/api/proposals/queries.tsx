@@ -1,7 +1,6 @@
-import { API_URL, NEXT_PUBLIC_API_URL } from '@/constants/endpoints';
+import {  NEXT_PUBLIC_API_URL } from '@/constants/endpoints';
 import { Cluster } from '@/types/cluster';
-import { getAllProposals } from '@solana/spl-governance';
-import { Connection, PublicKey } from '@solana/web3.js';
+
 
 // Prefetch
 export async function prefetchAllProposalsByRealm(pubkey: string) {
@@ -29,16 +28,16 @@ export function getAllProposalsQuery(
   };
 }
 
-export function getAllProposalsClientQuery(
-  connection: Connection,
-  programId: PublicKey,
-  realmId: PublicKey
-) {
-  return {
-    // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['allProposals', realmId.toString(), connection.rpcEndpoint],
-    queryFn: async () =>
-      (await getAllProposals(connection, programId, realmId)).flat(),
-    staleTime: 60 * 1000 * 60, // 1 hour
-  };
-}
+// export function getAllProposalsClientQuery(
+//   connection: Connection,
+//   programId: PublicKey,
+//   realmId: PublicKey
+// ) {
+//   return {
+//     // eslint-disable-next-line @tanstack/query/exhaustive-deps
+//     queryKey: ['allProposals', realmId.toString(), connection.rpcEndpoint],
+//     queryFn: async () =>
+//       (await getAllProposals(connection, programId, realmId)).flat(),
+//     staleTime: 60 * 1000 * 60, // 1 hour
+//   };
+// }

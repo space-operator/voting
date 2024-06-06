@@ -10,7 +10,7 @@ import {
   useQuery,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { getAllProposalsClientQuery, getAllProposalsQuery } from './queries';
+import {  getAllProposalsQuery } from './queries';
 import { Cluster } from '@/types/cluster';
 import { API_URL, NEXT_PUBLIC_API_URL } from '@/constants/endpoints';
 

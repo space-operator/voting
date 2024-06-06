@@ -90,9 +90,12 @@ export function DisplayProposals() {
               proposal={proposal}
             />
           ))
+        ) : data.length > 0 ? (
+          <div>{data.length} proposals found, please adjust filters</div>
         ) : (
-          <div>No proposals found, please adjust filters.</div>
+          <div>No proposals found in this governance</div>
         )}
+
         {totalPages > 1 &&
           PaginationBar(handlePageChange, currentPage, totalPages)}
       </div>

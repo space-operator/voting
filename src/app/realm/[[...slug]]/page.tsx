@@ -29,6 +29,7 @@ export default async function RealmPage({
     staleTime: 60 * 1000 * 60, // 1 hour
   });
 
+
   return (
     <div className='p-4'>
       <div className='text-xl font-bold my-4'>Voting Power</div>
