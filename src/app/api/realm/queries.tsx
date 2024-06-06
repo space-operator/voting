@@ -1,25 +1,6 @@
-
 import { queryClient } from '@/providers/query';
-import {
-  ProgramAccount,
-  Realm,
-  getRealm,
-  getRealms,
-} from '@solana/spl-governance';
+import { ProgramAccount, Realm, getRealm } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
-
-
-// prefetch all Realms
-export async function prefetchRealms(pubkey: string, rpcEndpoint: string) {
-  const connection = new Connection(rpcEndpoint, 'confirmed');
-  const governanceProgramID = new PublicKey(pubkey);
-
-  const data = await getRealms(connection, governanceProgramID);
-
-  // stringify for server
-  return JSON.stringify(data);
-}
-
 
 // prefetch SINGLE Realm
 export async function prefetchRealm(pubkey: string, rpcEndpoint: string) {
@@ -31,7 +12,6 @@ export async function prefetchRealm(pubkey: string, rpcEndpoint: string) {
   // stringify for server
   return JSON.stringify(data);
 }
-
 
 export async function fetchRealmByPubkey(
   connection: Connection,

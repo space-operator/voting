@@ -25,10 +25,9 @@ export default async function RealmPage({
 
   await queryClient.prefetchQuery({
     queryKey: ['allProposals', realmPk, cluster?.type ?? 'mainnet'],
-    queryFn: async () => await prefetchAllProposalsByRealm(realmPk),
+    queryFn: () => prefetchAllProposalsByRealm(realmPk),
     staleTime: 60 * 1000 * 60, // 1 hour
   });
-
 
   return (
     <div className='p-4'>

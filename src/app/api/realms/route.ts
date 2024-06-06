@@ -1,26 +1,18 @@
 import { PRIVATE_MAINNET_RPC_ENDPOINT } from '@/constants/endpoints';
-import { getRealm } from '@solana/spl-governance';
+import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@solana/governance-program-library';
+import { getRealm, getRealms } from '@solana/spl-governance';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-static';
 
 export async function GET(req: NextRequest) {
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const realmPk = searchParams.get('realmPk');
-
-    if (!realmPk) {
-      throw { error: 'realmPk query parameter is required' };
-    }
-
     const rpcEndpoint = PRIVATE_MAINNET_RPC_ENDPOINT;
     const connection = new Connection(rpcEndpoint);
 
-    const realmId = new PublicKey(realmPk);
+    const result = await getRealms(connection, DEFAULT_GOVERNANCE_PROGRAM_ID);
 
-    const result = await getRealm(connection, realmId);
-    
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json({

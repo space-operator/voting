@@ -2,7 +2,6 @@
 
 import { DEFAULT_GOVERNANCE_PROGRAM_ID } from '@/constants/programs';
 import { useQuery } from '@tanstack/react-query';
-import { prefetchRealms } from '@/app/api/realm/queries';
 import { realmsJson, splRepo } from '@/constants/other';
 import { PublicKey } from '@solana/web3.js';
 import { RealmInfo } from '@/types/realm';
@@ -13,6 +12,7 @@ import { Card, CardContent, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { useRouter } from 'next/navigation';
 import { PaginationBar } from './PaginationBar';
+import { prefetchRealms } from '@/app/api/realms/queries';
 
 interface RealmDisplayInfo {
   name: string;
@@ -27,8 +27,7 @@ export function Realms() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['realms', DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint],
-    queryFn: async () =>
-      await prefetchRealms(DEFAULT_GOVERNANCE_PROGRAM_ID, cluster.rpcEndpoint),
+    queryFn: async () => prefetchRealms(),
     staleTime: 3600000, // 1 hour
   });
 
@@ -50,10 +49,11 @@ export function Realms() {
 
     return repoData
       .map((realmInfo: RealmInfo) => {
-        const onChainMatch: ProgramAccount<Realm> | undefined = JSON.parse(
-          data
-        ).find((onChain: ProgramAccount<Realm>) =>
-          new PublicKey(onChain.pubkey).equals(new PublicKey(realmInfo.realmId))
+        const onChainMatch: ProgramAccount<Realm> | undefined = data.find(
+          (onChain: ProgramAccount<Realm>) =>
+            new PublicKey(onChain.pubkey).equals(
+              new PublicKey(realmInfo.realmId)
+            )
         ); // Corrected PublicKey comparison using .equals method
 
         if (!onChainMatch) {
